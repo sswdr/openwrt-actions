@@ -21,7 +21,10 @@ sed -i 's/luci-theme-bootstrap/luci-theme-argonne/g' ./feeds/luci/collections/lu
 sed -i "s/OpenWrt /杀生丸大人 Build $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" package/lean/default-settings/files/zzz-default-settings
 
 # 修改主机名
-sed -i 's/OpenWrt/SSWdeOpenWrt/g' package/base-files/files/bin/config_generate
+sed -i 's/OpenWrt/sswOpenWrt/g' package/base-files/files/bin/config_generate
+
+# 修改默认lede仓库编译分支
+sed -i 's/PATCHVER:=5.4/PATCHVER:=5.10/g' target/linux/armvirt/Makefile
 
 # Modify some code adaptation
 #sed -i 's/LUCI_DEPENDS.*/LUCI_DEPENDS:=\@\(arm\|\|aarch64\)/g' feeds/luci/applications/luci-app-cpufreq/Makefile
@@ -39,8 +42,9 @@ sed -i 's#ARMv8#openwrt_armvirt#g' package/luci-app-amlogic/luci-app-amlogic/roo
 sed -i 's#opt/kernel#kernel#g' package/luci-app-amlogic/luci-app-amlogic/root/etc/config/amlogic
 
 # （lean仓库没有的）拉取关机luci插件
-git clone https://github.com/sirpdboy/luci-app-poweroffdevice package/luci-app-poweroffdevice
 git clone https://github.com/esirplayground/luci-app-poweroff package/luci-app-poweroff
+# （lean仓库没有的）拉取定时设置插件luci插件
+git clone https://github.com/sirpdboy/luci-app-autotimeset package/luci-app-autotimeset
 
 # （lean仓库没有的）拉取网络存储 luci-app-gowebdav
 svn co https://github.com/immortalwrt-collections/openwrt-gowebdav/trunk/luci-app-gowebdav package/luci-app-gowebdav
