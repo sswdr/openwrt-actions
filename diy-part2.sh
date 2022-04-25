@@ -26,7 +26,7 @@ sed -i 's/OpenWrt/sswOpenWrt/g' package/base-files/files/bin/config_generate
 # 修改默认lede仓库编译分支
 sed -i 's/PATCHVER:=5.4/PATCHVER:=5.10/g' target/linux/armvirt/Makefile
 
-# Add autocore support for armvirt
+# Add autocore support for armvirt：修改后make menuconfig可用选上autocore，生成.config
 sed -i 's/TARGET_rockchip/TARGET_rockchip\|\|TARGET_armvirt/g' package/lean/autocore/Makefile
 
 # ########################################################################################################
