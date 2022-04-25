@@ -37,6 +37,8 @@ sed -i 's/TARGET_rockchip/TARGET_rockchip\|\|TARGET_armvirt/g' package/lean/auto
 # sed -i 's/invalid users = root/#invalid users = root/g' feeds/packages/net/samba4/files/smb.conf.template
 # 暂时未用：软件源修改
 # sed -i 's#openwrt.proxy.ustclug.org#mirrors.bfsu.edu.cn\\/openwrt#' package/lean/default-settings/files/zzz-default-settings
+# 暂时未用：修复？luci-app-cifs-mount（网络存储-挂载SMB网络共享，将 SMB/CIFS 的共享文件夹挂载到本地）
+# sed -i 's#mount -t cifs#mount.cifs#g' feeds/luci/applications/luci-app-cifs-mount/root/etc/init.d/cifs
 # ########################################################################################################
 
 # ---------------------------------------------------------------------------------------------------
