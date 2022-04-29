@@ -11,7 +11,7 @@ on:
       tag_version:
         description: '编译环境版本'
         required: false
-        default: 'v1'
+        default: '5-10-max-v3'
 
   #schedule:
   #  - cron: 0 16 * * *
@@ -142,7 +142,7 @@ jobs:
     - name: 编译环境导出：workdir.tar.gz
       uses: ncipollo/release-action@v1
       with:
-        tag: openwrt_N1_${{ env.PACKAGED_OUTPUTDATE }}
+        tag: dev_${{ github.event.inputs.tag_version }}
         artifacts: /workdir.tar.gz
         allowUpdates: true
         token: ${{ secrets.GITHUB_TOKEN }}
@@ -164,7 +164,7 @@ jobs:
     - name: 编译环境导出：home-runner-work.tar.gz
       uses: ncipollo/release-action@v1
       with:
-        tag: openwrt_N1_${{ env.PACKAGED_OUTPUTDATE }}
+        tag: dev_${{ github.event.inputs.tag_version }}
         artifacts: /home/runner/home-runner-work.tar.gz
         allowUpdates: true
         token: ${{ secrets.GITHUB_TOKEN }}
