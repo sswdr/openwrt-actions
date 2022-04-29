@@ -11,7 +11,7 @@ on:
       tag_version:
         description: '编译环境版本'
         required: false
-        default: '5-10-max-v3'
+        default: '5-10-lede-kenzok8-max-v3'
 
   #schedule:
   #  - cron: 0 16 * * *
@@ -147,7 +147,7 @@ jobs:
         allowUpdates: true
         token: ${{ secrets.GITHUB_TOKEN }}
         body: |
-          * **编译环境导出：workdir.tar.gz**
+          * **编译环境导出：5.4-lede+kenzok8-max-v3.config **
 
     - name: 清理编译环境的压缩包：workdir.tar.gz
       id: tarql1
@@ -169,7 +169,7 @@ jobs:
         allowUpdates: true
         token: ${{ secrets.GITHUB_TOKEN }}
         body: |
-          * **编译环境导出：home-runner-work.tar.gz**
+          * **编译环境导出：5.4-lede+kenzok8-max-v3.config **
 
     - name: 清理编译环境的压缩包：home-runner-work.tar.gz
       id: tarql2
