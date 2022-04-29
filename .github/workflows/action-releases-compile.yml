@@ -64,21 +64,21 @@ jobs:
       run: |
         cd /
         sudo rm -rf workdir
-        sudo wget -P / https://github.com/sswdr/Actions-OpenWrt-N1/releases/download/openwrt_N1_/workdir.tar.gz
+        sudo wget -P / https://github.com/sswdr/Private-Actions-OpenWrt/releases/download/dev_5-10-lede-kenzok8-max-v3/workdir.tar.gz
         cd /
         sudo tar -zxvf workdir.tar.gz
         sudo chown $USER:$GROUPS /workdir
         sudo rm -rf workdir.tar.gz
         cd /home/runner/work
-        sudo wget -P /home/runner/work https://github.com/sswdr/Actions-OpenWrt-N1/releases/download/openwrt_N1_/home-runner-work.tar.gz
+        sudo wget -P /home/runner/work https://github.com/sswdr/Private-Actions-OpenWrt/releases/download/dev_5-10-lede-kenzok8-max-v3/home-runner-work.tar.gz
         sudo tar -zxvf home-runner-work.tar.gz
-        sudo rm -rf Actions-OpenWrt-N1/
-        sudo mv /home/runner/work/work/Actions-OpenWrt-N1 /home/runner/work
+        sudo rm -rf Private-Actions-OpenWrt/
+        sudo mv /home/runner/work/work/Private-Actions-OpenWrt /home/runner/work
         sudo rm -rf home-runner-work.tar.gz
         sudo rm -rf work/
-        cd /home/runner/work/Actions-OpenWrt-N1/Actions-OpenWrt-N1
+        cd /home/runner/work/Private-Actions-OpenWrt/Private-Actions-OpenWrt
         sudo rm -rf openwrt
-        ln -sf /workdir/openwrt /home/runner/work/Actions-OpenWrt-N1/Actions-OpenWrt-N1/openwrt
+        ln -sf /workdir/openwrt /home/runner/work/Private-Actions-OpenWrt/Private-Actions-OpenWrt/openwrt
 
     - name: 编译固件
       working-directory: /workdir
@@ -140,7 +140,7 @@ jobs:
         body: |
           ### **适用于Amlogic平台的N1盒子OpenWrt固件**
           * **固件信息：**
-          默认IP: `192.168.2.254`
+          默认IP: `192.168.5.25`
           默认用户名: `root`
           默认密码: `password`
           * **使用方法：**
