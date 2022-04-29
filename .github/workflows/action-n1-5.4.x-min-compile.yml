@@ -1,4 +1,4 @@
-name: 使用releases编译固件
+name: action-n1-5.4.x-min-compile
 
 on:
   repository_dispatch:
@@ -11,10 +11,11 @@ env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
-  CONFIG_FILE: .config
+  CONFIG_FILE: 5.4-lede+kenzok8-min-v3.config
   DIY_P1_SH: diy-part1.sh
-  DIY_P2_SH: diy-part2.sh
+  DIY_P2_SH: diy-part2-5.4.x.sh
   TZ: Asia/Shanghai
+  UPLOAD_BIN_DIR: true
 
 jobs:
   build:
@@ -59,29 +60,44 @@ jobs:
         # sudo -E apt-get remove -y --purge azure-cli ghc zulu* hhvm llvm* firefox google* dotnet* powershell mysql* php* mssql-tools msodbcsql17 android*
         # sudo rm -rf /etc/mysql /etc/php /swapfile
 
-    - name: 下载releases环境
-      id: downreleases
+    - name: 克隆源码
+      working-directory: /workdir
       run: |
-        cd /
-        sudo rm -rf workdir
-        sudo wget -P / https://github.com/sswdr/Actions-OpenWrt-N1/releases/download/openwrt_N1_/workdir.tar.gz
-        cd /
-        sudo tar -zxvf workdir.tar.gz
-        sudo chown $USER:$GROUPS /workdir
-        sudo rm -rf workdir.tar.gz
-        cd /home/runner/work
-        sudo wget -P /home/runner/work https://github.com/sswdr/Actions-OpenWrt-N1/releases/download/openwrt_N1_/home-runner-work.tar.gz
-        sudo tar -zxvf home-runner-work.tar.gz
-        sudo rm -rf Actions-OpenWrt-N1/
-        sudo mv /home/runner/work/work/Actions-OpenWrt-N1 /home/runner/work
-        sudo rm -rf home-runner-work.tar.gz
-        sudo rm -rf work/
-        cd /home/runner/work/Actions-OpenWrt-N1/Actions-OpenWrt-N1
-        sudo rm -rf openwrt
-        ln -sf /workdir/openwrt /home/runner/work/Actions-OpenWrt-N1/Actions-OpenWrt-N1/openwrt
+        df -hT $PWD
+        git clone $REPO_URL -b $REPO_BRANCH openwrt
+        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+
+    - name: 加载自定义feeds
+      run: |
+        [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
+        chmod +x $DIY_P1_SH
+        cd openwrt
+        $GITHUB_WORKSPACE/$DIY_P1_SH
+
+    - name: 更新feeds
+      run: cd openwrt && ./scripts/feeds update -a
+
+    - name: 安装feeds
+      run: cd openwrt && ./scripts/feeds install -a
+
+    - name: 加载自定义配置
+      run: |
+        [ -e files ] && mv files openwrt/files
+        [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
+        chmod +x $DIY_P2_SH
+        cd openwrt
+        $GITHUB_WORKSPACE/$DIY_P2_SH
+
+    - name: 下载软件包
+      id: package
+      run: |
+        cd openwrt
+        make defconfig
+        make download -j8
+        find dl -size -1024c -exec ls -l {} \;
+        find dl -size -1024c -exec rm -f {} \;
 
     - name: 编译固件
-      working-directory: /workdir
       id: compile
       run: |
         cd openwrt
@@ -91,6 +107,13 @@ jobs:
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+
+    - name: 上传ipk等bin文件
+      uses: actions/upload-artifact@main
+      if: env.UPLOAD_BIN_DIR == 'true'
+      with:
+        name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+        path: openwrt/bin
 
     - name: 清理磁盘空间
       if: (!cancelled())

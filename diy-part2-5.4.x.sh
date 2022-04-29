@@ -12,7 +12,7 @@
 
 # ---------------------------------------------------------------------------------------------------
 # 修改ip
-sed -i 's/192.168.1.1/192.168.2.254/g' package/base-files/files/bin/config_generate
+sed -i 's/192.168.1.1/192.168.5.25/g' package/base-files/files/bin/config_generate
 
 # 修改默认主题
 sed -i 's/luci-theme-bootstrap/luci-theme-argonne/g' ./feeds/luci/collections/luci/Makefile
@@ -24,7 +24,7 @@ sed -i "s/OpenWrt /杀生丸大人 Build $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt 
 sed -i 's/OpenWrt/sswOpenWrt/g' package/base-files/files/bin/config_generate
 
 # 修改默认lede仓库编译分支
-sed -i 's/PATCHVER:=5.4/PATCHVER:=5.10/g' target/linux/armvirt/Makefile
+# sed -i 's/PATCHVER:=5.4/PATCHVER:=5.10/g' target/linux/armvirt/Makefile
 
 # Add autocore support for armvirt：修改后make menuconfig可用选上autocore，生成.config
 sed -i 's/TARGET_rockchip/TARGET_rockchip\|\|TARGET_armvirt/g' package/lean/autocore/Makefile
@@ -37,8 +37,6 @@ sed -i 's/TARGET_rockchip/TARGET_rockchip\|\|TARGET_armvirt/g' package/lean/auto
 # sed -i 's/invalid users = root/#invalid users = root/g' feeds/packages/net/samba4/files/smb.conf.template
 # 暂时未用：软件源修改
 # sed -i 's#openwrt.proxy.ustclug.org#mirrors.bfsu.edu.cn\\/openwrt#' package/lean/default-settings/files/zzz-default-settings
-# 暂时未用：修复？luci-app-cifs-mount（网络存储-挂载SMB网络共享，将 SMB/CIFS 的共享文件夹挂载到本地）
-# sed -i 's#mount -t cifs#mount.cifs#g' feeds/luci/applications/luci-app-cifs-mount/root/etc/init.d/cifs
 # ########################################################################################################
 
 # ---------------------------------------------------------------------------------------------------
