@@ -8,7 +8,10 @@
 ![xm1](doc/5.10-lede+kenzok8-max.jpg)
 
 #### 修改 [openwrt_packit](https://github.com/unifreq/openwrt_packit) 脚本，打包固件默认的配置：例如wifi，root密码，宽带密码，network，firewall等 ####
-
+- openwrt_packit/make.env
+- openwrt_packit/mk_s905d_n1.sh
+- openwrt_packit/files/first_run.sh
+ 
 ## 感谢
 - https://github.com/coolsnowwolf/lede
 - https://github.com/unifreq/openwrt_packit
