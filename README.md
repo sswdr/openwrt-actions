@@ -7,7 +7,7 @@
 #### action-n1-5.10.x-max-compile:  ####
 ![xm1](doc/5.10-lede+kenzok8-max.jpg)
 
-#### 修改 [openwrt_packit](https://github.com/unifreq/openwrt_packit) 脚本，打包固件默认的配置：例如wifi，root密码，宽带密码，network，firewall等 ####
+#### 修改 [openwrt_packit](https://github.com/unifreq/openwrt_packit) 脚本，打包固件时，添加默认配置：如wifi，root密码，宽带密码，network配置，firewall配置等 ####
 - openwrt_packit/make.env
 - openwrt_packit/mk_s905d_n1.sh
 - openwrt_packit/files/first_run.sh
