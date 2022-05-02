@@ -4,6 +4,9 @@
 默认用户名: `root`
 默认密码: `password`
 
+**5.10-lede+kenzok8-max: **
+![xm1](doc/5.10-lede+kenzok8-max.jpg)
+
 ## 感谢
 - https://github.com/coolsnowwolf/lede
 - https://github.com/unifreq/openwrt_packit
