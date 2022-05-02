@@ -3,8 +3,11 @@
 默认IP: `192.168.5.25`
 默认用户名: `root`
 默认密码: `password`
+
 #### action-n1-5.10.x-max-compile:  ####
 ![xm1](doc/5.10-lede+kenzok8-max.jpg)
+
+#### 在[openwrt_packit](https://github.com/unifreq/openwrt_packit)脚本中配置：例如wifi，root密码，宽带密码，network，firewall等 ####
 
 ## 感谢
 - https://github.com/coolsnowwolf/lede
