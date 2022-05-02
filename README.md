@@ -12,6 +12,7 @@
 - openwrt_packit/mk_s905d_n1.sh
 - openwrt_packit/files/first_run.sh
 #### 私人打包仓库：https://github.com/sswdr/OpenWrt-PackIt
+![xm1](doc/OpenWrt-PackIt.jpg)
  
 ## 感谢
 - https://github.com/coolsnowwolf/lede
