@@ -3,7 +3,7 @@
 默认IP: `192.168.5.25`
 默认用户名: `root`
 默认密码: `password`
-#### 5.10-lede+kenzok8-max:  ####
+#### action-n1-5.10.x-max-compile:  ####
 ![xm1](doc/5.10-lede+kenzok8-max.jpg)
 
 ## 感谢
