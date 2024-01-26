@@ -1,4 +1,5 @@
 # 使用releases上次的编译工作目录进行编译
+# 目前存在的问题：需要用自己的.config编译，而不是releases中的
 name: test-workdir-compile
 
 on:
@@ -10,8 +11,6 @@ env:
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: 5.10-lede+kenzok8-max-v3.config
-  DIY_P1_SH: diy-part1.sh
-  DIY_P2_SH: diy-part2.sh
   TZ: Asia/Shanghai
 
 jobs:
