@@ -8,11 +8,11 @@ on:
       ssh:
         description: 'SSH connection to Actions'
         required: false
-        default: 'false'
+        default: false
       tag_version:
         description: '编译环境版本'
         required: false
-        default: '5-10-lede-kenzok8-max-v3'
+        default: 5-10-lede-kenzok8-max-v3
 
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
