@@ -1,4 +1,5 @@
-name: action-test-ssh
+# 测试ssh连接
+name: test-ssh-connection
 
 on:
   repository_dispatch:

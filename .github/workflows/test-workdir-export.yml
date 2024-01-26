@@ -1,4 +1,5 @@
-name: action-dev-export
+# 导出编译环境
+name: test-workdir-export
 
 on:
   repository_dispatch:
@@ -33,12 +34,8 @@ jobs:
     - name: Checkout
       uses: actions/checkout@main
 
-    - name: 检查服务器配置
+    - name: 服务器信息
       run: |
-        echo "警告⚠"
-        echo "若分配的服务器性能不足，务必及时取消，重新运行！"
-        echo "已知编译成功CPU型号：8370C,8171M"
-        echo "已知性能不足CPU型号：8272CL,E5系列"
         echo "--------------------------CPU信息--------------------------"
         echo "CPU物理数量:$(cat /proc/cpuinfo| grep "physical id"| sort| uniq| wc -l)"
         echo -e "CPU核心及版本信息：$(cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c) \n"
@@ -111,27 +108,6 @@ jobs:
       env:
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-
-#    - name: 整理编译环境
-#      id: tarzl
-#      run: |
-#        sudo rm $GITHUB_WORKSPACE/openwrt
-#        sudo mv /workdir/openwrt/ $GITHUB_WORKSPACE/
-#        sudo tar -zcvf dev.tar.gz ./*
-#        sudo mv dev.tar.gz /
-#
-#    - name: 编译环境导出
-#      uses: ncipollo/release-action@v1
-#      with:
-#        tag: dev_${{ github.event.inputs.tag_version }}
-#        artifacts: /dev.tar.gz
-#        allowUpdates: true
-#        token: ${{ secrets.GITHUB_TOKEN }}
-#
-#    - name: 清理编译环境压缩包
-#      id: tarql
-#      run: |
-#        sudo rm /dev.tar.gz
 
     - name: 压缩：workdir.tar.gz
       id: tarzl1
