@@ -62,6 +62,6 @@ jobs:
         allowUpdates: true
         token: ${{ secrets.GITHUB_TOKEN }}
         body: |
-          * $CONFIG_FILE
+          * ${{ github.event.inputs.CONFIG_FILE }}
 
 
