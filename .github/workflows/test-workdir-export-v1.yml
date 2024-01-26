@@ -63,11 +63,11 @@ jobs:
     - name: 编译环境导出：workdir.tar.gz
       uses: ncipollo/release-action@v1
       with:
-        tag: dev_${{ github.event.inputs.CONFIG_FILE }}
+        tag: dev_${{ github.event.inputs.REPO_URL }}
         artifacts:
         allowUpdates: true
         token: ${{ secrets.GITHUB_TOKEN }}
         body: |
-          * ${{ github.event.inputs.CONFIG_FILE }}
+          * ${{ github.event.inputs.REPO_URL }}
 
 
