@@ -54,6 +54,12 @@ jobs:
 
     steps:
 
+
+    - name: echo test
+      run: |
+        echo $CONFIG_FILE
+        echo ${{ github.event.inputs.CONFIG_FILE }}
+
     - name: 编译环境导出：workdir.tar.gz
       uses: ncipollo/release-action@v1
       with:
