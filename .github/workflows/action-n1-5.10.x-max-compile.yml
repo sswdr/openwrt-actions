@@ -3,9 +3,11 @@ name: action-n1-5.10.x-max-compile
 on:
   repository_dispatch:
   workflow_dispatch:
-
-  #schedule:
-  #  - cron: 0 16 * * *
+    inputs:
+      ssh:
+        description: 'REPO_URL 编译仓库地址'
+        required: true
+        default: https://github.com/coolsnowwolf/lede
 
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
@@ -25,12 +27,8 @@ jobs:
     - name: Checkout
       uses: actions/checkout@main
 
-    - name: 检查服务器配置
+    - name: 服务器信息
       run: |
-        echo "警告⚠"
-        echo "若分配的服务器性能不足，务必及时取消，重新运行！"
-        echo "已知编译成功CPU型号：8370C,8171M"
-        echo "已知性能不足CPU型号：8272CL,E5系列"
         echo "--------------------------CPU信息--------------------------"
         echo "CPU物理数量:$(cat /proc/cpuinfo| grep "physical id"| sort| uniq| wc -l)"
         echo -e "CPU核心及版本信息：$(cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c) \n"
@@ -49,7 +47,9 @@ jobs:
       run: |
         sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
         sudo -E apt-get -qq update
-        sudo -E apt-get -qq install $(curl -fsSL git.io/depends-ubuntu-2004)
+        # sudo -E apt-get -qq install $(curl -fsSL git.io/depends-ubuntu-2004)
+        # 此处安装编译所需的依赖来自lede readme.md中
+        # sudo -E apt-get -qq install ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libfuse-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libpython3-dev libreadline-dev libssl-dev libtool lrzsz mkisofs msmtp ninja-build p7zip p7zip-full patch pkgconf python2.7 python3 python3-pyelftools python3-setuptools qemu-utils rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
         sudo -E apt-get -qq autoremove --purge
         sudo -E apt-get -qq clean
         sudo timedatectl set-timezone "$TZ"
@@ -67,7 +67,7 @@ jobs:
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
-    - name: 加载自定义feeds
+    - name: 加载自定义feeds至lede/feeds.conf.default
       run: |
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
         chmod +x $DIY_P1_SH
@@ -80,7 +80,7 @@ jobs:
     - name: 安装feeds
       run: cd openwrt && ./scripts/feeds install -a
 
-    - name: 加载自定义配置
+    - name: 加载自定义配置：files文件夹替换 & .config编译配置
       run: |
         [ -e files ] && mv files openwrt/files
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
@@ -88,7 +88,7 @@ jobs:
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
 
-    - name: 下载软件包
+    - name: 下载编译所需的文件依赖项或资源
       id: package
       run: |
         cd openwrt
@@ -169,12 +169,12 @@ jobs:
           retain_days: 7
           #retain_days: ${{ github.event.inputs.action_days }}
     
-    - name: 删除多余releases
-      uses: dev-drprasad/delete-older-releases@master
-      with:
-        repo: ${{ github.repository }}
-        keep_latest: 5
-        #keep_latest: ${{ github.event.inputs.rele }}
-        delete_tags: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#    - name: 删除多余releases
+#      uses: dev-drprasad/delete-older-releases@master
+#      with:
+#        repo: ${{ github.repository }}
+#        keep_latest: 5
+#        #keep_latest: ${{ github.event.inputs.rele }}
+#        delete_tags: true
+#      env:
+#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
