@@ -14,16 +14,13 @@ on:
         required: false
         default: '5-10-lede-kenzok8-max-v3'
 
-  #schedule:
-  #  - cron: 0 16 * * *
-
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: 5.10-lede+kenzok8-max-v3.config
   DIY_P1_SH: diy-part1.sh
-  DIY_P2_SH: diy-part2-5.10.x.sh
+  DIY_P2_SH: diy-part2.sh
   TZ: Asia/Shanghai
 
 jobs:

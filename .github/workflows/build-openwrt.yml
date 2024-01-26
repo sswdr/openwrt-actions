@@ -1,23 +1,51 @@
-name: action-n1-5.10.x-max-compile
+name: build-openwrt
 
 on:
   repository_dispatch:
   workflow_dispatch:
     inputs:
       REPO_URL:
-        description: '编译仓库地址'
+        description: '编译仓库地址[主仓库]'
         required: true
         default: https://github.com/coolsnowwolf/lede
+      REPO_BRANCH:
+        description: '编译仓库分支[默认主仓库master不需要改]'
+        required: true
+        default: master
+      FEEDS_CONF:
+        description: '自定义feeds配置文件[仓库根目录下的文件名称]'
+        required: false
+        default: feeds.conf.default
+      CONFIG_FILE:
+        description: '.config配置文件[仓库根目录下build.config/]'
+        required: true
+        default: build.config/.config
+      DIY_P1_SH:
+        description: '自定义diy-part1.sh文件名'
+        required: true
+        default: diy-part1.sh
+      DIY_P2_SH:
+        description: '自定义diy-part2.sh文件名'
+        required: true
+        default: diy-part2.sh
+      TZ:
+        description: '时区配置'
+        required: false
+        default: Asia/Shanghai
+      UPLOAD_BIN_DIR:
+        description: '是否上传ipk等bin文件'
+        required: false
+        default: true
 
 env:
   REPO_URL: ${{ github.event.inputs.REPO_URL }}
-  REPO_BRANCH: master
-  FEEDS_CONF: feeds.conf.default
-  CONFIG_FILE: 5.10-lede+kenzok8-max-v3.config
-  DIY_P1_SH: diy-part1.sh
-  DIY_P2_SH: diy-part2-5.10.x.sh
-  TZ: Asia/Shanghai
-  UPLOAD_BIN_DIR: true
+  REPO_BRANCH: ${{ github.event.inputs.REPO_BRANCH }}
+  FEEDS_CONF: ${{ github.event.inputs.FEEDS_CONF }}
+  CONFIG_FILE: ${{ github.event.inputs.CONFIG_FILE }}
+  DIY_P1_SH: ${{ github.event.inputs.DIY_P1_SH }}
+  DIY_P2_SH: ${{ github.event.inputs.DIY_P2_SH }}
+  TZ: ${{ github.event.inputs.TZ }}
+  UPLOAD_BIN_DIR: ${{ github.event.inputs.UPLOAD_BIN_DIR }}
 
 jobs:
   build:
@@ -71,6 +99,9 @@ jobs:
     - name: 加载自定义feeds至lede/feeds.conf.default
       run: |
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
+
+    - name: 执行DIY_P1_SH脚本
+      run: |
         chmod +x $DIY_P1_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P1_SH
@@ -81,10 +112,13 @@ jobs:
     - name: 安装feeds
       run: cd openwrt && ./scripts/feeds install -a
 
-    - name: 加载自定义配置：files文件夹替换 & .config编译配置
+    - name: 加载自定义配置: files文件夹替换 & .config编译配置
       run: |
         [ -e files ] && mv files openwrt/files
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
+
+    - name: 执行DIY_P2_SH脚本
+      run: |
         chmod +x $DIY_P2_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
