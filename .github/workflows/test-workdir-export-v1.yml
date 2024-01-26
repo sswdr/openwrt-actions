@@ -68,6 +68,6 @@ jobs:
         allowUpdates: true
         token: ${{ secrets.GITHUB_TOKEN }}
         body: |
-          * ${{ github.event.inputs.REPO_URL }} || $REPO_URL
+          * ${{ github.event.inputs.REPO_URL }} || ${{ REPO_URL }}
 
 
