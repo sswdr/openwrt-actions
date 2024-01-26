@@ -4,13 +4,13 @@ on:
   repository_dispatch:
   workflow_dispatch:
     inputs:
-      ssh:
-        description: 'REPO_URL 编译仓库地址'
+      REPO_URL:
+        description: '编译仓库地址'
         required: true
         default: https://github.com/coolsnowwolf/lede
 
 env:
-  REPO_URL: https://github.com/coolsnowwolf/lede
+  REPO_URL: github.event.inputs.REPO_URL
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: 5.10-lede+kenzok8-max-v3.config
