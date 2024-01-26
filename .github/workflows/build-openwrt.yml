@@ -111,6 +111,7 @@ jobs:
 
     - name: 加载自定义配置files文件夹和.config文件
       run: |
+        cd openwrt
         [ -e files ] && mv files openwrt/files
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
 
