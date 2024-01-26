@@ -131,7 +131,7 @@ jobs:
         KERNEL_VERSION_NAME: 5.10.111
 
     - name: 打包内核
-      uses: unifreq/openwrt_packit@2022.04.27
+      uses: sswdr/openwrt_packit@2022.04.27
       env:
         WHOAMI: 杀生丸大人
         OPENWRT_ARMVIRT: openwrt-armvirt/*.tar.gz
