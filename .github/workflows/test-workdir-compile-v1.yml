@@ -66,9 +66,13 @@ jobs:
         sudo wget -P /home/runner/work https://github.com/sswdr/Actions-OpenWrt/releases/download/dev_5-10-lede-kenzok8-max-v3/home-runner-work.tar.gz
         sudo tar -zxvf home-runner-work.tar.gz
         sudo rm -rf Actions-OpenWrt/
+
+        # TODO 特殊处理特殊打的包
         sudo mv /home/runner/work/work/Private-Actions-OpenWrt /home/runner/work
         sudo mv /home/runner/work/Private-Actions-OpenWrt /home/runner/work/Actions-OpenWrt
         sudo mv /home/runner/work/Actions-OpenWrt/Private-Actions-OpenWrt /home/runner/work/Actions-OpenWrt/Actions-OpenWrt
+        # TODO 特殊处理特殊打的包
+
         sudo rm -rf home-runner-work.tar.gz
         sudo rm -rf work/
         cd /home/runner/work/Actions-OpenWrt/Actions-OpenWrt
