@@ -1,6 +1,6 @@
 # 使用releases上次的编译工作目录进行编译
 # 目前存在的问题：需要用自己的.config编译，而不是releases中的
-name: test-workdir-compile-v1
+name: test-workdir-compile-v2
 
 on:
   repository_dispatch:
