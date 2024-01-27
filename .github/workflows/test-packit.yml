@@ -19,8 +19,6 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@main
 
     - name: 打包内核
       uses: rin0612/openwrt_packit@backup.2022.04.25
