@@ -58,13 +58,13 @@ jobs:
       run: |
         cd /
         sudo rm -rf workdir
-        sudo wget -P / https://github.com/sswdr/Actions-OpenWrt/releases/download/dev_5-10-lede-kenzok8-max-v3/workdir.tar.gz
+        sudo wget -P / https://github.com/sswdr/Actions-OpenWrt/releases/download/backup.2022.04.25/workdir.tar.gz
         cd /
         sudo tar -zxvf workdir.tar.gz
         sudo chown $USER:$GROUPS /workdir
         sudo rm -rf workdir.tar.gz
         cd /home/runner/work
-        sudo wget -P /home/runner/work https://github.com/sswdr/Actions-OpenWrt/releases/download/dev_5-10-lede-kenzok8-max-v3/home-runner-work.tar.gz
+        sudo wget -P /home/runner/work https://github.com/sswdr/Actions-OpenWrt/releases/download/backup.2022.04.25/home-runner-work.tar.gz
         sudo tar -zxvf home-runner-work.tar.gz
         sudo rm -rf Actions-OpenWrt/
 
