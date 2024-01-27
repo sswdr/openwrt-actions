@@ -121,7 +121,7 @@ jobs:
         sudo du -h --max-depth=1 /workdir/openwrt |sort -nr | head -10
 
     - name: 打包内核
-      uses: sswdr/openwrt_packit@2022.04.27
+      uses: rin0612/openwrt_packit@backup.2022.04.25
       env:
         WHOAMI: 杀生丸大人
         OPENWRT_ARMVIRT: openwrt-armvirt/*.tar.gz
