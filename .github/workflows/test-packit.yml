@@ -31,8 +31,8 @@ jobs:
         OPENWRT_ARMVIRT: https://github.com/sswdr/Actions-OpenWrt/releases/download/openwrt_N1_2022.04.29.1427/openwrt-armvirt-64-default-rootfs.tar.gz
         PACKAGE_SOC: s905d
         KERNEL_AUTO_LATEST: false
-        KERNEL_REPO_URL: https://github.com/rin0612/Forked-kernel/tree/main/pub/stable
-        KERNEL_VERSION_NAME: 5.10.111
+        KERNEL_REPO_URL: https://github.com/rin0612/openwrt_packit/releases/download/backup.kernel
+        KERNEL_VERSION_NAME: 5.10.110
 
     - name: SSH connection to Actions
       uses: P3TERX/ssh2actions@v1.0.0
