@@ -1,13 +1,13 @@
 # 测试ssh连接github action
 
-name: part-ssh-connection
+name: part-ssh-connect
 
 on:
   repository_dispatch:
   workflow_dispatch:
     inputs:
       ssh:
-        description: '测试ssh连接github action'
+        description: '是否ssh连接到actions'
         required: false
         default: true
 
@@ -17,7 +17,7 @@ jobs:
 
     steps:
 
-    - name: SSH connection to Actions
+    - name: 是否ssh连接到actions
       uses: rin0612/ssh2actions@v1.0.0
       if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
       env:

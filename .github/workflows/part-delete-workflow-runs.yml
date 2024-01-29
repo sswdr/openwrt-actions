@@ -1,15 +1,10 @@
-# 测试ssh连接github action
+# 清理actions空间
 
 name: part-delete-workflow-runs
 
 on:
   repository_dispatch:
   workflow_dispatch:
-    inputs:
-      ssh:
-        description: '测试ssh连接github action'
-        required: false
-        default: true
 
 jobs:
   build:
@@ -17,7 +12,7 @@ jobs:
 
     steps:
 
-    - name: 清理Actions空间
+    - name: 清理actions空间
       uses: Mattraks/delete-workflow-runs@main
       with:
           token: ${{ secrets.GITHUB_TOKEN }}
