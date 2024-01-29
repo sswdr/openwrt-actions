@@ -1,6 +1,6 @@
 # 测试ssh连接github action
 
-name: part-ssh-connection
+name: part-delete-workflow-runs
 
 on:
   repository_dispatch:
