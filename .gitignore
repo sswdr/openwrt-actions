@@ -1,4 +1,4 @@
 # Project exclude paths
-/Actions-OpenWrt.iml
+/openwrt-build.iml
 /target/
 /.idea/
