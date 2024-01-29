@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-    - name: 准备需要推送到releases文件
+    - name: 准备需要推送到releases的文件
       run: |
         echo "----------准备将/opt/2024/*推送到releases--------------"
         mkdir -p /opt/2024
@@ -25,7 +25,6 @@ jobs:
       uses: rin0612/release-action@v1
       with:
         tag: ${{ env.PACKAGED_OUTPUTDATE }}_releases的tag
-        # 推送的文件可从环境变量中取
         artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/*
         allowUpdates: true
         token: ${{ secrets.GITHUB_TOKEN }}
