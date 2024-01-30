@@ -1,0 +1,61 @@
+# 导出编译环境
+# TODO 待编译的action确认完成后，同步这里的
+
+name: test-part-export-build-env
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+
+env:
+  REPO_URL: https://github.com/coolsnowwolf/lede
+  REPO_BRANCH: master
+  FEEDS_CONF: feeds.conf.default
+  CONFIG_FILE: 5.10-lede+kenzok8-max-v3.config
+  DIY_P1_SH: diy-part1.sh
+  DIY_P2_SH: diy-part2.sh
+  TZ: Asia/Shanghai
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@main
+
+    - name: 初始化编译环境
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        sudo -E apt-get -qq install git
+        sudo timedatectl set-timezone "$TZ"
+        sudo mkdir -p /workdir
+        sudo chown $USER:$GROUPS /workdir
+
+    - name: 克隆源码
+      working-directory: /workdir
+      run: |
+        df -hT $PWD
+        git clone $REPO_URL -b $REPO_BRANCH openwrt
+        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+
+    - name: 压缩编译环境
+      run: |
+        sudo tar -zcvf /workdir.tar.gz /workdir/
+        sudo tar -zcvf /home/runner/home-runner-work.tar.gz /home/runner/work/
+        echo "PACKAGED_OUTPUTDATE=$(date +"%Y.%m.%d.%H%M")" >>$GITHUB_ENV
+        echo "PACKAGED_OUTPUTPATH=/workdir.tar.gz,/home/runner/home-runner-work.tar.gz" >>$GITHUB_ENV
+
+      # TODO release body 在action run写入具体的环境信息，例如diy2脚本的内容
+
+
+    - name: 编译环境导出
+      uses: rin0612/release-action@v1
+      with:
+        tag: backup_build_env_${{ env.PACKAGED_OUTPUTDATE }}
+        artifacts: ${{ env.PACKAGED_OUTPUTPATH }}
+        allowUpdates: true
+        token: ${{ secrets.GITHUB_TOKEN }}
+        body: |
+          ### **编译环境导出_${{ env.PACKAGED_OUTPUTDATE }}**
