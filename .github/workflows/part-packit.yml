@@ -40,4 +40,3 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         body: |
           ### **${{ env.PACKAGED_OUTPUTDATE }}_releases的budy适用于md语法**
-
