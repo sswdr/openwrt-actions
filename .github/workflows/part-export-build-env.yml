@@ -105,8 +105,8 @@ jobs:
       uses: rin0612/release-action@v1
       with:
         tag: backup_build_env_${{ env.PACKAGED_OUTPUTDATE }}
-        artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/*
+        artifacts: ${{ env.PACKAGED_OUTPUTPATH }}
         allowUpdates: true
         token: ${{ secrets.GITHUB_TOKEN }}
         body: |
-          * **编译环境导出 **
+          ### **编译环境导出_${{ env.PACKAGED_OUTPUTDATE }}**
