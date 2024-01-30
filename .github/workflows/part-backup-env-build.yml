@@ -1,6 +1,6 @@
 # 使用导出的编译环境编译
 
-name: test-workdir-compile-v3
+name: part-backup-env-build
 
 on:
   repository_dispatch:
