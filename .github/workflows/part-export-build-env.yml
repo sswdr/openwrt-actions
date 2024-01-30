@@ -1,5 +1,4 @@
 # 导出编译环境
-# TODO 待编译的action确认完成后，同步这里的
 
 name: part-export-build-env
 
@@ -19,24 +18,10 @@ env:
 jobs:
   build:
     runs-on: ubuntu-20.04
-
+    # TODO 待编译的action确认完成后，同步这里的每个step操作
     steps:
     - name: Checkout
       uses: actions/checkout@main
-
-    - name: 服务器信息
-      run: |
-        echo "--------------------------CPU信息--------------------------"
-        echo "CPU物理数量:$(cat /proc/cpuinfo| grep "physical id"| sort| uniq| wc -l)"
-        echo -e "CPU核心及版本信息：$(cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c) \n"
-        echo "--------------------------内存信息--------------------------"
-        echo "已安装内存详细信息："
-        sudo lshw -short -C memory | grep GiB
-        echo -e "\n"
-        echo "--------------------------硬盘信息--------------------------"
-        echo -e  "硬盘数量：$(ls /dev/sd* | grep -v [1-9] | wc -l) \n"
-        echo "硬盘详情："
-        df -Th
 
     - name: 初始化编译环境
       env:
@@ -95,11 +80,14 @@ jobs:
     - name: 压缩编译环境
       run: |
         sudo tar -zcvf /workdir.tar.gz /workdir/ 2>&1 1>/dev/null | grep -i "error"
-        sudo tar -zcvf /home/runner/home-runner-work.tar.gz /home/runner/work/ 2>&1 1>/dev/null | grep -i "error"
+        sudo tar -zcvf /home.tar.gz /home/ 2>&1 1>/dev/null | grep -i "error"
+        echo "PACKAGED_OUTPUTPATH=/workdir.tar.gz,/home/.tar.gz" >>$GITHUB_ENV
         echo "PACKAGED_OUTPUTDATE=$(date +"%Y.%m.%d.%H%M")" >>$GITHUB_ENV
-        echo "PACKAGED_OUTPUTPATH=/workdir.tar.gz,/home/runner/home-runner-work.tar.gz" >>$GITHUB_ENV
 
-      # TODO release body 在action run写入具体的环境信息，例如diy2脚本的内容
+    # TODO release body 在action run写入具体的环境信息，例如diy2脚本的内容
+#    - name: 说明信息，具体的环境信息，例如diy2脚本的内容
+#      run: |
+#        echo "EXPORT_BUILD_ENV_VERSION=${环境信息}" >>$GITHUB_ENV
 
     - name: 编译环境导出
       uses: rin0612/release-action@v1
