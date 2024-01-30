@@ -9,7 +9,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-20.04
-
     steps:
     - name: 准备需要推送到releases的文件
       run: |

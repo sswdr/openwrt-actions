@@ -9,9 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-20.04
-
     steps:
-
     - name: 清理actions空间
       uses: Mattraks/delete-workflow-runs@main
       with:

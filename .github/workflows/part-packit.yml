@@ -1,4 +1,4 @@
-# rootfs和n1处理脚本与内核等配置打包n1镜像
+# rootfs.tar.gz和kernel与n1打包脚本制作镜像
 
 name: part-packit
 
