@@ -42,8 +42,8 @@ jobs:
 
     - name: 压缩编译环境
       run: |
-        tar -zcvf /workdir.tar.gz /workdir/
-        tar -zcvf /home/runner/home-runner-work.tar.gz /home/runner/work/
+        sudo tar -zcvf /workdir.tar.gz /workdir/
+        sudo tar -zcvf /home/runner/home-runner-work.tar.gz /home/runner/work/
         echo "PACKAGED_OUTPUTDATE=$(date +"%Y.%m.%d.%H%M")" >>$GITHUB_ENV
         echo "PACKAGED_OUTPUTPATH=\"/workdir.tar.gz,/home/runner/home-runner-work.tar.gz\"" >>$GITHUB_ENV
 
