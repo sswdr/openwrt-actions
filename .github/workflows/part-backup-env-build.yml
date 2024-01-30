@@ -1,6 +1,6 @@
-# 使用releases上次的编译工作目录进行编译
-# 目前存在的问题：需要用自己的.config编译，而不是releases中的
-name: test-workdir-compile-v1
+# 使用导出的编译环境编译
+
+name: test-workdir-compile-v3
 
 on:
   repository_dispatch:
@@ -12,6 +12,7 @@ env:
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: 5.10-lede+kenzok8-max-v3.config
   TZ: Asia/Shanghai
+  UPLOAD_BIN_DIR: true
 
 jobs:
   build:
@@ -79,6 +80,11 @@ jobs:
         sudo rm -rf openwrt
         ln -sf /workdir/openwrt /home/runner/work/Actions-OpenWrt/Actions-OpenWrt/openwrt
 
+        # 测试5.10-lede+kenzok8-max-v3.config
+        sudo rm /workdir/openwrt/.config
+        curl -o /workdir/openwrt/.config https://raw.githubusercontent.com/sswdr/Actions-OpenWrt/main/build.config.backup/5.10-lede%2Bkenzok8-max-v3.config
+        sudo chown $USER:$GROUPS /workdir
+
     - name: 编译固件
       working-directory: /workdir
       id: compile
@@ -120,7 +126,7 @@ jobs:
         sudo du -h --max-depth=1 /workdir/openwrt |sort -nr | head -10
 
     - name: 打包内核
-      uses: unifreq/openwrt_packit@master
+      uses: rin0612/openwrt_packit@backup.2022.04.25
       env:
         WHOAMI: 杀生丸大人
         OPENWRT_ARMVIRT: openwrt-armvirt/*.tar.gz
@@ -142,22 +148,3 @@ jobs:
           默认IP: `192.168.5.25`
           默认用户名: `root`
           默认密码: `password`
-
-    - name: 清理Actions空间
-      uses: Mattraks/delete-workflow-runs@main
-      with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          repository: ${{ github.repository }}
-          keep_minimum_runs: 0
-          retain_days: 7
-          #retain_days: ${{ github.event.inputs.action_days }}
-    
-#    - name: 删除多余releases
-#      uses: dev-drprasad/delete-older-releases@master
-#      with:
-#        repo: ${{ github.repository }}
-#        keep_latest: 5
-#        #keep_latest: ${{ github.event.inputs.rele }}
-#        delete_tags: true
-#      env:
-#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

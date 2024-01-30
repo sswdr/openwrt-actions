@@ -1,5 +1,6 @@
 # 导出编译环境
 # TODO 待编译的action确认完成后，同步这里的
+
 name: part-export-build-env
 
 on:
@@ -97,6 +98,8 @@ jobs:
         tar -zcvf /home/runner/home-runner-work.tar.gz /home/runner/work/
         echo "PACKAGED_OUTPUTDATE=$(date +"%Y.%m.%d.%H%M")" >>$GITHUB_ENV
         echo "PACKAGED_OUTPUTPATH=\"/workdir.tar.gz,/home/runner/home-runner-work.tar.gz\"" >>$GITHUB_ENV
+
+      # TODO release body 在action run写入具体的环境信息，例如diy2脚本的内容
 
     - name: 编译环境导出
       uses: rin0612/release-action@v1
