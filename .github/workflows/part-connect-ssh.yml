@@ -1,6 +1,6 @@
 # 测试ssh连接github action
 
-name: part-ssh-connect
+name: part-connect-ssh
 
 on:
   repository_dispatch:
