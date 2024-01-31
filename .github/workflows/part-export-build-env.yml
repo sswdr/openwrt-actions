@@ -1,16 +1,11 @@
 # 导出编译环境
-# TODO 待编译的action确认完成后，同步这里的每个step操作
+# TODO 待编译的action确认完成后，同步这里的
 
 name: part-export-build-env
 
 on:
   repository_dispatch:
   workflow_dispatch:
-    inputs:
-      ssh:
-        description: '是否ssh连接到actions'
-        required: false
-        default: true
 
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
@@ -24,10 +19,8 @@ env:
 jobs:
   build:
     runs-on: ubuntu-20.04
-    steps:
-    - name: Checkout
-      uses: actions/checkout@main
 
+    steps:
     - name: 初始化编译环境
       env:
         DEBIAN_FRONTEND: noninteractive
@@ -42,20 +35,14 @@ jobs:
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
-    - name: ssh连接到actions
-      uses: rin0612/ssh2actions@v1.0.0
-      if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
-      env:
-        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
 
 
     - name: 压缩编译环境
       run: |
         sudo tar -zcvf /workdir.tar.gz /workdir/ 2>&1 1>/dev/null | grep -i "error"
         sudo tar -zcvf /home.tar.gz /home/runner/work/ 2>&1 1>/dev/null | grep -i "error"
-        echo "PACKAGED_OUTPUTPATH=/workdir.tar.gz,/home.tar.gz" >>$GITHUB_ENV
         echo "PACKAGED_OUTPUTDATE=$(date +"%Y.%m.%d.%H%M")" >>$GITHUB_ENV
+        echo "PACKAGED_OUTPUTPATH=/workdir.tar.gz,/home.tar.gz" >>$GITHUB_ENV
 
     - name: 编译环境导出
       uses: rin0612/release-action@v1
