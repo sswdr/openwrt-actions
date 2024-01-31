@@ -1,0 +1,37 @@
+# 使用导出的编译环境编译
+
+name: part-build-backup-env-v1
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      ssh:
+        description: '是否ssh连接到actions'
+        required: false
+        default: true
+env:
+  # 时区设置,方便看正常日志的时间,后面通过变量进行设置
+  TZ: Asia/Shanghai
+  # 使用编译的.config编译配置
+  CONFIG_FILE_URL: https://raw.githubusercontent.com/sswdr/openwrt-actions/main/build.config.backup/lede-pure-min-v1.config
+  # 使用的build-backup-env下载链接
+  $BACKUP_ENV_URL: https://github.com/sswdr/openwrt-actions/releases/download/backup_build_env_2022.04.25.1999/workdir.tar.gz
+  # 是否上传编译好的bin文件夹到action
+  UPLOAD_BIN_DIR: true
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+    # 相当于git clone ${当前仓库} -b ${下面的@main分支} /home/runner/work/${当前仓库名称}/${当前仓库名称}
+    # TODO 这个步骤可以去掉?
+    - name: 将当前仓库克隆到运行器
+      uses: actions/checkout@main
+
+    - name: ssh连接到actions
+      uses: rin0612/ssh2actions@v1.0.0
+      if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
+      env:
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
