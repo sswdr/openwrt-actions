@@ -40,9 +40,9 @@ jobs:
     - name: 压缩编译环境
       run: |
         sudo tar -zcvf /workdir.tar.gz /workdir/ 2>&1 1>/dev/null | grep -i "error"
-        sudo tar -zcvf /home.tar.gz /home/runner/work/ 2>&1 1>/dev/null | grep -i "error"
+        sudo tar -zcvf /home/runner/home-runner-work.tar.gz /home/runner/work/ 2>&1 1>/dev/null | grep -i "error"
         echo "PACKAGED_OUTPUTDATE=$(date +"%Y.%m.%d.%H%M")" >>$GITHUB_ENV
-        echo "PACKAGED_OUTPUTPATH=/workdir.tar.gz,/home.tar.gz" >>$GITHUB_ENV
+        echo "PACKAGED_OUTPUTPATH=/workdir.tar.gz,/home/runner/home-runner-work.tar.gz" >>$GITHUB_ENV
 
     - name: 编译环境导出
       uses: rin0612/release-action@v1
