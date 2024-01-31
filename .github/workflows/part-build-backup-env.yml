@@ -52,9 +52,9 @@ jobs:
         # 时区设置,方便看正常日志的时间
         sudo timedatectl set-timezone "Asia/Shanghai"
         # 清理多余文件，腾出磁盘空间
-        docker rmi $(docker images -q)
         # sudo -E apt-get remove -y --purge azure-cli ghc zulu* hhvm llvm* firefox google* dotnet* powershell mysql* php* mssql-tools msodbcsql17 android*
         # sudo rm -rf /etc/mysql /etc/php /swapfile
+        docker rmi $(docker images -q)
 
     - name: 下载export-build-env
       working-directory: /
