@@ -18,6 +18,7 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
+    # 将当前仓库克隆到运行器使后续步骤能够访问操 == git clone ${当前仓库} -b ${下面的@main分支} /home/runner/work/${当前仓库名称}/${当前仓库名称}
     - name: Checkout
       uses: actions/checkout@main
 
