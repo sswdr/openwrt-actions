@@ -1,0 +1,30 @@
+# 相当于git clone ${当前仓库} -b ${下面的@main分支} /home/runner/work/${当前仓库名称}/${当前仓库名称},并且actions最后stop会Post该仓库
+
+name: part-checkout
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      ssh:
+        description: '是否ssh连接到actions'
+        required: false
+        default: true
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+    - name: 将当前仓库克隆到运行器
+      uses: actions/checkout@main
+
+    - name: 进行一些对仓库的操作
+      run: |
+        echo "cd /home/runner/work/openwrt-actions/openwrt-actions"
+
+    - name: ssh连接到actions
+      uses: rin0612/ssh2actions@v1.0.0
+      if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
+      env:
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}

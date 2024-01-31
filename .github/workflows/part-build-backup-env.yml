@@ -1,30 +1,34 @@
 # 使用导出的编译环境编译
+# TODO 待测试：需要用自己的.config编译，而不是releases中的
 
 name: part-build-backup-env
 
 on:
   repository_dispatch:
   workflow_dispatch:
+    inputs:
+      CONFIG_FILE_URL:
+        description: '使用的.config编译配置文件'
+        required: true
+        default: https://raw.githubusercontent.com/sswdr/openwrt-actions/main/build.config.backup/lede-pure-min-v1.config
+      BACKUP_ENV_URL:
+        description: '使用的build-backup-env下载链接'
+        required: true
+        default: https://github.com/sswdr/openwrt-actions/releases/download/backup_build_env_2022.04.25.1999/workdir.tar.gz
+      UPLOAD_BIN_DIR:
+        description: '是否上传编译好的bin文件夹到action'
+        required: true
+        default: true
 
 env:
-  # 时区设置,方便看正常日志的时间,后面通过变量进行设置
-  TZ: Asia/Shanghai
-  # 使用编译的.config编译配置
-  CONFIG_FILE_URL: https://raw.githubusercontent.com/sswdr/openwrt-actions/main/build.config.backup/lede-pure-min-v1.config
-  # 使用的build-backup-env下载链接
-  BACKUP_ENV_URL: https://github.com/sswdr/openwrt-actions/releases/download/backup_build_env_2022.04.25.1999/workdir.tar.gz
-  # 是否上传编译好的bin文件夹到action
-  UPLOAD_BIN_DIR: true
+  CONFIG_FILE_URL: ${{ github.event.inputs.CONFIG_FILE_URL }}
+  BACKUP_ENV_URL: ${{ github.event.inputs.BACKUP_ENV_URL }}
+  UPLOAD_BIN_DIR: ${{ github.event.inputs.UPLOAD_BIN_DIR }}
 
 jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
-    # 相当于git clone ${当前仓库} -b ${下面的@main分支} /home/runner/work/${当前仓库名称}/${当前仓库名称}
-    # TODO 这个步骤可以去掉?
-    - name: 将当前仓库克隆到运行器
-      uses: actions/checkout@main
-
     - name: 服务器信息
       run: |
         echo "CPU物理数量: $(cat /proc/cpuinfo| grep "physical id"| sort| uniq| wc -l)"
@@ -40,31 +44,18 @@ jobs:
         sudo -E apt-get -qq update
         # 此处安装编译所需的依赖来自lede readme.md中，原先使用的sudo -E apt-get -qq install $(curl -fsSL git.io/depends-ubuntu-2004)，来自P3TERX
         sudo -E apt-get -qq install ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libfuse-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libpython3-dev libreadline-dev libssl-dev libtool lrzsz mkisofs msmtp ninja-build p7zip p7zip-full patch pkgconf python2.7 python3 python3-pyelftools python3-setuptools qemu-utils rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
-        sudo timedatectl set-timezone "$TZ"
-        sudo mkdir -p /workdir
-        sudo chown $USER:$GROUPS /workdir
+        # 时区设置,方便看正常日志的时间,后面通过变量进行设置
+        sudo timedatectl set-timezone "Asia/Shanghai"
 
     - name: 下载export-build-env
       working-directory: /
       run: |
         sudo wget -q -P / $BACKUP_ENV_URL
+        echo "下载成功: $BACKUP_ENV_URL" && ls -alh / | grep *.tar.gz
         sudo tar -zxf workdir.tar.gz
         sudo chown $USER:$GROUPS /workdir
         wget -q -O /workdir/.config -N $CONFIG_FILE_URL
-
-        # TODO 这段是否必须?
-        # cd /home/runner/work
-        # sudo wget -P /home/runner/work https://github.com/sswdr/openwrt-actions/releases/download/backup_build_env_2022.04.25.1999/home.tar.gz
-        # sudo tar -zxvf home.tar.gz
-        # sudo rm -rf Actions-OpenWrt/
-        # sudo mv /home/runner/work/work/Private-Actions-OpenWrt /home/runner/work
-        # sudo mv /home/runner/work/Private-Actions-OpenWrt /home/runner/work/Actions-OpenWrt
-        # sudo mv /home/runner/work/Actions-OpenWrt/Private-Actions-OpenWrt /home/runner/work/Actions-OpenWrt/Actions-OpenWrt
-        # sudo rm -rf home-runner-work.tar.gz
-        # sudo rm -rf work/
-        # cd /home/runner/work/Actions-OpenWrt/Actions-OpenWrt
-        # sudo rm -rf openwrt
-        # ln -sf /workdir/openwrt /home/runner/work/Actions-OpenWrt/Actions-OpenWrt/openwrt
+        echo "准备完成: /workdir" && ls -alh /workdir
 
     - name: 编译固件
       working-directory: /workdir/openwrt
@@ -72,11 +63,11 @@ jobs:
         echo -e "开始编译: $(date +"%Y%m%d%H%M") start $(nproc) thread compile,先多线程,失败则单线程,再失败则详细日志的单线程"
         make -j$(nproc) || make -j1 || make -j1 V=s
         echo "结束编译: $(date +"%Y%m%d%H%M") success"
-        echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+        echo "BUILD_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
 
-    - name: 上传编译目录的bin文件夹
+    - name: 上传编译完成后bin文件夹
       uses: actions/upload-artifact@main
       if: env.UPLOAD_BIN_DIR == 'true'
       with:
-        name: openwrt_bin_${{ env.FILE_DATE }}
+        name: openwrt_bin_${{ env.BUILD_DATE }}
         path: openwrt/bin
