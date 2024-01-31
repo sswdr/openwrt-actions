@@ -17,9 +17,8 @@ jobs:
         PACKIT_REPO_URL: https://github.com/rin0612/openwrt_packit
         PACKIT_REPO_BRANCH: backup.2022.04.25
         # rootfs文件可以是下载的http连接,也可以是文件目录
-        # 例如编译的在/workdir/openwrt/bin/targets/*/*/*.tar.gz,后会移动到/home/runner/work/*/*/openwrt-armvirt/*.tar.gz
         # TODO 文件目录的待编译part完成后测试
-        # OPENWRT_ARMVIRT: /home/runner/work/*/*/openwrt-armvirt/*.tar.gz
+        # OPENWRT_ARMVIRT: /workdir/openwrt/bin/targets/*/*/*.tar.gz
         OPENWRT_ARMVIRT: https://github.com/sswdr/openwrt-actions/releases/download/openwrt_N1_2022.04.29.1427/openwrt-armvirt-64-default-rootfs.tar.gz
         # 使用的内核下载链接: ${KERNEL_REPO_URL}/${KERNEL_VERSION}.tar.gz
         KERNEL_REPO_URL: https://github.com/rin0612/openwrt_packit/releases/download/backup.kernel
