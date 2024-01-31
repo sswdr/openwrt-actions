@@ -41,11 +41,20 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
+        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
         sudo -E apt-get -qq update
         # 此处安装编译所需的依赖来自lede readme.md中，原先使用的sudo -E apt-get -qq install $(curl -fsSL git.io/depends-ubuntu-2004)，来自P3TERX
         sudo -E apt-get -qq install ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libfuse-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libpython3-dev libreadline-dev libssl-dev libtool lrzsz mkisofs msmtp ninja-build p7zip p7zip-full patch pkgconf python2.7 python3 python3-pyelftools python3-setuptools qemu-utils rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
+        sudo -E apt-get -qq autoremove --purge
+        sudo -E apt-get -qq clean
+        sudo mkdir -p /workdir
+        sudo chown $USER:$GROUPS /workdir
         # 时区设置,方便看正常日志的时间,后面通过变量进行设置
         sudo timedatectl set-timezone "Asia/Shanghai"
+        # 清理多余文件，腾出磁盘空间
+        docker rmi $(docker images -q)
+        # sudo -E apt-get remove -y --purge azure-cli ghc zulu* hhvm llvm* firefox google* dotnet* powershell mysql* php* mssql-tools msodbcsql17 android*
+        # sudo rm -rf /etc/mysql /etc/php /swapfile
 
     - name: 下载export-build-env
       working-directory: /
