@@ -54,8 +54,8 @@ jobs:
         echo "下载成功: $BACKUP_ENV_URL" && ls -alh / | grep *.tar.gz
         sudo tar -zxf workdir.tar.gz
         sudo chown $USER:$GROUPS /workdir
-        wget -q -O /workdir/.config -N $CONFIG_FILE_URL
-        echo "准备完成: /workdir" && ls -alh /workdir
+        wget -q -O /workdir/openwrt/.config -N $CONFIG_FILE_URL
+        echo "准备完成: /workdir/openwrt" && ls -alh /workdir
 
     - name: 编译固件
       working-directory: /workdir/openwrt
