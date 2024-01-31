@@ -16,7 +16,7 @@ on:
         required: true
         default: https://github.com/sswdr/openwrt-actions/releases/download/backup_build_env_2022.04.25.1999/workdir.tar.gz
       UPLOAD_BIN_DIR:
-        description: '是否上传编译好的bin文件夹到action'
+        description: '是否上传编译完成后bin文件夹'
         required: true
         default: true
 
@@ -56,6 +56,7 @@ jobs:
         sudo chown $USER:$GROUPS /workdir
         wget -q -O /workdir/openwrt/.config -N $CONFIG_FILE_URL
         echo "准备完成: /workdir/openwrt" && ls -alh /workdir/openwrt
+        echo "编译配置: /workdir/openwrt/.config" && cat /workdir/openwrt/.config
 
     - name: 编译固件
       working-directory: /workdir/openwrt
