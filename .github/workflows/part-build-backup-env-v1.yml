@@ -29,6 +29,17 @@ jobs:
     - name: 将当前仓库克隆到运行器
       uses: actions/checkout@main
 
+    - name: 下载export-build-env
+      working-directory: /
+      run: |
+        echo  $BACKUP_ENV_URL
+        echo "wget -q -P / $BACKUP_ENV_URL"
+        echo "tar -zxf workdir.tar.gz"
+        sudo wget -q -P / $BACKUP_ENV_URL
+        sudo tar -zxf workdir.tar.gz
+        sudo chown $USER:$GROUPS /workdir
+        wget -q -O /workdir/.config -N $CONFIG_FILE_URL
+
     - name: ssh连接到actions
       uses: rin0612/ssh2actions@v1.0.0
       if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
