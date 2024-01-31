@@ -1,20 +1,18 @@
+# 使用导出的编译环境编译
+
 name: part-build-backup-env-v0
 
 on:
   repository_dispatch:
   workflow_dispatch:
 
-  #schedule:
-  #  - cron: 0 16 * * *
-
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: 5.10-lede+kenzok8-max-v3.config
-  DIY_P1_SH: diy-part1.sh
-  DIY_P2_SH: diy-part2-5.10.x.sh
   TZ: Asia/Shanghai
+  UPLOAD_BIN_DIR: true
 
 jobs:
   build:
@@ -24,12 +22,8 @@ jobs:
     - name: Checkout
       uses: actions/checkout@main
 
-    - name: 检查服务器配置
+    - name: 服务器信息
       run: |
-        echo "警告⚠"
-        echo "若分配的服务器性能不足，务必及时取消，重新运行！"
-        echo "已知编译成功CPU型号：8370C,8171M"
-        echo "已知性能不足CPU型号：8272CL,E5系列"
         echo "--------------------------CPU信息--------------------------"
         echo "CPU物理数量:$(cat /proc/cpuinfo| grep "physical id"| sort| uniq| wc -l)"
         echo -e "CPU核心及版本信息：$(cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c) \n"
@@ -64,21 +58,28 @@ jobs:
       run: |
         cd /
         sudo rm -rf workdir
-        sudo wget -P / https://github.com/sswdr/Actions-OpenWrt/releases/download/dev_5-10-lede-kenzok8-max-v3/workdir.tar.gz
+        sudo wget -P / https://github.com/sswdr/openwrt-actions/releases/download/backup_build_env_2022.04.25.1999/workdir.tar.gz
         cd /
         sudo tar -zxvf workdir.tar.gz
         sudo chown $USER:$GROUPS /workdir
         sudo rm -rf workdir.tar.gz
         cd /home/runner/work
-        sudo wget -P /home/runner/work https://github.com/sswdr/Actions-OpenWrt/releases/download/dev_5-10-lede-kenzok8-max-v3/home-runner-work.tar.gz
-        sudo tar -zxvf home-runner-work.tar.gz
-        sudo rm -rf Actions-OpenWrt/
-        sudo mv /home/runner/work/work/Actions-OpenWrt /home/runner/work
-        sudo rm -rf home-runner-work.tar.gz
-        sudo rm -rf work/
-        cd /home/runner/work/Actions-OpenWrt/Actions-OpenWrt
+        sudo wget -P /home/runner/work https://github.com/sswdr/openwrt-actions/releases/download/backup_build_env_2022.04.25.1999/home.tar.gz
+        sudo tar -zxvf home.tar.gz
+        sudo rm -rf openwrt-actions/
+
+        # TODO 特殊处理特殊打的包
+        sudo mv /home/runner/work/home/runner/work/Private-Actions-OpenWrt/ /home/runner/work
+        sudo mv /home/runner/work/Private-Actions-OpenWrt /home/runner/work/openwrt-actions
+        sudo mv /home/runner/work/openwrt-actions/Private-Actions-OpenWrt /home/runner/work/openwrt-actions/openwrt-actions
+        # TODO 特殊处理特殊打的包
+
+        sudo rm -rf home.tar.gz
+        sudo rm -rf home/
+        cd /home/runner/work/openwrt-actions/openwrt-actions
         sudo rm -rf openwrt
-        ln -sf /workdir/openwrt /home/runner/work/Actions-OpenWrt/Actions-OpenWrt/openwrt
+        ln -sf /workdir/openwrt /home/runner/work/openwrt-actions/openwrt-actions/openwrt
+        sudo chown $USER:$GROUPS /workdir
 
     - name: 编译固件
       working-directory: /workdir
@@ -98,67 +99,3 @@ jobs:
       with:
         name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
         path: openwrt/bin
-
-    - name: 清理磁盘空间
-      if: (!cancelled())
-      run: |
-        echo "清理之前："
-        df -hT
-        mkdir openwrt-armvirt
-        mv openwrt/bin/targets/*/*/*.tar.gz openwrt-armvirt/
-        echo -e "\n"
-        echo "列出空间占用前10的目录或文件："
-        sudo du -h --max-depth=2 /workdir/openwrt |sort -nr | head -10
-        rm -rf /workdir/openwrt/*
-        echo -e "\n"
-        echo "清理之后："
-        df -hT
-        echo -e "\n"
-        echo "当前路径文件"
-        ls -l
-        echo -e "\n"
-        echo "列出空间占用前10的目录或文件："
-        sudo du -h --max-depth=1 /workdir/openwrt |sort -nr | head -10
-
-    - name: 打包内核
-      uses: unifreq/openwrt_packit@master
-      env:
-        WHOAMI: 杀生丸大人
-        OPENWRT_ARMVIRT: openwrt-armvirt/*.tar.gz
-        PACKAGE_SOC: s905d
-        KERNEL_AUTO_LATEST: false
-        KERNEL_REPO_URL: https://github.com/rin0612/Forked-kernel/tree/main/pub/stable
-        KERNEL_VERSION_NAME: 5.10.111
-
-    - name: 发布固件
-      uses: ncipollo/release-action@v1
-      with:
-        tag: openwrt_N1_${{ env.PACKAGED_OUTPUTDATE }}
-        artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/*
-        allowUpdates: true
-        token: ${{ secrets.GITHUB_TOKEN }}
-        body: |
-          ### **适用于Amlogic平台的N1盒子OpenWrt固件**
-          * **固件信息：**
-          默认IP: `192.168.5.25`
-          默认用户名: `root`
-          默认密码: `password`
-
-    - name: 清理Actions空间
-      uses: Mattraks/delete-workflow-runs@main
-      with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          repository: ${{ github.repository }}
-          keep_minimum_runs: 0
-          retain_days: 7
-          #retain_days: ${{ github.event.inputs.action_days }}
-    
-    - name: 删除多余releases
-      uses: dev-drprasad/delete-older-releases@master
-      with:
-        repo: ${{ github.repository }}
-        keep_latest: 5
-        #keep_latest: ${{ github.event.inputs.rele }}
-        delete_tags: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
