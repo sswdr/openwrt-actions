@@ -10,7 +10,7 @@ on:
       CONFIG_FILE_URL:
         description: '使用的.config编译配置文件'
         required: true
-        default: https://raw.githubusercontent.com/sswdr/openwrt-actions/main/build.config.backup/lede-pure-min-v1.config
+        default: https://raw.githubusercontent.com/sswdr/openwrt-actions/main/build.config.backup/backup_build_env_2022.04.25.1999.config
       BACKUP_ENV_URL:
         description: '使用的build-backup-env下载链接'
         required: true
