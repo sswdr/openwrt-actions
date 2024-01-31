@@ -1,0 +1,86 @@
+# 使用导出的编译环境编译
+
+name: part-build-backup-env-1-lede-pure-min-v1.config
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      CONFIG_FILE_URL:
+        description: '.config编译配置链接'
+        required: true
+        default: https://raw.githubusercontent.com/sswdr/openwrt-actions/main/build.config.backup/lede-pure-min-v1.config
+      BACKUP_ENV_URL:
+        description: 'build-backup-env链接'
+        required: true
+        default: https://github.com/sswdr/openwrt-actions/releases/download/backup_build_env_2022.04.25.1999/workdir.tar.gz
+      UPLOAD_BIN_DIR:
+        description: '是否上传编译完成后的bin文件夹到actions的artifact'
+        required: true
+        default: true
+
+env:
+  CONFIG_FILE_URL: ${{ github.event.inputs.CONFIG_FILE_URL }}
+  BACKUP_ENV_URL: ${{ github.event.inputs.BACKUP_ENV_URL }}
+  UPLOAD_BIN_DIR: ${{ github.event.inputs.UPLOAD_BIN_DIR }}
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+    - name: 服务器信息
+      run: |
+        echo "CPU物理数量: $(cat /proc/cpuinfo| grep "physical id"| sort| uniq| wc -l)"
+        echo -e "CPU核心及版本信息：$(cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c)"
+        echo "已安装内存详细信息: " && sudo lshw -short -C memory | grep GiB
+        echo -e  "硬盘数量: $(ls /dev/sd* | grep -v [1-9] | wc -l)"
+        echo "硬盘详情: " && df -Th
+
+    - name: 初始化编译环境
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        sudo -E apt-get -qq update
+        # 此处安装编译所需的依赖来自lede readme.md中，原先使用的sudo -E apt-get -qq install $(curl -fsSL git.io/depends-ubuntu-2004)，来自P3TERX
+        sudo -E apt-get -qq install ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libfuse-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libpython3-dev libreadline-dev libssl-dev libtool lrzsz mkisofs msmtp ninja-build p7zip p7zip-full patch pkgconf python2.7 python3 python3-pyelftools python3-setuptools qemu-utils rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
+        sudo -E apt-get -qq autoremove --purge
+        sudo -E apt-get -qq clean
+        # 清理多余文件，腾出磁盘空间
+        # sudo -E apt-get remove -y --purge azure-cli ghc zulu* hhvm llvm* firefox google* dotnet* powershell mysql* php* mssql-tools msodbcsql17 android*
+        # sudo rm -rf /etc/mysql /etc/php /swapfile
+        docker rmi $(docker images -q)
+        # 时区设置,方便看正常日志的时间
+        sudo timedatectl set-timezone "Asia/Shanghai"
+        # 编译的work目录
+        sudo mkdir -p /workdir
+        sudo chown $USER:$GROUPS /workdir
+
+    - name: 下载export-build-env
+      working-directory: /
+      run: |
+        sudo wget -q -P / $BACKUP_ENV_URL
+        echo "下载成功: $BACKUP_ENV_URL" && ls -alh / | grep *.tar.gz
+        sudo tar -zxf workdir.tar.gz && sudo rm workdir.tar.gz
+        wget -q -O /workdir/openwrt/.config -N $CONFIG_FILE_URL
+        sudo chown -R $USER:$GROUPS /workdir
+        echo "准备完成: /workdir/openwrt" && ls -alh /workdir/openwrt
+        # echo "编译配置: /workdir/openwrt/.config" && cat /workdir/openwrt/.config
+
+    - name: 编译固件
+      working-directory: /workdir/openwrt
+      run: |
+        echo "执行: make defconfig,将上传的.config匹配为适用于当前平台和硬件环境的配置文件"
+        make defconfig
+        echo -e "开始编译: $(date +"%Y%m%d%H%M") start $(nproc) thread compile,先多线程,失败则单线程,再失败则详细日志的单线程"
+        make -j$(nproc) || make -j1 || make -j1 V=s
+        echo "结束编译: $(date +"%Y%m%d%H%M") success"
+        echo "BUILD_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+
+    - name: 上传编译完成后的bin文件夹到actions的artifact
+      uses: actions/upload-artifact@main
+      if: env.UPLOAD_BIN_DIR == 'true'
+      with:
+        name: openwrt_bin_${{ env.BUILD_DATE }}
+        # 会将整个目录压缩成${name}.zip并上传
+        path: /workdir/openwrt/bin
