@@ -49,7 +49,7 @@ jobs:
         sudo -E apt-get -qq clean
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
-        # 时区设置,方便看正常日志的时间,后面通过变量进行设置
+        # 时区设置,方便看正常日志的时间
         sudo timedatectl set-timezone "Asia/Shanghai"
         # 清理多余文件，腾出磁盘空间
         docker rmi $(docker images -q)
