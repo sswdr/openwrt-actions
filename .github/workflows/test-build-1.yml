@@ -1,33 +1,55 @@
-# 使用导出的编译环境编译
-
-name: part-build-backup-env
+# 使用拉出的编译仓库环境编译
+name: test-build-1
 
 on:
   repository_dispatch:
   workflow_dispatch:
     inputs:
-      CONFIG_FILE_URL:
+      REPO_URL:
+        description: '编译仓库地址'
+        required: true
+        default: https://github.com/coolsnowwolf/lede
+      REPO_BRANCH:
+        description: '编译仓库分支'
+        required: true
+        default: master
+      FEEDS_CONF:
+        description: '自定义的feeds配置文件'
+        required: false
+        default: feeds.conf.default
+      CONFIG_FILE:
         description: '.config编译配置'
         required: true
-        default: https://raw.githubusercontent.com/sswdr/openwrt-actions/main/build.config/lede-pure-min-v1.config
-      BACKUP_ENV_URL:
-        description: 'build-backup-env编译环境'
+        default: build.config/2024.02.01-1.config
+      DIY_P1_SH:
+        description: '自定义的diy-part1.sh'
         required: true
-        default: https://github.com/sswdr/openwrt-actions/releases/download/backup_build_env_2022.04.25.1999/workdir.tar.gz
+        default: diy-part1.sh
+      DIY_P2_SH:
+        description: '自定义的diy-part2.sh'
+        required: true
+        default: diy-part2.sh
       UPLOAD_BIN_DIR:
         description: '是否上传编译完成后的bin文件夹到actions的artifact'
         required: true
         default: true
 
 env:
-  CONFIG_FILE_URL: ${{ github.event.inputs.CONFIG_FILE_URL }}
-  BACKUP_ENV_URL: ${{ github.event.inputs.BACKUP_ENV_URL }}
+  REPO_URL: ${{ github.event.inputs.REPO_URL }}
+  REPO_BRANCH: ${{ github.event.inputs.REPO_BRANCH }}
+  FEEDS_CONF: ${{ github.event.inputs.FEEDS_CONF }}
+  CONFIG_FILE: ${{ github.event.inputs.CONFIG_FILE }}
+  DIY_P1_SH: ${{ github.event.inputs.DIY_P1_SH }}
+  DIY_P2_SH: ${{ github.event.inputs.DIY_P2_SH }}
   UPLOAD_BIN_DIR: ${{ github.event.inputs.UPLOAD_BIN_DIR }}
 
 jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
+    - name: Checkout
+      uses: actions/checkout@main
+
     - name: 服务器信息
       run: |
         echo "CPU物理数量: $(cat /proc/cpuinfo| grep "physical id"| sort| uniq| wc -l)"
@@ -56,22 +78,46 @@ jobs:
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
 
-    - name: 下载export-build-env
-      working-directory: /
+    - name: 克隆源码
+      working-directory: /workdir
       run: |
-        sudo wget -q -P / $BACKUP_ENV_URL
-        echo "下载成功: $BACKUP_ENV_URL" && ls -alh / | grep *.tar.gz
-        sudo tar -zxf workdir.tar.gz && sudo rm workdir.tar.gz
-        wget -q -O /workdir/openwrt/.config -N $CONFIG_FILE_URL
-        sudo chown -R $USER:$GROUPS /workdir
-        echo "准备完成: /workdir/openwrt" && ls -alh /workdir/openwrt
-        # echo "编译配置: /workdir/openwrt/.config" && cat /workdir/openwrt/.config
+        df -hT $PWD
+        git clone $REPO_URL -b $REPO_BRANCH openwrt
+        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
-    - name: 编译固件
-      working-directory: /workdir/openwrt
+    - name: 加载自定义feeds至openwrt/feeds.conf.default, 执行DIY_P1_SH
       run: |
+        [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
+        chmod +x $DIY_P1_SH
+        cd openwrt
+        $GITHUB_WORKSPACE/$DIY_P1_SH
+
+    - name: 更新feeds
+      run: cd openwrt && ./scripts/feeds update -a
+
+    - name: 安装feeds
+      run: cd openwrt && ./scripts/feeds install -a
+
+    - name: 加载自定义配置files文件夹至openwrt/files, 复制.config, 执行DIY_P2_SH
+      run: |
+        [ -e files ] && mv files openwrt/files
+        [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
+        chmod +x $DIY_P2_SH
+        cd openwrt
+        $GITHUB_WORKSPACE/$DIY_P2_SH
+
+    - name: 下载编译所需的文件依赖项或资源
+      run: |
+        cd openwrt
         echo "执行: make defconfig,将上传的.config匹配为适用于当前平台和硬件环境的配置文件"
         make defconfig
+        make download -j8
+        find dl -size -1024c -exec ls -l {} \;
+        find dl -size -1024c -exec rm -f {} \;
+
+    - name: 编译固件
+      run: |
+        cd openwrt
         echo -e "开始编译: $(date +"%Y%m%d%H%M") start $(nproc) thread compile,先多线程,失败则单线程,再失败则详细日志的单线程"
         make -j$(nproc) || make -j1 || make -j1 V=s
         echo "结束编译: $(date +"%Y%m%d%H%M") success"
@@ -83,4 +129,4 @@ jobs:
       with:
         name: openwrt_bin_${{ env.BUILD_DATE }}
         # 会将整个目录压缩成${name}.zip并上传
-        path: /workdir/openwrt/bin
+        path: openwrt/bin

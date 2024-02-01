@@ -20,7 +20,7 @@ on:
       CONFIG_FILE:
         description: '.config编译配置'
         required: true
-        default: build.config.backup/2024.02.01-1.config
+        default: build.config/lede-pure-min-v1.config
       DIY_P1_SH:
         description: '自定义的diy-part1.sh'
         required: true
