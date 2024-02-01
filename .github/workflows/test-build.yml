@@ -1,4 +1,4 @@
-name: part-build-old
+name: test-build
 
 on:
   repository_dispatch:
