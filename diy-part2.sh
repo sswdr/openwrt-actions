@@ -6,8 +6,8 @@
 sed -i 's/192.168.1.1/192.168.5.25/g' package/base-files/files/bin/config_generate
 
 # 修改默认主题,这样就可以只编译一个主题,因为默认主题无法取消编译,注意luci-theme-argonne/在lede仓库没有，需要在扩展仓库中添加
-# TODO 待处理：只编译一个默认主题
-# sed -i 's/luci-theme-bootstrap/luci-theme-argonne/g' ./feeds/luci/collections/luci/Makefile
+# TODO 待处理: 只编译一个默认主题; luci-theme-argonne是kenzok8/openwrt-packages在2022的,目前是kenzok8/openwrt-packages/luci-theme-argone
+# sed -i 's/luci-theme-bootstrap/luci-theme-argone/g' ./feeds/luci/collections/luci/Makefile
 
 # 设置固件build信息
 sed -i "s/OpenWrt /杀生丸大人 Build $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" package/lean/default-settings/files/zzz-default-settings
