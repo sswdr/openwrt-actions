@@ -1,4 +1,6 @@
 # 使用拉出的编译仓库环境编译
+# TODO 5.10编译报错了
+
 name: test-build-1
 
 on:
@@ -84,6 +86,10 @@ jobs:
         df -hT $PWD
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+
+        # TODO
+        echo "TODO 5.10编译报错了" && cd /workdir/openwrt
+        sed -i '114s/DEPENDS:=+kmod-libphy/DEPENDS:=+kmod-libphy +kmod-of-mdio/' package/kernel/linux/modules/netdevices.mk
 
     - name: 加载自定义feeds至openwrt/feeds.conf.default, 执行DIY_P1_SH
       run: |
