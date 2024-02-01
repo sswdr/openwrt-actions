@@ -6,36 +6,32 @@ on:
   workflow_dispatch:
     inputs:
       REPO_URL:
-        description: '编译仓库地址[主仓库]'
+        description: '编译仓库地址'
         required: true
         default: https://github.com/coolsnowwolf/lede
       REPO_BRANCH:
-        description: '编译仓库分支[默认主仓库master不需要改]'
+        description: '编译仓库分支'
         required: true
         default: master
       FEEDS_CONF:
-        description: '自定义feeds配置文件[仓库根目录下的文件名称]'
+        description: '自定义的feeds配置文件'
         required: false
         default: feeds.conf.default
       CONFIG_FILE:
-        description: '.config配置文件[仓库根目录下build.config/]'
+        description: '.config编译配置'
         required: true
-        default: build.config/.config
+        default: build.config.backup/lede-pure-min-v1.config
       DIY_P1_SH:
-        description: '自定义diy-part1.sh文件名'
+        description: '自定义的diy-part1.sh'
         required: true
         default: diy-part1.sh
       DIY_P2_SH:
-        description: '自定义diy-part2.sh文件名'
+        description: '自定义的diy-part2.sh'
         required: true
         default: diy-part2.sh
-      TZ:
-        description: '时区配置'
-        required: false
-        default: Asia/Shanghai
       UPLOAD_BIN_DIR:
-        description: '是否上传ipk等bin文件'
-        required: false
+        description: '是否上传编译完成后的bin文件夹到actions的artifact'
+        required: true
         default: true
 
 env:
@@ -45,7 +41,6 @@ env:
   CONFIG_FILE: ${{ github.event.inputs.CONFIG_FILE }}
   DIY_P1_SH: ${{ github.event.inputs.DIY_P1_SH }}
   DIY_P2_SH: ${{ github.event.inputs.DIY_P2_SH }}
-  TZ: ${{ github.event.inputs.TZ }}
   UPLOAD_BIN_DIR: ${{ github.event.inputs.UPLOAD_BIN_DIR }}
 
 jobs:
@@ -57,17 +52,11 @@ jobs:
 
     - name: 服务器信息
       run: |
-        echo "--------------------------CPU信息--------------------------"
-        echo "CPU物理数量:$(cat /proc/cpuinfo| grep "physical id"| sort| uniq| wc -l)"
-        echo -e "CPU核心及版本信息：$(cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c) \n"
-        echo "--------------------------内存信息--------------------------"
-        echo "已安装内存详细信息："
-        sudo lshw -short -C memory | grep GiB
-        echo -e "\n"
-        echo "--------------------------硬盘信息--------------------------"
-        echo -e  "硬盘数量：$(ls /dev/sd* | grep -v [1-9] | wc -l) \n"
-        echo "硬盘详情："
-        df -Th
+        echo "CPU物理数量: $(cat /proc/cpuinfo| grep "physical id"| sort| uniq| wc -l)"
+        echo -e "CPU核心及版本信息：$(cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c)"
+        echo "已安装内存详细信息: " && sudo lshw -short -C memory | grep GiB
+        echo -e  "硬盘数量: $(ls /dev/sd* | grep -v [1-9] | wc -l)"
+        echo "硬盘详情: " && df -Th
 
     - name: 初始化编译环境
       env:
@@ -75,19 +64,19 @@ jobs:
       run: |
         sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
         sudo -E apt-get -qq update
-        # 此处安装编译所需的依赖来自https://raw.githubusercontent.com/P3TERX/openwrt-list/master/depends-ubuntu-2004
-        # sudo -E apt-get -qq install $(curl -fsSL git.io/depends-ubuntu-2004)
-        # 此处安装编译所需的依赖来自lede readme.md中
+        # 此处安装编译所需的依赖来自lede readme.md中，原先使用的sudo -E apt-get -qq install $(curl -fsSL git.io/depends-ubuntu-2004)，来自P3TERX
         sudo -E apt-get -qq install ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libfuse-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libpython3-dev libreadline-dev libssl-dev libtool lrzsz mkisofs msmtp ninja-build p7zip p7zip-full patch pkgconf python2.7 python3 python3-pyelftools python3-setuptools qemu-utils rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
         sudo -E apt-get -qq autoremove --purge
         sudo -E apt-get -qq clean
-        sudo timedatectl set-timezone "$TZ"
-        sudo mkdir -p /workdir
-        sudo chown $USER:$GROUPS /workdir
         # 清理多余文件，腾出磁盘空间
-        docker rmi $(docker images -q)
         # sudo -E apt-get remove -y --purge azure-cli ghc zulu* hhvm llvm* firefox google* dotnet* powershell mysql* php* mssql-tools msodbcsql17 android*
         # sudo rm -rf /etc/mysql /etc/php /swapfile
+        docker rmi $(docker images -q)
+        # 时区设置,方便看正常日志的时间
+        sudo timedatectl set-timezone "Asia/Shanghai"
+        # 编译的work目录
+        sudo mkdir -p /workdir
+        sudo chown $USER:$GROUPS /workdir
 
     - name: 克隆源码
       working-directory: /workdir
@@ -118,73 +107,26 @@ jobs:
         $GITHUB_WORKSPACE/$DIY_P2_SH
 
     - name: 下载编译所需的文件依赖项或资源
-      id: package
       run: |
         cd openwrt
+        echo "执行: make defconfig,将上传的.config匹配为适用于当前平台和硬件环境的配置文件"
         make defconfig
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
 
     - name: 编译固件
-      id: compile
       run: |
         cd openwrt
-        echo -e "$(nproc) thread compile"
+        echo -e "开始编译: $(date +"%Y%m%d%H%M") start $(nproc) thread compile,先多线程,失败则单线程,再失败则详细日志的单线程"
         make -j$(nproc) || make -j1 || make -j1 V=s
-        echo "::set-output name=status::success"
-        grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
-        [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
-        echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+        echo "结束编译: $(date +"%Y%m%d%H%M") success"
+        echo "BUILD_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
 
-    - name: 上传ipk等bin文件
+    - name: 上传编译完成后的bin文件夹到actions的artifact
       uses: actions/upload-artifact@main
       if: env.UPLOAD_BIN_DIR == 'true'
       with:
-        name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+        name: openwrt_bin_${{ env.BUILD_DATE }}
+        # 会将整个目录压缩成${name}.zip并上传
         path: openwrt/bin
-
-    - name: 清理磁盘空间
-      if: (!cancelled())
-      run: |
-        echo "清理之前："
-        df -hT
-        mkdir openwrt-armvirt
-        mv openwrt/bin/targets/*/*/*.tar.gz openwrt-armvirt/
-        echo -e "\n"
-        echo "列出空间占用前10的目录或文件："
-        sudo du -h --max-depth=2 /workdir/openwrt |sort -nr | head -10
-        rm -rf /workdir/openwrt/*
-        echo -e "\n"
-        echo "清理之后："
-        df -hT
-        echo -e "\n"
-        echo "当前路径文件"
-        ls -l
-        echo -e "\n"
-        echo "列出空间占用前10的目录或文件："
-        sudo du -h --max-depth=1 /workdir/openwrt |sort -nr | head -10
-
-    - name: 打包内核
-      uses: unifreq/openwrt_packit@master
-      env:
-        WHOAMI: 杀生丸大人
-        OPENWRT_ARMVIRT: openwrt-armvirt/*.tar.gz
-        PACKAGE_SOC: s905d
-        KERNEL_AUTO_LATEST: false
-        KERNEL_REPO_URL: https://github.com/rin0612/Forked-kernel/tree/main/pub/stable
-        KERNEL_VERSION_NAME: 5.10.111
-
-    - name: 发布固件
-      uses: ncipollo/release-action@v1
-      with:
-        tag: openwrt_N1_${{ env.PACKAGED_OUTPUTDATE }}
-        artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/*
-        allowUpdates: true
-        token: ${{ secrets.GITHUB_TOKEN }}
-        body: |
-          ### **适用于Amlogic平台的N1盒子OpenWrt固件**
-          * **固件信息：**
-          默认IP: `192.168.5.25`
-          默认用户名: `root`
-          默认密码: `password`
