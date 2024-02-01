@@ -1,4 +1,4 @@
-name: test-build-openwrt
+name: part-build-old
 
 on:
   repository_dispatch:
