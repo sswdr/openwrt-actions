@@ -1,6 +1,6 @@
 # 使用导出的编译环境编译
 
-name: part-build-backup-env-v0
+name: part-build-backup-env-0
 
 on:
   repository_dispatch:
