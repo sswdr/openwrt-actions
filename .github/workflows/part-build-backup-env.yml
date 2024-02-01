@@ -7,11 +7,11 @@ on:
   workflow_dispatch:
     inputs:
       CONFIG_FILE_URL:
-        description: '.config编译配置链接'
+        description: '.config编译配置'
         required: true
         default: https://raw.githubusercontent.com/sswdr/openwrt-actions/main/build.config.backup/lede-pure-min-v1.config
       BACKUP_ENV_URL:
-        description: 'build-backup-env链接'
+        description: 'build-backup-env编译环境'
         required: true
         default: https://github.com/sswdr/openwrt-actions/releases/download/backup_build_env_2022.04.25.1999/workdir.tar.gz
       UPLOAD_BIN_DIR:
