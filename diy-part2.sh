@@ -17,7 +17,8 @@ sed -i 's/OpenWrt/sswOpenWrt/g' package/base-files/files/bin/config_generate
 
 # 指定lede仓库内核版本编译,目前最新代码中使用[KERNEL_PATCHVER:=5.15]
 # 这个是lede旧仓库的参数指定方式: sed -i 's/PATCHVER:=5.4/PATCHVER:=5.10/g' target/linux/armvirt/Makefile
-sed -i 's/KERNEL_PATCHVER:=.*/KERNEL_PATCHVER:=5.10/g' target/linux/armvirt/Makefile
+# TODO 待处理: 指定内核版本编译
+# sed -i 's/KERNEL_PATCHVER:=.*/KERNEL_PATCHVER:=5.10/g' target/linux/armvirt/Makefile
 
 # ---------------------------------------------扩展仓库--------------------------------------------------------------------
 # luci关机
