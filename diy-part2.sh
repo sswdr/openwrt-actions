@@ -28,8 +28,7 @@ git clone https://github.com/kenzok8/small package/small
 # kenzok8 packages
 git clone https://github.com/kenzok8/openwrt-packages package/openwrt-packages
 
-# TODO 待整理 扩展仓库加进来的中可能会和lede库有重复插件,最好删除
-rm -rf package/openwrt-packages/luci-app-amlogic
+# 扩展仓库加进来的中可能会和lede库有重复插件,最好删除
 rm -rf package/openwrt-packages/UnblockNeteaseMusic
 rm -rf package/openwrt-packages/luci-app-unblockneteasemusic
 rm -rf package/openwrt-packages/luci-theme-argon
