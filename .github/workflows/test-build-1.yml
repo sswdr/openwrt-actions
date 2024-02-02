@@ -23,10 +23,6 @@ on:
         description: '.config编译配置'
         required: true
         default: build.config/2024.02.01-1.config
-      DIY_P1_SH:
-        description: '自定义的diy-part1.sh'
-        required: true
-        default: diy-part1.sh
       DIY_P2_SH:
         description: '自定义的diy-part2.sh'
         required: true
@@ -41,7 +37,6 @@ env:
   REPO_BRANCH: ${{ github.event.inputs.REPO_BRANCH }}
   FEEDS_CONF: ${{ github.event.inputs.FEEDS_CONF }}
   CONFIG_FILE: ${{ github.event.inputs.CONFIG_FILE }}
-  DIY_P1_SH: ${{ github.event.inputs.DIY_P1_SH }}
   DIY_P2_SH: ${{ github.event.inputs.DIY_P2_SH }}
   UPLOAD_BIN_DIR: ${{ github.event.inputs.UPLOAD_BIN_DIR }}
 
@@ -99,12 +94,9 @@ jobs:
         echo "TODO 5.10编译报错了" && cd /workdir/openwrt
         sed -i '114s/DEPENDS:=+kmod-libphy/DEPENDS:=+kmod-libphy +kmod-of-mdio/' package/kernel/linux/modules/netdevices.mk
 
-    - name: 加载自定义feeds至openwrt/feeds.conf.default, 执行DIY_P1_SH
+    - name: 加载自定义feeds至openwrt/feeds.conf.default
       run: |
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
-        chmod +x $DIY_P1_SH
-        cd openwrt
-        $GITHUB_WORKSPACE/$DIY_P1_SH
 
     - name: 更新feeds
       run: cd openwrt && ./scripts/feeds update -a

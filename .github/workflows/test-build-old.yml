@@ -20,10 +20,6 @@ on:
         description: '.config配置文件[仓库根目录下build.config/]'
         required: true
         default: build.config/.config
-      DIY_P1_SH:
-        description: '自定义diy-part1.sh文件名'
-        required: true
-        default: diy-part1.sh
       DIY_P2_SH:
         description: '自定义diy-part2.sh文件名'
         required: true
@@ -42,7 +38,6 @@ env:
   REPO_BRANCH: ${{ github.event.inputs.REPO_BRANCH }}
   FEEDS_CONF: ${{ github.event.inputs.FEEDS_CONF }}
   CONFIG_FILE: ${{ github.event.inputs.CONFIG_FILE }}
-  DIY_P1_SH: ${{ github.event.inputs.DIY_P1_SH }}
   DIY_P2_SH: ${{ github.event.inputs.DIY_P2_SH }}
   TZ: ${{ github.event.inputs.TZ }}
   UPLOAD_BIN_DIR: ${{ github.event.inputs.UPLOAD_BIN_DIR }}
@@ -97,12 +92,9 @@ jobs:
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
-    - name: 加载自定义feeds至openwrt/feeds.conf.default, 执行DIY_P1_SH
+    - name: 加载自定义feeds至openwrt/feeds.conf.default
       run: |
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
-        chmod +x $DIY_P1_SH
-        cd openwrt
-        $GITHUB_WORKSPACE/$DIY_P1_SH
 
     - name: 更新feeds
       run: cd openwrt && ./scripts/feeds update -a
