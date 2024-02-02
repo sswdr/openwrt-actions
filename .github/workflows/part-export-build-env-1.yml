@@ -1,0 +1,151 @@
+# 导出编译环境
+# TODO 待编译的action确认完成后，同步这里的每个step操作
+
+name: part-export-build-env-1
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      REPO_URL:
+        description: '编译仓库地址'
+        required: true
+        default: https://github.com/coolsnowwolf/lede
+      REPO_BRANCH:
+        description: '编译仓库分支'
+        required: true
+        default: master
+      FEEDS_CONF:
+        description: '自定义的feeds配置文件'
+        required: false
+        default: feeds.conf.default
+      CONFIG_FILE:
+        description: '.config编译配置'
+        required: true
+        default: build.config/lede-pure-min-v1.config
+      INIT_CONFIG_SH:
+        description: '自定义的init-config.sh'
+        required: true
+        default: init-config.sh
+      UPLOAD_BIN_DIR:
+        description: '是否上传编译完成后的bin文件夹到actions的artifact'
+        required: true
+        default: true
+
+env:
+  REPO_URL: ${{ github.event.inputs.REPO_URL }}
+  REPO_BRANCH: ${{ github.event.inputs.REPO_BRANCH }}
+  FEEDS_CONF: ${{ github.event.inputs.FEEDS_CONF }}
+  CONFIG_FILE: ${{ github.event.inputs.CONFIG_FILE }}
+  INIT_CONFIG_SH: ${{ github.event.inputs.INIT_CONFIG_SH }}
+  UPLOAD_BIN_DIR: ${{ github.event.inputs.UPLOAD_BIN_DIR }}
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Checkout
+      uses: actions/checkout@main
+
+    - name: 获取服务器信息,解除当前用户限制,设置时区
+      run: |
+        echo "CPU物理数量: $(cat /proc/cpuinfo| grep "physical id"| sort| uniq| wc -l)"
+        echo -e "CPU核心及版本信息：$(cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c)"
+        echo "已安装内存详细信息: " && sudo lshw -short -C memory | grep GiB
+        echo -e  "硬盘数量: $(ls /dev/sd* | grep -v [1-9] | wc -l)"
+        echo "硬盘详情: " && df -Th
+        echo "解除当前用户限制 $USER $(date +"%Y%m%d%H%M")"
+        ulimit -u 10000
+        ulimit -n 4096
+        ulimit -d unlimited
+        ulimit -m unlimited
+        ulimit -s unlimited
+        ulimit -t unlimited
+        ulimit -v unlimited
+        echo "设置时区,方便看正常日志的时间: Asia/Shanghai"
+        sudo timedatectl set-timezone "Asia/Shanghai"
+
+    - name: 初始化编译环境
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        sudo -E apt-get -qq update
+        # 此处安装编译所需的依赖来自lede readme.md中，原先使用的sudo -E apt-get -qq install $(curl -fsSL git.io/depends-ubuntu-2004)，来自P3TERX
+        sudo -E apt-get -qq install ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libfuse-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libpython3-dev libreadline-dev libssl-dev libtool lrzsz mkisofs msmtp ninja-build p7zip p7zip-full patch pkgconf python2.7 python3 python3-pyelftools python3-setuptools qemu-utils rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
+        sudo -E apt-get -qq autoremove --purge
+        sudo -E apt-get -qq clean
+        # 清理多余文件，腾出磁盘空间
+        # sudo -E apt-get remove -y --purge azure-cli ghc zulu* hhvm llvm* firefox google* dotnet* powershell mysql* php* mssql-tools msodbcsql17 android*
+        # sudo rm -rf /etc/mysql /etc/php /swapfile
+        docker rmi $(docker images -q)
+        # 编译的work目录
+        sudo mkdir -p /workdir
+        sudo chown $USER:$GROUPS /workdir
+
+    - name: 克隆源码
+      working-directory: /workdir
+      run: |
+        df -hT $PWD
+        git clone $REPO_URL -b $REPO_BRANCH openwrt
+        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+
+    - name: 替换feeds.conf.default
+      run: |
+        if [ -e "$FEEDS_CONF" ]; then
+          mv $FEEDS_CONF openwrt/feeds.conf.default
+          echo "当前仓库存在feeds.conf.default,将替换到openwrt/feeds.conf.default"
+        else
+          echo "当前仓库不存在feeds.conf.default,跳过"
+        fi
+
+    - name: 更新feeds
+      run: cd openwrt && ./scripts/feeds update -a
+
+    - name: 安装feeds
+      run: cd openwrt && ./scripts/feeds install -a
+
+    - name: 加载自定义配置files文件夹至openwrt/files, 复制.config, 执行INIT_CONFIG_SH
+      run: |
+        [ -e files ] && mv files openwrt/files
+        [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
+        chmod +x $INIT_CONFIG_SH
+#        cd openwrt
+#        $GITHUB_WORKSPACE/$INIT_CONFIG_SH
+
+    - name: 下载编译所需的文件依赖项或资源
+      run: |
+        cd openwrt
+        echo "执行: make defconfig,将上传的.config匹配为适用于当前平台和硬件环境的配置文件"
+        make defconfig
+        make download -j8
+        find dl -size -1024c -exec ls -l {} \;
+        find dl -size -1024c -exec rm -f {} \;
+
+    - name: 压缩编译环境
+      run: |
+        sudo tar -zcf /workdir.tar.gz /workdir/
+        sudo tar -zcf /home.tar.gz /home/runner/work/
+        ls -alh /*.tar.gz
+
+    - name: 整理推送到release的env信息
+      run: |
+        # release body 文件
+        cd / && sudo touch bodyFile.txt && sudo chown $USER:$GROUPS bodyFile.txt
+        echo "action yml env Json: " >> bodyFile.txt
+        echo "${{ toJson(env) }}" >> bodyFile.txt
+        echo "$INIT_CONFIG_SH: " >> bodyFile.txt
+        cat $GITHUB_WORKSPACE/$INIT_CONFIG_SH >> bodyFile.txt
+        # release-action 环境变量设置
+        echo "PACKAGED_OUTPUTPATH=/*.tar.gz" >>$GITHUB_ENV
+        echo "PACKAGED_OUTPUTDATE=$(date +"%Y.%m.%d.%H%M")" >>$GITHUB_ENV
+        echo "RELEASES_BODY_FILE=/bodyFile.txt" >>$GITHUB_ENV
+
+    - name: 编译环境导出
+      uses: rin0612/release-action@v1
+      with:
+        tag: backup_build_env_${{ env.PACKAGED_OUTPUTDATE }}
+        artifacts: ${{ env.PACKAGED_OUTPUTPATH }}
+        allowUpdates: true
+        token: ${{ secrets.GITHUB_TOKEN }}
+        bodyFile: ${{ env.RELEASES_BODY_FILE }}
