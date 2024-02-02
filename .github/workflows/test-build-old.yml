@@ -49,7 +49,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@main
 
-    - name: 获取服务器信息,解除当前用户限制
+    - name: 获取服务器信息,解除当前用户限制,设置时区
       run: |
         echo "CPU物理数量: $(cat /proc/cpuinfo| grep "physical id"| sort| uniq| wc -l)"
         echo -e "CPU核心及版本信息：$(cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c)"
@@ -64,6 +64,8 @@ jobs:
         ulimit -s unlimited
         ulimit -t unlimited
         ulimit -v unlimited
+        echo "设置时区,方便看正常日志的时间: Asia/Shanghai"
+        sudo timedatectl set-timezone "Asia/Shanghai"
 
     - name: 初始化编译环境
       env:
