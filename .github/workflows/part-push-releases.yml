@@ -6,6 +6,11 @@ on:
   repository_dispatch:
   workflow_dispatch:
 
+# 任意的变量
+env:
+  VERSION: v1
+  DATE: 2024.02.02
+
 jobs:
   build:
     runs-on: ubuntu-20.04
@@ -29,3 +34,5 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         body: |
           ### **${{ env.PACKAGED_OUTPUTDATE }}_releases的budy适用于md语法**
+          把整个变量当json输出: 
+          ${{ toJson(env) }}
