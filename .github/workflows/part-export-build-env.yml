@@ -89,6 +89,9 @@ jobs:
         df -hT $PWD
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+        
+        # TODO 这里有个依赖下载不上
+        sed -i 's/https/http/' toolchain/fortify-headers/Makefile
 
     - name: 替换feeds.conf.default
       run: |
