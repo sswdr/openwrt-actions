@@ -94,7 +94,7 @@ jobs:
         echo "TODO 5.10编译报错了" && cd /workdir/openwrt
         sed -i '114s/DEPENDS:=+kmod-libphy/DEPENDS:=+kmod-libphy +kmod-of-mdio/' package/kernel/linux/modules/netdevices.mk
 
-    - name: 加载自定义feeds至openwrt/feeds.conf.default
+    - name: 替换openwrt/feeds.conf.default(暂时未用)
       run: |
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
 
