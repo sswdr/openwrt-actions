@@ -33,7 +33,7 @@ jobs:
         echo "1 line" >> bodyFile.txt
         echo "${{ toJson(env) }}" >> bodyFile.txt
         echo "3 line" >> bodyFile.txt
-        echo -e "CPU核心及版本信息：$(cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c)"
+        echo -e "CPU核心及版本信息：$(cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c)" >> bodyFile.txt
 
     - name: 推送文件到releases,如果tag不存在会创建
       uses: rin0612/release-action@v1
