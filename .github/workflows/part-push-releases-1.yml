@@ -27,7 +27,7 @@ jobs:
 
     - name: 准备releases的body正文的文件
       run: |
-        cd / && touch bodyFile.txt
+        cd / && sudo touch bodyFile.txt && sudo chown $USER:$GROUPS bodyFile.txt
         echo "1"
         echo "${{ toJson(env) }}" >> bodyFile.txt
         echo "3"
