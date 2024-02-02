@@ -90,6 +90,7 @@ jobs:
         # TODO
         echo "TODO 5.10编译报错了" && cd /workdir/openwrt
         sed -i '114s/DEPENDS:=+kmod-libphy/DEPENDS:=+kmod-libphy +kmod-of-mdio/' package/kernel/linux/modules/netdevices.mk
+        sed -i 's/TARGET_CFLAGS += -DHAVE_MAP_SYNC/TARGET_CFLAGS += -DHAVE_MAP_SYNC -D_LARGEFILE64_SOURCE/' feeds/packages/utils/xfsprogs/Makefile
 
     - name: 加载自定义feeds至openwrt/feeds.conf.default, 执行DIY_P1_SH
       run: |

@@ -85,6 +85,10 @@ jobs:
         df -hT $PWD
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+        
+        # TODO
+        echo "TODO 5.15编译报错了" && cd /workdir/openwrt
+        sed -i 's/TARGET_CFLAGS += -DHAVE_MAP_SYNC/TARGET_CFLAGS += -DHAVE_MAP_SYNC -D_LARGEFILE64_SOURCE/' feeds/packages/utils/xfsprogs/Makefile
 
     - name: 加载自定义feeds至openwrt/feeds.conf.default, 执行DIY_P1_SH
       run: |
