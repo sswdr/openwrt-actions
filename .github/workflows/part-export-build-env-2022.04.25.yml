@@ -123,7 +123,7 @@ jobs:
         echo "PACKAGED_OUTPUTPATH=/workdir.tar.gz,/home.tar.gz" >>$GITHUB_ENV
         echo "PACKAGED_OUTPUTDATE=$(date +"%Y.%m.%d.%H%M")" >>$GITHUB_ENV
 
-      # TODO release body 在action run写入具体的环境信息，例如diy2脚本的内容
+      # TODO 下面的release body，在action run写入具体的export环境信息，例如: init-config.sh、env信息、时间信息
 #    - name: 说明信息，具体的环境信息，例如diy2脚本的内容
 #      run: |
 #        echo "EXPORT_BUILD_ENV_VERSION=${环境信息}" >>$GITHUB_ENV
