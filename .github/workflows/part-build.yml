@@ -51,13 +51,21 @@ jobs:
     - name: Checkout
       uses: actions/checkout@main
 
-    - name: 服务器信息
+    - name: 获取服务器信息,解除当前用户限制
       run: |
         echo "CPU物理数量: $(cat /proc/cpuinfo| grep "physical id"| sort| uniq| wc -l)"
         echo -e "CPU核心及版本信息：$(cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c)"
         echo "已安装内存详细信息: " && sudo lshw -short -C memory | grep GiB
         echo -e  "硬盘数量: $(ls /dev/sd* | grep -v [1-9] | wc -l)"
         echo "硬盘详情: " && df -Th
+        echo "解除当前用户限制 $USER $(date +"%Y%m%d%H%M")"
+        ulimit -u 10000
+        ulimit -n 4096
+        ulimit -d unlimited
+        ulimit -m unlimited
+        ulimit -s unlimited
+        ulimit -t unlimited
+        ulimit -v unlimited
 
     - name: 初始化编译环境
       env:
