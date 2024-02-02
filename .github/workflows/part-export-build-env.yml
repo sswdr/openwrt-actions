@@ -13,7 +13,7 @@ env:
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: 5.10-lede+kenzok8-max-v3.config
-  DIY_P2_SH: diy-part2.sh
+  INIT_CONFIG_SH: init-config.sh
   TZ: Asia/Shanghai
 
 jobs:
@@ -80,9 +80,9 @@ jobs:
       run: |
         [ -e files ] && mv files openwrt/files
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
-        chmod +x $DIY_P2_SH
+        chmod +x $INIT_CONFIG_SH
         cd openwrt
-        $GITHUB_WORKSPACE/$DIY_P2_SH
+        $GITHUB_WORKSPACE/$INIT_CONFIG_SH
 
     - name: 下载软件包
       id: package

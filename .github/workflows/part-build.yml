@@ -22,10 +22,10 @@ on:
         description: '.config编译配置'
         required: true
         default: build.config/lede-pure-min-v1.config
-      DIY_P2_SH:
-        description: '自定义的diy-part2.sh'
+      INIT_CONFIG_SH:
+        description: '自定义的init-config.sh'
         required: true
-        default: diy-part2.sh
+        default: init-config.sh
       UPLOAD_BIN_DIR:
         description: '是否上传编译完成后的bin文件夹到actions的artifact'
         required: true
@@ -36,7 +36,7 @@ env:
   REPO_BRANCH: ${{ github.event.inputs.REPO_BRANCH }}
   FEEDS_CONF: ${{ github.event.inputs.FEEDS_CONF }}
   CONFIG_FILE: ${{ github.event.inputs.CONFIG_FILE }}
-  DIY_P2_SH: ${{ github.event.inputs.DIY_P2_SH }}
+  INIT_CONFIG_SH: ${{ github.event.inputs.INIT_CONFIG_SH }}
   UPLOAD_BIN_DIR: ${{ github.event.inputs.UPLOAD_BIN_DIR }}
 
 jobs:
@@ -99,13 +99,13 @@ jobs:
     - name: 安装feeds
       run: cd openwrt && ./scripts/feeds install -a
 
-    - name: 加载自定义配置files文件夹至openwrt/files, 复制.config, 执行DIY_P2_SH
+    - name: 加载自定义配置files文件夹至openwrt/files, 复制.config, 执行INIT_CONFIG_SH
       run: |
         [ -e files ] && mv files openwrt/files
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
-        chmod +x $DIY_P2_SH
+        chmod +x $INIT_CONFIG_SH
         cd openwrt
-        $GITHUB_WORKSPACE/$DIY_P2_SH
+        $GITHUB_WORKSPACE/$INIT_CONFIG_SH
 
     - name: 下载编译所需的文件依赖项或资源
       run: |
