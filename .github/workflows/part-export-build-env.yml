@@ -91,8 +91,7 @@ jobs:
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
     - name: 替换openwrt/feeds.conf.default(暂时未用)
-      run: |
-        [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
+      run: [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
 
     - name: 更新feeds
       run: cd openwrt && ./scripts/feeds update -a
