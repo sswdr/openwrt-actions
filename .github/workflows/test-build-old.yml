@@ -94,9 +94,14 @@ jobs:
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
-    - name: 替换openwrt/feeds.conf.default(暂时未用)
+    - name: 替换feeds.conf.default
       run: |
-        [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
+        if [ -e "$FEEDS_CONF" ]; then
+          mv $FEEDS_CONF openwrt/feeds.conf.default
+          echo "当前仓库存在feeds.conf.default,将替换到openwrt/feeds.conf.default"
+        else
+          echo "当前仓库不存在feeds.conf.default,跳过"
+        fi
 
     - name: 更新feeds
       run: cd openwrt && ./scripts/feeds update -a
