@@ -22,7 +22,7 @@ on:
       CONFIG_FILE:
         description: '.config编译配置'
         required: true
-        default: build.config/lede-pure-min-v1.config
+        default: build.config/2024.02.01-2.config
       INIT_CONFIG_SH:
         description: '自定义的init-config.sh'
         required: true
@@ -105,19 +105,42 @@ jobs:
     - name: 安装feeds
       run: cd openwrt && ./scripts/feeds install -a
 
-    - name: 加载自定义配置files文件夹至openwrt/files, 复制.config, 执行INIT_CONFIG_SH
+    - name: 替换files文件夹
       run: |
-        [ -e files ] && mv files openwrt/files
-        [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
+        if [ -e files ]; then
+          mv files openwrt/files
+          echo "当前仓库存在files文件夹,将替换到openwrt/files"
+        else
+          echo "当前仓库不存在files文件夹,将不替换到openwrt/files,跳过"
+        fi
+
+    - name: 替换.config文件
+      run: |
+        if [ -e "$CONFIG_FILE" ]; then
+          mv $CONFIG_FILE openwrt/.config
+          echo "当前仓库存在.config文件,将替换到openwrt/.config"
+        else
+          echo "当前仓库不存在.config文件,将不替换到openwrt/.config,跳过"
+        fi
+
+    - name: 执行init-config.sh自定义处理脚本
+      run: |
+        echo "将执行以下内容: " && cat $INIT_CONFIG_SH && echo "开始执行: "
         chmod +x $INIT_CONFIG_SH
         cd openwrt
         $GITHUB_WORKSPACE/$INIT_CONFIG_SH
 
+    - name: 执行make defconfig
+      run: |
+        cd openwrt
+        echo "执行前: " && ls -alh | grep -w .config
+        echo "执行make defconfig,将.config文件匹配为适用于当前平台和硬件环境的配置文件"
+        make defconfig
+        echo "执行后: " && ls -alh | grep -w .config
+
     - name: 下载编译所需的文件依赖项或资源
       run: |
         cd openwrt
-        echo "执行: make defconfig,将上传的.config匹配为适用于当前平台和硬件环境的配置文件"
-        make defconfig
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
