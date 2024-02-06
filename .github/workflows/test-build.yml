@@ -124,6 +124,7 @@ jobs:
 
     - name: 执行init-config.sh自定义处理脚本
       run: |
+        echo "将执行以下内容: " && cat $INIT_CONFIG_SH && echo "开始执行: "
         chmod +x $INIT_CONFIG_SH
         cd openwrt
         $GITHUB_WORKSPACE/$INIT_CONFIG_SH
