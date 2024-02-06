@@ -81,6 +81,8 @@ jobs:
         sed -i 's/TARGET_CFLAGS += -DHAVE_MAP_SYNC/TARGET_CFLAGS += -DHAVE_MAP_SYNC -D_LARGEFILE64_SOURCE/' feeds/packages/utils/xfsprogs/Makefile
         echo "TODO 处理phylink编译报错" && cd /workdir/openwrt
         sed -i '114s/DEPENDS:=+kmod-libphy/DEPENDS:=+kmod-libphy +kmod-of-mdio/' package/kernel/linux/modules/netdevices.mk
+        echo "TODO 处理hostapd wpa_supplicant-full编译报错" && cd /workdir/openwrt
+        sed -i 's/#CONFIG_AP=y/CONFIG_AP=y/' package/network/services/hostapd/files/wpa_supplicant-full.config
 
     - name: 执行make defconfig
       working-directory: /workdir/openwrt
