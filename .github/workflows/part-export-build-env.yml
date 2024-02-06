@@ -118,10 +118,6 @@ jobs:
         cd openwrt
         echo "执行: make defconfig,将上传的.config匹配为适用于当前平台和硬件环境的配置文件"
         make defconfig
-
-        # TODO 这里有个依赖下载不上
-        sed -i 's/https/http/' toolchain/fortify-headers/Makefile
-
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
