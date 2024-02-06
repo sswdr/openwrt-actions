@@ -1,7 +1,7 @@
 # 使用拉出的编译仓库环境编译
 # TODO 5.10编译报错了
 
-name: test-build-1
+name: test-build-001
 
 on:
   repository_dispatch:
