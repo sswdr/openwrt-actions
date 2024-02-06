@@ -133,9 +133,13 @@ jobs:
         # release body 文件
         cd / && sudo touch bodyFile.txt && sudo chown $USER:$GROUPS bodyFile.txt
         echo "action yml env Json: " >> bodyFile.txt
+        echo "\`\`\`" >> bodyFile.txt
         echo "${{ toJson(env) }}" >> bodyFile.txt
+        echo "\`\`\`" >> bodyFile.txt
         echo "$INIT_CONFIG_SH: " >> bodyFile.txt
+        echo "\`\`\`" >> bodyFile.txt
         cat $GITHUB_WORKSPACE/$INIT_CONFIG_SH >> bodyFile.txt
+        echo "\`\`\`" >> bodyFile.txt
         # release-action 环境变量设置
         echo "PACKAGED_OUTPUTPATH=/*.tar.gz" >>$GITHUB_ENV
         echo "PACKAGED_OUTPUTDATE=$(date +"%Y.%m.%d.%H%M")" >>$GITHUB_ENV
