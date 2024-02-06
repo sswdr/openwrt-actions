@@ -89,7 +89,7 @@ jobs:
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
-    - name: 替换feeds.conf.default
+    - name: 替换feeds.conf.default文件
       run: |
         if [ -e "$FEEDS_CONF" ]; then
           mv $FEEDS_CONF openwrt/feeds.conf.default
