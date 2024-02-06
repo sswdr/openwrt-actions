@@ -93,9 +93,9 @@ jobs:
       run: |
         if [ -e "$FEEDS_CONF" ]; then
           mv $FEEDS_CONF openwrt/feeds.conf.default
-          echo "当前仓库存在feeds.conf.default,将替换到openwrt/feeds.conf.default"
+          echo "当前仓库存在feeds.conf.default文件,将替换到openwrt/feeds.conf.default"
         else
-          echo "当前仓库不存在feeds.conf.default,将不替换到openwrt/feeds.conf.default,跳过"
+          echo "当前仓库不存在feeds.conf.default文件,将不替换到openwrt/feeds.conf.default,跳过"
         fi
 
     - name: 更新feeds
