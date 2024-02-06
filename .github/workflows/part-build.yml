@@ -135,4 +135,4 @@ jobs:
       with:
         name: openwrt_bin_${{ env.BUILD_DATE }}
         # 会将整个目录压缩成${name}.zip并上传
-        path: openwrt/bin
+        path: /workdir/openwrt/bin
