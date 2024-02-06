@@ -132,8 +132,10 @@ jobs:
     - name: 执行make defconfig
       run: |
         cd openwrt
+        echo "执行前: " && ls -alh | grep -w .config
         echo "执行make defconfig,将.config文件匹配为适用于当前平台和硬件环境的配置文件"
         make defconfig
+        echo "执行后: " && ls -alh | grep -w .config
 
     - name: 下载编译所需的文件依赖项或资源
       run: |
