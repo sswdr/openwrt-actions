@@ -85,6 +85,8 @@ jobs:
         # sed -i 's/https/http/' toolchain/fortify-headers/Makefile
         echo "TODO 处理hostapd wpa_supplicant-full编译报错" && cd /workdir/openwrt
         sed -i 's/#CONFIG_AP=y/CONFIG_AP=y/' package/network/services/hostapd/files/wpa_supplicant-full.config
+        # echo "TODO 处理下载miniupnpd失败2022.04.25分支(执行make download -j8前处理)" && cd /workdir/openwrt
+        # sed -i 's/free.fr/tuxfamily.org/' feeds/packages/net/miniupnpd/Makefile
 
     - name: 执行make defconfig
       working-directory: /workdir/openwrt
