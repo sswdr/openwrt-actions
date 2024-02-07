@@ -146,7 +146,8 @@ jobs:
     - name: 下载编译所需的文件依赖项或资源
       run: |
         cd openwrt
-        make -j8 download V=s
+        make -j8 download
+        # make -j8 download V=s
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
 
