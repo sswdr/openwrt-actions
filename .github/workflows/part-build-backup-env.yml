@@ -13,7 +13,7 @@ on:
       BACKUP_ENV_URL:
         description: 'build-backup-env编译环境'
         required: true
-        default: https://github.com/sswdr/openwrt-actions/releases/download/backup_build_env_2022.04.25.1999/workdir.tar.gz
+        default: https://github.com/sswdr/openwrt-actions/releases/download/backup_build_env_2022.04.25.1800/workdir.tar.gz
       UPLOAD_BIN_DIR:
         description: '是否上传编译完成后的bin文件夹到actions的artifact'
         required: true
