@@ -138,6 +138,11 @@ jobs:
         make defconfig
         echo "执行后: " && ls -alh | grep -w .config
 
+    - name: 编译固件前,处理编译错误的问题
+      run: |
+        echo "TODO 处理下载miniupnpd失败" && cd /workdir/openwrt
+        sed -i 's/free.fr/tuxfamily.org/' feeds/packages/net/miniupnpd/Makefile
+
     - name: 下载编译所需的文件依赖项或资源
       run: |
         cd openwrt
