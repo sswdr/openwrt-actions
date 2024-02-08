@@ -92,6 +92,8 @@ jobs:
     - name: test-001
       working-directory: /workdir/openwrt
       run: |
+        rm -rf package/openwrt-packages/luci-app-ddnsto
+        rm -rf package/openwrt-packages/ddnsto
         echo >> feeds.conf.default
         echo 'src-git linkease_nas https://github.com/linkease/nas-packages.git;master' >> feeds.conf.default
         echo 'src-git linkease_nas_luci https://github.com/linkease/nas-packages-luci.git;main' >> feeds.conf.default
