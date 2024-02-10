@@ -74,6 +74,8 @@ jobs:
         sudo chown -R $USER:$GROUPS /workdir
         echo "准备完成: /workdir/openwrt" && ls -alh /workdir/openwrt
         # echo "编译配置: /workdir/openwrt/.config" && cat /workdir/openwrt/.config
+        echo "更新编译时间信息 $(TZ=UTC-8 date "+%Y.%m.%d")"
+        sed -i "s/[0-9]\{4\}\.[0-9]\{2\}\.[0-9]\{2\}/$(TZ=UTC-8 date "+%Y.%m.%d")/" /workdir/openwrt/package/lean/default-settings/files/zzz-default-settings
 
 #    # TODO 待整理这部分的内容
 #    - name: 编译固件前,处理编译错误的问题
@@ -92,9 +94,15 @@ jobs:
     - name: test-001
       working-directory: /workdir/openwrt
       run: |
-        rm -rf package/openwrt-packages/luci-app-ddnsto
-        rm -rf package/openwrt-packages/ddnsto
         git clone https://github.com/rin0612/openwrt-packages-ssw  package/openwrt-packages-ssw
+        rm -rf package/openwrt-packages/UnblockNeteaseMusic
+        rm -rf package/openwrt-packages/luci-app-unblockneteasemusic
+        rm -rf package/openwrt-packages/luci-theme-argon
+        rm -rf package/openwrt-packages/luci-app-argon-config
+        rm -rf package/openwrt-packages/luci-theme-argonne
+        rm -rf package/openwrt-packages/luci-app-argonne-config
+        rm -rf package/openwrt-packages/ddnsto
+        rm -rf package/openwrt-packages/luci-app-ddnsto
 
     - name: 执行make defconfig
       working-directory: /workdir/openwrt
