@@ -21,7 +21,7 @@ on:
       CONFIG_FILE:
         description: '.config编译配置'
         required: true
-        default: backup_build_env_2024.x/2024.02.01-2.config
+        default: build.config/backup_build_env_2024.x/2024.02.01-2.config
       INIT_CONFIG_SH:
         description: '自定义的init-config.sh'
         required: true
