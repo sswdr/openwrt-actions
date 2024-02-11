@@ -118,6 +118,13 @@ jobs:
 #        make defconfig
 #        echo "执行后: " && ls -alh | grep -w .config
 
+    - name: test-002
+      working-directory: /workdir/openwrt
+      run: |
+        echo "执行前: " && cat ./feeds/luci/collections/luci/Makefile
+        sed -i 's/luci-theme-argonne/luci-theme-bootstrap/g' ./feeds/luci/collections/luci/Makefile
+        echo "执行后: " && cat ./feeds/luci/collections/luci/Makefile
+
     - name: 编译固件
       working-directory: /workdir/openwrt
       run: |
