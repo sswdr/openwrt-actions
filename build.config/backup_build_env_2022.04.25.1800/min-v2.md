@@ -1,11 +1,22 @@
-纯lede min
-主题luci-theme-argonne改为luci-theme-bootstrap
-CONFIG_LINUX_5_10=y
-autocore以添加未启用
+编译配置文件获取环境准备: 
+```
+git clone https://github.com/rin0612/lede -b backup.2022.04.25
+cd lede
 
-min-v1.config = [CONFIG_LINUX_5_10=y] + [核心配置] + [ipv6 固件] + [必要固定配置] - [无用默认选上的配置]
+./scripts/feeds update -a
+./scripts/feeds install -a
 
-其中 [核心配置] + [ipv6 固件] 如下: 
+sed -i 's/KERNEL_PATCHVER:=.*/KERNEL_PATCHVER:=5.10/g' target/linux/armvirt/Makefile
+sed -i 's/TARGET_rockchip/TARGET_rockchip\|\|TARGET_armvirt/g' package/lean/autocore/Makefile
+
+make defconfig
+make menuconfig
+```
+##### 一个主题[luci-theme-bootstrap]
+##### linux内核版本[CONFIG_LINUX_5_10=y]
+##### 添加了autocore-arm支持但是没有选择编译
+##### 去除无用默认选上的配置: UnblockNeteaseMusic-Go
+##### [核心配置] + [ipv6 固件]: 
 ```
 Target System  ->  QEMU ARM Virtual Machine 
 Subtarget ->  QEMU ARMv**8 Virtual Machine (cortex-a53)
@@ -37,15 +48,4 @@ ipv6 固件：
         2、Extra packages --->  ipv6helper（选上）
         3、Base system  --->  [*] Build with DHCPv6 support.  （如果前面不带 * 就选上）
         4、Network  --->  6in4 和 6rd 和 6to4  （三个都选上）
-```
-
-备注:
-```
-min-v1.config来自于: https://github.com/sswdr/openwrt-actions/blob/backup.2022.05.02/5.10-lede+kenzok8-min-v3.config
-
-min-v1.config = 5.10-lede+kenzok8-min-v3.config 在 backup_build_env_2022.04.25.1800 下执行 make defconfig
-
-其中lede+kenzok8-min-v1.config -> lede+kenzok8-min-v2.config -> 5.10-lede+kenzok8-min-v3.config
-
-具体改动参考文件对比工具对比差异
 ```
