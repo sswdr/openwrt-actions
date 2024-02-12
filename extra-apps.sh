@@ -19,5 +19,19 @@ rm -rf package/openwrt-packages/luci-app-argonne-config
 rm -rf package/openwrt-packages/ddnsto
 rm -rf package/openwrt-packages/luci-app-ddnsto
 
+# TODO 如果需要对feeds仓库有调整, 可以到这里进行修改, 即当前目录下的feeds.conf.default
+# cat > feeds.conf.default <<EOF
+# src-git packages https://github.com/coolsnowwolf/packages
+# src-git luci https://github.com/coolsnowwolf/luci
+# src-git routing https://github.com/coolsnowwolf/routing
+# src-git telephony https://git.openwrt.org/feed/telephony.git
+# #src-git helloworld https://github.com/fw876/helloworld.git
+# #src-git oui https://github.com/zhaojh329/oui.git
+# #src-git video https://github.com/openwrt/video.git
+# #src-git targets https://github.com/openwrt/targets.git
+# #src-git oldpackages http://git.openwrt.org/packages.git
+# #src-link custom /usr/src/openwrt/custom-feed
+# EOF
+
 ./scripts/feeds update -a
 ./scripts/feeds install -a

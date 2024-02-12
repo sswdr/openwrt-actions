@@ -6,56 +6,46 @@ on:
   repository_dispatch:
   workflow_dispatch:
     inputs:
-      REPO_URL:
-        description: '编译仓库地址'
+      REPO_URL_BRANCH:
+        description: '编译仓库及分支'
         required: true
-        default: https://github.com/rin0612/lede
-      REPO_BRANCH:
-        description: '编译仓库分支'
-        required: true
-        default: backup.2022.04.25
+        default: https://github.com/rin0612/lede -b backup.2022.04.25
       EXTRA_APPS_SH:
-        description: '扩展插件仓库的脚本'
+        description: '插件扩展仓库/feeds调整脚本'
         required: false
         default: extra-apps.sh
-      FEEDS_CONF:
-        description: '自定义的feeds配置文件'
-        required: false
-        default: feeds.conf.default
       CONFIG_FILE:
         description: '.config编译配置'
         required: true
         default: build.config/backup_build_env_2022.04.25.1800/min-v2.config
+      MYCONFIG:
+        description: '自定义配置: 主机ip地址、主机名、内核版本、默认主题(luci-theme-bootstrap/luci-theme-argonne,在.config必须包含这个主题)'
+        required: true
+        default: "{\"HOST_IP\":\"192.168.5.25\",\"HOST_NAME\":\"sswOpenWrt\",\"KERNEL_PATCHVER\":\"5.10\",\"DEFAULT_THEME\":\"luci-theme-argonne\"}"
       MAKE_DEFCONFIG:
-        description: '是否执行make defconfig'
+        description: '是否执行make defconfig(不执行make defconfig将以当前.config直接编译,修改仓库时不会引入其他默认选上的不需要的依赖)'
         required: true
         default: false
       BACKUP_ENV_URL:
-        description: '是否加载离线编译环境中的dl包'
+        description: '是否加载离线编译环境中的dl包, 为空则通过Makefile下载对应dl, 导入后会跳过下载'
         required: false
         default: https://github.com/sswdr/openwrt-actions/releases/download/backup_build_env_2022.04.25.1800/workdir.tar.gz
       UPLOAD_BIN_DIR:
         description: '是否上传编译完成后的bin文件夹到actions的artifact'
         required: true
         default: true
-      MYCONFIG:
-        description: '自定义配置: 主机ip地址、主机名、内核版本、默认主题(luci-theme-bootstrap/luci-theme-argonne,在.config必须包含这个主题)'
-        required: true
-        default: "{\"HOST_IP\":\"192.168.5.25\",\"HOST_NAME\":\"sswOpenWrt\",\"KERNEL_PATCHVER\":\"5.10\",\"DEFAULT_THEME\":\"luci-theme-argonne\"}"
 
 env:
-  REPO_URL: ${{ github.event.inputs.REPO_URL }}
-  REPO_BRANCH: ${{ github.event.inputs.REPO_BRANCH }}
+  REPO_URL_BRANCH: ${{ github.event.inputs.REPO_URL_BRANCH }}
   EXTRA_APPS_SH: ${{ github.event.inputs.EXTRA_APPS_SH }}
-  FEEDS_CONF: ${{ github.event.inputs.FEEDS_CONF }}
   CONFIG_FILE: ${{ github.event.inputs.CONFIG_FILE }}
-  MAKE_DEFCONFIG: ${{ github.event.inputs.MAKE_DEFCONFIG }}
-  BACKUP_ENV_URL: ${{ github.event.inputs.BACKUP_ENV_URL }}
-  UPLOAD_BIN_DIR: ${{ github.event.inputs.UPLOAD_BIN_DIR }}
   MYCONFIG_HOST_IP: ${{fromJSON(github.event.inputs.MYCONFIG).HOST_IP}}
   MYCONFIG_HOST_NAME: ${{fromJSON(github.event.inputs.MYCONFIG).HOST_NAME}}
   MYCONFIG_KERNEL_PATCHVER: ${{fromJSON(github.event.inputs.MYCONFIG).KERNEL_PATCHVER}}
   MYCONFIG_DEFAULT_THEME: ${{fromJSON(github.event.inputs.MYCONFIG).DEFAULT_THEME}}
+  MAKE_DEFCONFIG: ${{ github.event.inputs.MAKE_DEFCONFIG }}
+  BACKUP_ENV_URL: ${{ github.event.inputs.BACKUP_ENV_URL }}
+  UPLOAD_BIN_DIR: ${{ github.event.inputs.UPLOAD_BIN_DIR }}
 
 jobs:
   build:
@@ -104,18 +94,8 @@ jobs:
       working-directory: /workdir
       run: |
         df -hT $PWD
-        git clone $REPO_URL -b $REPO_BRANCH openwrt
+        git clone $REPO_URL_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
-
-    - name: 准备feeds.conf.default文件
-      run: |
-        if [ -e "$FEEDS_CONF" ]; then
-          mv $FEEDS_CONF openwrt/feeds.conf.default
-          echo "当前仓库存在feeds.conf.default文件,将替换到openwrt/feeds.conf.default"
-        else
-          echo "当前仓库不存在feeds.conf.default文件,将不替换到openwrt/feeds.conf.default,跳过"
-        fi
-        echo "目前使用的feeds.conf.default如下: " && cat openwrt/feeds.conf.default
 
     - name: 更新feeds
       run: cd openwrt && ./scripts/feeds update -a
