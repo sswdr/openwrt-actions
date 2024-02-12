@@ -107,15 +107,6 @@ jobs:
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
-    - name: 准备files文件夹
-      run: |
-        if [ -e files ]; then
-          mv files openwrt/files
-          echo "当前仓库存在files文件夹,将替换到openwrt/files"
-        else
-          echo "当前仓库不存在files文件夹,将不替换到openwrt/files,跳过"
-        fi
-
     - name: 准备feeds.conf.default文件
       run: |
         if [ -e "$FEEDS_CONF" ]; then
@@ -126,22 +117,29 @@ jobs:
         fi
         echo "目前使用的feeds.conf.default如下: " && cat openwrt/feeds.conf.default
 
-    - name: 加载扩展仓库
-      run: |
-        if [ -e "$EXTRA_APPS_SH" ]; then
-          echo "加载扩展仓库, 将执行以下内容: " && cat $EXTRA_APPS_SH && echo "开始执行: "
-          chmod +x $EXTRA_APPS_SH
-          cd openwrt
-          $GITHUB_WORKSPACE/$EXTRA_APPS_SH
-        else
-          echo "加载扩展仓库: 跳过"
-        fi
-
     - name: 更新feeds
       run: cd openwrt && ./scripts/feeds update -a
 
     - name: 安装feeds
       run: cd openwrt && ./scripts/feeds install -a
+
+    - name: 准备files文件夹
+      run: |
+        if [ -e files ]; then
+          mv files openwrt/files
+          echo "当前仓库存在files文件夹,将替换到openwrt/files"
+        else
+          echo "当前仓库不存在files文件夹,将不替换到openwrt/files,跳过"
+        fi
+
+    - name: 准备.config文件
+      run: |
+        if [ -e "$CONFIG_FILE" ]; then
+          cp $CONFIG_FILE openwrt/.config
+          echo "当前仓库存在.config文件,将替换到openwrt/.config"
+        else
+          echo "当前仓库不存在.config文件,将不替换到openwrt/.config,跳过"
+        fi
 
     - name: 执行init-config自定义配置
       run: |
@@ -159,13 +157,15 @@ jobs:
         echo "--------其他通用配置-添加autocore-arm支持可配置, 需要手动在.config/make menuconfig中选择启用"
         sed -i 's/TARGET_rockchip/TARGET_rockchip\|\|TARGET_armvirt/g' package/lean/autocore/Makefile
 
-    - name: 准备.config文件
+    - name: 加载扩展仓库
       run: |
-        if [ -e "$CONFIG_FILE" ]; then
-          cp $CONFIG_FILE openwrt/.config
-          echo "当前仓库存在.config文件,将替换到openwrt/.config"
+        if [ -e "$EXTRA_APPS_SH" ]; then
+          echo "加载扩展仓库, 将执行以下内容: " && cat $EXTRA_APPS_SH && echo "开始执行: "
+          chmod +x $EXTRA_APPS_SH
+          cd openwrt
+          $GITHUB_WORKSPACE/$EXTRA_APPS_SH
         else
-          echo "当前仓库不存在.config文件,将不替换到openwrt/.config,跳过"
+          echo "加载扩展仓库: 跳过"
         fi
 
     - name: 执行make defconfig

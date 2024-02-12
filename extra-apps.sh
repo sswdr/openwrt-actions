@@ -18,3 +18,6 @@ rm -rf package/openwrt-packages/luci-theme-argonne
 rm -rf package/openwrt-packages/luci-app-argonne-config
 rm -rf package/openwrt-packages/ddnsto
 rm -rf package/openwrt-packages/luci-app-ddnsto
+
+./scripts/feeds update -a
+./scripts/feeds install -a
