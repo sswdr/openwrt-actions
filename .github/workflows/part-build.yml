@@ -1,6 +1,6 @@
 # 使用拉出的编译仓库环境编译
 
-name: part-build-plus
+name: part-build
 
 on:
   repository_dispatch:
