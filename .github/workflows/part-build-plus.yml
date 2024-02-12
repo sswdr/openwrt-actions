@@ -135,8 +135,8 @@ jobs:
     - name: 准备.config文件
       run: |
         cp $CONFIG_FILE openwrt/.config
-        echo "当前仓库存在$CONFIG_FILE文件,将替换到openwrt/.config"
-        ls -alh | grep -w openwrt/.config && cat openwrt/.config
+        echo "复制仓库下$CONFIG_FILE,替换到openwrt/.config"
+        ls -alh openwrt/.config && cat openwrt/.config
 
     - name: 加载自定义配置
       run: |
@@ -172,9 +172,9 @@ jobs:
         if [ "$MAKE_DEFCONFIG" = true ]; then
             echo "开始执行make defconfig, 将.config文件匹配为适用于当前平台和硬件环境的配置文件"
             echo "注意: 部分.config配置中的配置讲会重置为默认选项"
-            echo "--------执行前--------" && ls -alh | grep -w .config && cat .config
+            echo "--------执行前--------" && ls -alh .config && cat .config
             make defconfig
-            echo "--------执行后--------" && ls -alh | grep -w .config && cat .config
+            echo "--------执行后--------" && ls -alh .config && cat .config
         else
             echo "跳过执行make defconfig, 将直接使用.config中的配置编译" && ls -alh | grep -w .config && cat .config
         fi
