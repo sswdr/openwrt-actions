@@ -88,11 +88,11 @@ jobs:
       run: |
         sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
         sudo -E apt-get -qq update
-        # 此处安装编译所需的依赖来自lede readme.md中，原先使用的sudo -E apt-get -qq install $(curl -fsSL git.io/depends-ubuntu-2004)，来自P3TERX
+        # 此处安装编译所需的依赖来自lede readme.md中, 原先使用的sudo -E apt-get -qq install $(curl -fsSL git.io/depends-ubuntu-2004), 来自P3TERX
         sudo -E apt-get -qq install ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libfuse-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libpython3-dev libreadline-dev libssl-dev libtool lrzsz mkisofs msmtp ninja-build p7zip p7zip-full patch pkgconf python2.7 python3 python3-pyelftools python3-setuptools qemu-utils rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
         sudo -E apt-get -qq autoremove --purge
         sudo -E apt-get -qq clean
-        # 清理多余文件，腾出磁盘空间
+        # 清理多余文件, 腾出磁盘空间
         # sudo -E apt-get remove -y --purge azure-cli ghc zulu* hhvm llvm* firefox google* dotnet* powershell mysql* php* mssql-tools msodbcsql17 android*
         # sudo rm -rf /etc/mysql /etc/php /swapfile
         docker rmi $(docker images -q)
@@ -134,14 +134,11 @@ jobs:
 
     - name: 准备.config文件
       run: |
-        if [ -e "$CONFIG_FILE" ]; then
-          cp $CONFIG_FILE openwrt/.config
-          echo "当前仓库存在.config文件,将替换到openwrt/.config"
-        else
-          echo "当前仓库不存在.config文件,将不替换到openwrt/.config,跳过"
-        fi
+        cp $CONFIG_FILE openwrt/.config
+        echo "当前仓库存在$CONFIG_FILE文件,将替换到openwrt/.config"
+        ls -alh | grep -w .config && cat .config
 
-    - name: 执行init-config自定义配置
+    - name: 加载自定义配置
       run: |
         cd openwrt
         echo "--------自定义配置-主机ip地址: $MYCONFIG_HOST_IP"
@@ -160,6 +157,7 @@ jobs:
     - name: 加载扩展仓库
       run: |
         if [ -e "$EXTRA_APPS_SH" ]; then
+          echo "注意: 加载扩展仓库之前, 务必先安装feeds和更新feeds, 否则会一堆依赖不全"
           echo "加载扩展仓库, 将执行以下内容: " && cat $EXTRA_APPS_SH && echo "开始执行: "
           chmod +x $EXTRA_APPS_SH
           cd openwrt
@@ -178,7 +176,7 @@ jobs:
             make defconfig
             echo "--------执行后--------" && ls -alh | grep -w .config && cat .config
         else
-            echo "跳过执行make defconfig, 将直接使用.config中的配置编译"
+            echo "跳过执行make defconfig, 将直接使用.config中的配置编译" && ls -alh | grep -w .config && cat .config
         fi
 
     - name: 准备编译所需的文件依赖项或资源
