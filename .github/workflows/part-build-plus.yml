@@ -39,9 +39,9 @@ on:
         required: true
         default: true
       MYCONFIG:
-        description: '自定义配置: 主机ip地址、主机名、内核版本、默认主题(luci-theme-bootstrap/luci-theme-argone,在.config必须包含这个主题)'
+        description: '自定义配置: 主机ip地址、主机名、内核版本、默认主题(luci-theme-bootstrap/luci-theme-argonne,在.config必须包含这个主题)'
         required: true
-        default: "{\"HOST_IP\":\"192.168.5.25\",\"HOST_NAME\":\"sswOpenWrt\",\"KERNEL_PATCHVER\":\"5.10\",\"DEFAULT_THEME\":\"luci-theme-argone\"}"
+        default: "{\"HOST_IP\":\"192.168.5.25\",\"HOST_NAME\":\"sswOpenWrt\",\"KERNEL_PATCHVER\":\"5.10\",\"DEFAULT_THEME\":\"luci-theme-argonne\"}"
 
 env:
   REPO_URL: ${{ github.event.inputs.REPO_URL }}

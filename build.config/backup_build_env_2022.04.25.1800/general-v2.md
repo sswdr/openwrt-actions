@@ -2,10 +2,10 @@
 
 1.主题只编译一个
 ```
-sed -i 's/luci-theme-bootstrap/luci-theme-argone/g' ./feeds/luci/collections/luci/Makefile
+sed -i 's/luci-theme-bootstrap/luci-theme-argonne/g' ./feeds/luci/collections/luci/Makefile
 make menuconfig
     取消勾选luci-theme-bootstrap
-    勾选luci-theme-argone、luci-theme-argone-config
+    勾选luci-theme-argonne、luci-theme-argonne-config
 ```
 
 1.luci-app
