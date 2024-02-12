@@ -14,7 +14,7 @@ make menuconfig
 ```
 ##### 一个主题[luci-theme-bootstrap]
 ##### linux内核版本[CONFIG_LINUX_5_10=y]
-##### 添加必要依赖: CONFIG_PACKAGE_pv=y
+##### 添加必要依赖: CONFIG_PACKAGE_pv=y(openwrt-ddbr 依赖于pv)
 ##### 去除无用默认选上的配置: # CONFIG_PACKAGE_UnblockNeteaseMusic-Go is not set
 ##### 添加了autocore-arm支持但是没有选择编译: # CONFIG_PACKAGE_autocore-arm is not set
 ##### [核心配置] + [ipv6 固件]: 
