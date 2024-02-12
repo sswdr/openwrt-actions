@@ -136,7 +136,7 @@ jobs:
       run: |
         cp $CONFIG_FILE openwrt/.config
         echo "当前仓库存在$CONFIG_FILE文件,将替换到openwrt/.config"
-        ls -alh | grep -w .config && cat .config
+        ls -alh | grep -w openwrt/.config && cat openwrt/.config
 
     - name: 加载自定义配置
       run: |
