@@ -1,4 +1,8 @@
 #!/bin/bash
+#
+# 只增删插件仓库/修改feeds
+# TODO 指定分支 默认分支backup.2022.04.25, 可extra-apps.sh main来指定分支 BRANCH=${1:-backup.2022.04.25}
+#
 
 # 自用备份插件库 by ssw
 git clone https://github.com/rin0612/openwrt-packages-ssw  package/openwrt-packages-ssw
