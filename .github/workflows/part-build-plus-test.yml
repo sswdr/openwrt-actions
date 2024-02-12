@@ -9,7 +9,7 @@ on:
       MYCONFIG:
         description: '自定义配置'
         required: true
-        default: "{ "MYCONFIG_HOST_IP": "testing-mulesoft-api-dev" }"
+        default: "{ \"MYCONFIG_HOST_IP\": \"testing-mulesoft-api-dev\" }"
 
 env:
   MYCONFIG_HOST_IP: ${{fromJSON(github.event.inputs.MYCONFIG).MYCONFIG_HOST_IP}}
