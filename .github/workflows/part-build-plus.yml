@@ -49,7 +49,7 @@ on:
       MYCONFIG_KERNEL_PATCHVER:
         description: '自定义配置-内核版本'
         required: true
-        default: 5.10
+        default: "5.10"
       MYCONFIG_DEFAULT_THEME:
         description: '自定义配置-默认主题(.config必须包含这个主题)'
         required: true

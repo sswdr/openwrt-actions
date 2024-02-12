@@ -1,0 +1,38 @@
+# 使用拉出的编译仓库环境编译
+
+name: part-build-plus-test
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      MYCONFIG_HOST_IP:
+        description: '自定义配置-主机ip地址'
+        required: true
+        default: 192.168.5.25
+      MYCONFIG_HOST_NAME:
+        description: '自定义配置-主机名'
+        required: true
+        default: sswOpenWrt
+      MYCONFIG_KERNEL_PATCHVER:
+        description: '自定义配置-内核版本'
+        required: true
+        default: 5.10
+      MYCONFIG_DEFAULT_THEME:
+        description: '自定义配置-默认主题(.config必须包含这个主题)'
+        required: true
+        default: luci-theme-argone
+
+env:
+  MYCONFIG_HOST_IP: ${{ github.event.inputs.MYCONFIG_HOST_IP }}
+  MYCONFIG_HOST_NAME: ${{ github.event.inputs.MYCONFIG_HOST_NAME }}
+  MYCONFIG_KERNEL_PATCHVER: ${{ github.event.inputs.MYCONFIG_KERNEL_PATCHVER }}
+  MYCONFIG_DEFAULT_THEME: ${{ github.event.inputs.MYCONFIG_DEFAULT_THEME }}
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+    - name: part-build-plus-test
+      run: |
+        echo "CPU物理数量: $(cat /proc/cpuinfo| grep "physical id"| sort| uniq| wc -l)"
