@@ -123,21 +123,6 @@ jobs:
     - name: 安装feeds
       run: cd openwrt && ./scripts/feeds install -a
 
-    - name: 准备files文件夹
-      run: |
-        if [ -e files ]; then
-          mv files openwrt/files
-          echo "当前仓库存在files文件夹,将替换到openwrt/files"
-        else
-          echo "当前仓库不存在files文件夹,将不替换到openwrt/files,跳过"
-        fi
-
-    - name: 准备.config文件
-      run: |
-        cp $CONFIG_FILE openwrt/.config
-        echo "复制仓库下$CONFIG_FILE,替换到openwrt/.config"
-        ls -alh openwrt/.config && cat openwrt/.config
-
     - name: 加载自定义配置
       run: |
         cd openwrt
@@ -165,6 +150,21 @@ jobs:
         else
           echo "加载扩展仓库: 跳过"
         fi
+
+    - name: 准备files文件夹
+      run: |
+        if [ -e files ]; then
+          mv files openwrt/files
+          echo "当前仓库存在files文件夹,将替换到openwrt/files"
+        else
+          echo "当前仓库不存在files文件夹,将不替换到openwrt/files,跳过"
+        fi
+
+    - name: 准备.config文件
+      run: |
+        cp $CONFIG_FILE openwrt/.config
+        echo "复制仓库下$CONFIG_FILE,替换到openwrt/.config"
+        ls -alh openwrt/.config && cat openwrt/.config
 
     - name: 执行make defconfig
       run: |
