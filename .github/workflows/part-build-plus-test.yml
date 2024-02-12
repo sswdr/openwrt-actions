@@ -1,0 +1,32 @@
+# 使用拉出的编译仓库环境编译
+
+name: part-build-plus-test
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      MYCONFIG:
+        description: '自定义配置'
+        required: true
+        default: "{ "MYCONFIG_HOST_IP": "testing-mulesoft-api-dev" }"
+
+env:
+  MYCONFIG_HOST_IP: ${{fromJSON(github.event.inputs.MYCONFIG).MYCONFIG_HOST_IP}}
+#  MYCONFIG_HOST_NAME: ${{fromJSON(github.event.inputs.MYCONFIG).MYCONFIG_HOST_NAME}}
+#  MYCONFIG_KERNEL_PATCHVER: ${{fromJSON(github.event.inputs.MYCONFIG).MYCONFIG_KERNEL_PATCHVER}}
+#  MYCONFIG_DEFAULT_THEME: ${{fromJSON(github.event.inputs.MYCONFIG).MYCONFIG_DEFAULT_THEME}}
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Checkout
+      uses: actions/checkout@main
+
+    - name: 获取服务器信息,解除当前用户限制,设置时区
+      run: |
+        echo $MYCONFIG_HOST_IP
+#        echo $MYCONFIG_HOST_NAME
+#        echo $MYCONFIG_KERNEL_PATCHVER
+#        echo $MYCONFIG_DEFAULT_THEME
