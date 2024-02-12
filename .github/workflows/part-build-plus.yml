@@ -41,7 +41,7 @@ on:
       MYCONFIG_HOST_IP:
         description: '自定义配置-主机ip地址'
         required: true
-        default: 192.168.5.25
+        default: "192.168.5.25"
       MYCONFIG_HOST_NAME:
         description: '自定义配置-主机名'
         required: true
