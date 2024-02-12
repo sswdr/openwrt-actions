@@ -157,5 +157,4 @@ jobs:
       if: env.UPLOAD_BIN_DIR == 'true'
       with:
         name: openwrt_bin_${{ env.BUILD_DATE }}
-        # 会将整个目录压缩成${name}.zip并上传
         path: /workdir/openwrt/bin
