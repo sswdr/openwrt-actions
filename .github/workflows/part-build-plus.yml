@@ -110,7 +110,7 @@ jobs:
     - name: 准备.config文件
       run: |
         if [ -e "$CONFIG_FILE" ]; then
-          mv $CONFIG_FILE openwrt/.config
+          cp $CONFIG_FILE openwrt/.config
           echo "当前仓库存在.config文件,将替换到openwrt/.config"
         else
           echo "当前仓库不存在.config文件,将不替换到openwrt/.config,跳过"
