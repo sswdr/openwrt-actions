@@ -36,6 +36,6 @@ rm -rf package/openwrt-packages/luci-app-unblockneteasemusic
 rm -rf package/openwrt-packages/luci-theme-argon
 rm -rf package/openwrt-packages/luci-app-argon-config
 
-# ----------------------------------------------通用init-config.sh更新安装feeds----------------------------------------------
+# ----------------------------------------------更新安装feeds----------------------------------------------
 ./scripts/feeds update -a
 ./scripts/feeds install -a
