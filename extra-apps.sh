@@ -1,10 +1,9 @@
 #!/bin/bash
 #
 # 只增删插件仓库/修改feeds
-# TODO 指定分支 默认分支backup.2022.04.25, 可extra-apps.sh main来指定分支 BRANCH=${1:-backup.2022.04.25}
 #
 
-# 自用备份插件库 by ssw
+# 自用备份插件库 by ssw, main分支
 git clone https://github.com/rin0612/openwrt-packages-ssw  package/openwrt-packages-ssw
 
 # kenzok8 packages by backup.2022.04.25
@@ -23,7 +22,7 @@ rm -rf package/openwrt-packages/luci-app-argonne-config
 rm -rf package/openwrt-packages/ddnsto
 rm -rf package/openwrt-packages/luci-app-ddnsto
 
-# TODO 如果需要对feeds仓库有调整, 可以到这里进行修改, 即当前目录下的feeds.conf.default
+# TODO 如果需要对feeds仓库有调整, 可以到这里进行修改, 即当前目录下的feeds.conf.default, eg:
 # cat > feeds.conf.default <<EOF
 # src-git packages https://github.com/coolsnowwolf/packages
 # src-git luci https://github.com/coolsnowwolf/luci
