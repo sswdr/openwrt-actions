@@ -22,6 +22,11 @@ rm -rf package/openwrt-packages/luci-app-argonne-config
 rm -rf package/openwrt-packages/ddnsto
 rm -rf package/openwrt-packages/luci-app-ddnsto
 
+rm -rf feeds/packages/net/zerotier
+cp -R feeds/openwrt_packages_ssw/zerotier/ feeds/packages/net/
+rm -rf feeds/luci/applications/luci-app-zerotier
+cp -R feeds/openwrt_packages_ssw/luci-app-zerotier/ feeds/luci/applications/
+
 # TODO 如果需要对feeds仓库有调整, 可以到这里进行修改, 即当前目录下的feeds.conf.default, eg:
 # cat > feeds.conf.default <<EOF
 # src-git packages https://github.com/coolsnowwolf/packages
