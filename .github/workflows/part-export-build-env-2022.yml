@@ -6,6 +6,10 @@ on:
   repository_dispatch:
   workflow_dispatch:
     inputs:
+      ssh:
+        description: '是否ssh连接到actions'
+        required: false
+        default: true
       REPO_URL_BRANCH:
         description: '编译仓库及分支'
         required: true
@@ -158,6 +162,13 @@ jobs:
         else
             echo "跳过执行make defconfig, 将直接使用.config中的配置编译" && ls -alh | grep -w .config && cat .config
         fi
+
+    - name: ssh连接到actions
+      uses: rin0612/ssh2actions@v1.0.0
+      if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
+      env:
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
 
 #    - name: 准备编译所需的文件依赖项或资源
 #      run: |
