@@ -1,23 +1,24 @@
-编译配置文件获取环境准备: 
+部署以下编译环境: 
 ```
-git clone https://github.com/rin0612/lede -b backup.2022.04.25
-cd lede
-
+git clone https://github.com/rin0612/lede -b backup.2022.04.25 openwrt
+cd openwrt
 ./scripts/feeds update -a
 ./scripts/feeds install -a
-
 sed -i 's/KERNEL_PATCHVER:=.*/KERNEL_PATCHVER:=5.10/g' target/linux/armvirt/Makefile
 sed -i 's/TARGET_rockchip/TARGET_rockchip\|\|TARGET_armvirt/g' package/lean/autocore/Makefile
 
 make defconfig
 make menuconfig
 ```
-##### 一个主题[luci-theme-bootstrap]
-##### linux内核版本[CONFIG_LINUX_5_10=y]
-##### 添加必要依赖: CONFIG_PACKAGE_pv=y(openwrt-ddbr 依赖于pv)
-##### 去除无用默认选上的配置: # CONFIG_PACKAGE_UnblockNeteaseMusic-Go is not set
-##### 添加了autocore-arm支持但是没有选择编译: # CONFIG_PACKAGE_autocore-arm is not set
-##### [核心配置] + [ipv6 固件]: 
+进行如下操作：
+```
+一个主题[luci-theme-bootstrap]
+linux内核版本[CONFIG_LINUX_5_10=y]
+添加必要依赖: CONFIG_PACKAGE_pv=y(openwrt-ddbr 依赖于pv)
+去除无用默认选上的配置: # CONFIG_PACKAGE_UnblockNeteaseMusic-Go is not set
+添加了autocore-arm支持但是没有选择编译: # CONFIG_PACKAGE_autocore-arm is not set
+[核心配置] + [ipv6 固件]: 
+```
 ```
 Target System  ->  QEMU ARM Virtual Machine 
 Subtarget ->  QEMU ARMv**8 Virtual Machine (cortex-a53)
