@@ -195,11 +195,9 @@ jobs:
 
     - name: 准备artifact信息
       run: |
-        sudo cd /
-        sudo tar -zcvf workdir.tar.gz /workdir
-        sudo chown $USER:$GROUPS /workdir.tar.gz
+        tar -zcvf workdir.tar.gz /workdir
         echo "BUILD_DATE=$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
-        echo "BUILD_ARTIFACT=/workdir.tar.gz" >> $GITHUB_ENV
+        echo "BUILD_ARTIFACT=$PWD/workdir.tar.gz" >> $GITHUB_ENV
 
     - name: 上传编译完成后的bin文件夹到actions的artifact
       uses: actions/upload-artifact@v4
