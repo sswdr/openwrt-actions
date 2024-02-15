@@ -10,7 +10,7 @@ sed -i 's/TARGET_rockchip/TARGET_rockchip\|\|TARGET_armvirt/g' package/lean/auto
 make defconfig
 make menuconfig
 ```
-进行如下操作：
+进行如下操作：基于make defconfig生成的.config
 ```
 一个主题[luci-theme-bootstrap]
 linux内核版本[CONFIG_LINUX_5_10=y]

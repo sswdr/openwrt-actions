@@ -20,9 +20,9 @@ cp ../build.config/backup_build_env_2022.04.25.1800/min-v2.config openwrt/.confi
 make defconfig
 make menuconfig
 ```
-进行如下操作：
+进行如下操作：基于min-v2.config
 ```
-基于min-v2.config, 将其复制到如上编译环境下的.config, 执行make defconfig
+将其复制到如上编译环境下的.config, 执行make defconfig
 将生成的.config与min-v2.config使用diffinity文本对比工具对比
     在生成的.config中, 新增的行, 逐行查看, 找到开头为非#的行, 把这些都设置为#开头
     例如: CONFIG_PACKAGE_luci-app-ssr-plus=y -> # CONFIG_PACKAGE_luci-app-ssr-plus is not set
