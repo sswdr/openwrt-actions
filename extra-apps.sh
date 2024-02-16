@@ -22,7 +22,13 @@ rm -rf package/openwrt-packages/ddnsto
 rm -rf package/openwrt-packages/luci-app-ddnsto
 
 rm -rf feeds/packages/net/zerotier
+rm -rf feeds/packages/net/baidupcs-go
+rm -rf feeds/packages/net/baidupcs-web
+rm -rf feeds/packages/multimedia/UnblockNeteaseMusic
+rm -rf feeds/packages/multimedia/UnblockNeteaseMusic-Go
 rm -rf feeds/luci/applications/luci-app-zerotier
+rm -rf feeds/luci/applications/luci-app-unblockmusic
+rm -rf feeds/luci/applications/luci-app-baidupcs-web
 
 # TODO 如果需要对feeds仓库有调整, 可以到这里进行修改, 即当前目录下的feeds.conf.default, eg:
 # cat > feeds.conf.default <<EOF
