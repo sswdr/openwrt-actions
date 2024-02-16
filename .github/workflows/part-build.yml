@@ -17,7 +17,7 @@ on:
       CONFIG_FILE:
         description: '.config编译配置'
         required: true
-        default: build.config/backup_build_env_2022.04.25.1800/min-v2.config
+        default: build.config/backup_build_env_2022.04.25.1800/general-v2.config
       MYCONFIG:
         description: '自定义配置: 主机ip地址、主机名、内核版本、默认主题(luci-theme-bootstrap/luci-theme-argonne,在.config必须包含这个主题)'
         required: true
@@ -29,7 +29,7 @@ on:
       BACKUP_ENV_URL:
         description: '是否加载离线编译环境中的dl包, 为空则通过Makefile下载对应dl, 导入后会跳过下载'
         required: false
-        default: https://github.com/sswdr/openwrt-actions/releases/download/backup_build_env_2022.04.25.1800/workdir.tar.gz
+        default: https://github.com/sswdr/openwrt-actions/releases/download/backup_build_env_2024.02.17.0052/workdir.tar.gz
       UPLOAD_BIN_DIR:
         description: '是否上传编译完成后的bin文件夹到actions的artifact'
         required: true
