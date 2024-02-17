@@ -1,6 +1,6 @@
 # 使用拉出的编译仓库环境编译
 
-name: part-build
+name: test-build
 
 on:
   repository_dispatch:
@@ -87,15 +87,15 @@ jobs:
         # sudo rm -rf /etc/mysql /etc/php /swapfile
         docker rmi $(docker images -q)
         # 编译的work目录
-        sudo mkdir -p /workdir
-        sudo chown $USER:$GROUPS /workdir
+        sudo mkdir -p /mnt/workdir
+        sudo chown $USER:$GROUPS /mnt/workdir
 
     - name: 克隆源码
-      working-directory: /workdir
+      working-directory: /mnt/workdir
       run: |
         df -hT $PWD
         git clone $REPO_URL_BRANCH openwrt
-        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+        ln -sf /mnt/workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
     - name: 更新feeds
       run: cd openwrt && ./scripts/feeds update -a
@@ -168,7 +168,7 @@ jobs:
             echo "下载成功: " && ls -alh ./ | grep *.tar.gz
             sudo tar -zxf workdir.tar.gz && sudo rm workdir.tar.gz
             rm -rf ./dl && cp -R workdir/openwrt/dl ./ && rm -rf workdir
-            sudo chown -R $USER:$GROUPS /workdir
+            sudo chown -R $USER:$GROUPS /mnt/workdir
             echo "加载离线编译环境中的dl包: " && ls -alh ./dl
         }
         echo "开始执行: make download -j8"
@@ -178,7 +178,7 @@ jobs:
       run: |
         cd openwrt
         echo -e "开始编译: $(date +"%Y%m%d%H%M") start $(nproc) thread compile,先多线程,失败则单线程,再失败则详细日志的单线程"
-        make -j$(nproc) || make -j1 || make -j1 V=s
+        make -j1 V=s
         echo "结束编译: $(date +"%Y%m%d%H%M") success"
         echo "BUILD_DATE=$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
 
@@ -187,4 +187,4 @@ jobs:
       if: env.UPLOAD_BIN_DIR == 'true'
       with:
         name: openwrt_bin_${{ env.BUILD_DATE }}
-        path: /workdir/openwrt/bin
+        path: /mnt/workdir/openwrt/bin
