@@ -39,9 +39,9 @@ on:
 
 
       output_config:
-        description: '编译输出配置: '
+        description: '编译输出配置: 编译bin到artifact,编译env到artifact,编译env带dl到artifact,编译bin到releases,编译env到releases,编译env带dl到releases'
         required: true
-        default: true
+        default: "{\"artifact_bin\":true,\"artifact_env\":true,\"artifact_env_dl\":true,\"releases_bin\":true,\"releases_env\":true,\"releases_env_dl\":true}"
 
 
 env:
