@@ -178,6 +178,7 @@ jobs:
         }
         echo "开始执行: make download -j8"
         make download -j8
+        echo "执行make download -j8后的dl包: " && ls -alh ./dl
 
     - name: ssh连接到actions
       uses: rin0612/ssh2actions@v1.0.0

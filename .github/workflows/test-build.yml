@@ -173,6 +173,7 @@ jobs:
         }
         echo "开始执行: make download -j8"
         make download -j8
+        echo "执行make download -j8后的dl包: " && ls -alh ./dl
 
     - name: 编译固件
       run: |
