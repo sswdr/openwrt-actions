@@ -6,46 +6,55 @@ on:
   repository_dispatch:
   workflow_dispatch:
     inputs:
-      REPO_URL_BRANCH:
+      repo_url_branch:
         description: '编译仓库及分支'
         required: true
         default: https://github.com/rin0612/lede -b backup.2022.04.25
-      EXTRA_APPS_SH:
+      backup_env_url:
+        description: '是否加载离线编译环境中的dl包(为空则通过Makefile下载对应dl,导入文件后会通过hash值校验通过则跳过下载)'
+        required: false
+        default: https://github.com/sswdr/openwrt-actions/releases/download/backup_build_env_2024.02.17.0052/workdir.tar.gz
+      extra_apps_sh:
         description: '插件扩展仓库/feeds调整脚本'
         required: false
         default: extra-apps.sh
-      CONFIG_FILE:
-        description: '.config编译配置'
+      config_file:
+        description: '编译配置.config文件'
         required: true
         default: build.config/backup_build_env_2022.04.25.1800/general-v2.config
-      MYCONFIG:
-        description: '自定义配置: 主机ip地址、主机名、内核版本、默认主题(luci-theme-bootstrap/luci-theme-argonne,在.config必须包含这个主题)'
-        required: true
-        default: "{\"HOST_IP\":\"192.168.5.25\",\"HOST_NAME\":\"sswOpenWrt\",\"KERNEL_PATCHVER\":\"5.10\",\"DEFAULT_THEME\":\"luci-theme-argonne\"}"
-      MAKE_DEFCONFIG:
+      make_defconfig:
         description: '是否执行make defconfig(不执行make defconfig将以当前.config直接编译,修改仓库时不会引入其他默认选上的不需要的依赖)'
         required: true
         default: false
-      BACKUP_ENV_URL:
-        description: '是否加载离线编译环境中的dl包, 为空则通过Makefile下载对应dl, 导入后会跳过下载'
-        required: false
-        default: https://github.com/sswdr/openwrt-actions/releases/download/backup_build_env_2024.02.17.0052/workdir.tar.gz
-      UPLOAD_BIN_DIR:
+      myconfig:
+        description: '自定义配置: 主机ip地址,主机名,内核版本,默认主题(luci-theme-bootstrap/luci-theme-argonne,在.config必须包含这个主题)'
+        required: true
+        default: "{\"host_ip\":\"192.168.5.25\",\"host_name\":\"sswOpenWrt\",\"kernel_patchver\":\"5.10\",\"default_theme\":\"luci-theme-argonne\"}"
+
+
+      upload_bin_dir:
         description: '是否上传编译完成后的bin文件夹到actions的artifact'
         required: true
         default: true
 
+
+      output_config:
+        description: '编译输出配置: '
+        required: true
+        default: true
+
+
 env:
-  REPO_URL_BRANCH: ${{ github.event.inputs.REPO_URL_BRANCH }}
-  EXTRA_APPS_SH: ${{ github.event.inputs.EXTRA_APPS_SH }}
-  CONFIG_FILE: ${{ github.event.inputs.CONFIG_FILE }}
-  MYCONFIG_HOST_IP: ${{fromJSON(github.event.inputs.MYCONFIG).HOST_IP}}
-  MYCONFIG_HOST_NAME: ${{fromJSON(github.event.inputs.MYCONFIG).HOST_NAME}}
-  MYCONFIG_KERNEL_PATCHVER: ${{fromJSON(github.event.inputs.MYCONFIG).KERNEL_PATCHVER}}
-  MYCONFIG_DEFAULT_THEME: ${{fromJSON(github.event.inputs.MYCONFIG).DEFAULT_THEME}}
-  MAKE_DEFCONFIG: ${{ github.event.inputs.MAKE_DEFCONFIG }}
-  BACKUP_ENV_URL: ${{ github.event.inputs.BACKUP_ENV_URL }}
-  UPLOAD_BIN_DIR: ${{ github.event.inputs.UPLOAD_BIN_DIR }}
+  repo_url_branch: ${{ github.event.inputs.repo_url_branch }}
+  backup_env_url: ${{ github.event.inputs.backup_env_url }}
+  extra_apps_sh: ${{ github.event.inputs.extra_apps_sh }}
+  config_file: ${{ github.event.inputs.config_file }}
+  make_defconfig: ${{ github.event.inputs.make_defconfig }}
+  myconfig_host_ip: ${{fromJSON(github.event.inputs.myconfig).host_ip}}
+  myconfig_host_name: ${{fromJSON(github.event.inputs.myconfig).host_name}}
+  myconfig_kernel_patchver: ${{fromJSON(github.event.inputs.myconfig).kernel_patchver}}
+  myconfig_default_theme: ${{fromJSON(github.event.inputs.myconfig).default_theme}}
+  upload_bin_dir: ${{ github.event.inputs.upload_bin_dir }}
 
 jobs:
   build:
@@ -94,7 +103,7 @@ jobs:
       working-directory: /mnt/workdir
       run: |
         df -hT $PWD
-        git clone $REPO_URL_BRANCH openwrt
+        git clone $repo_url_branch openwrt
         ln -sf /mnt/workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
     - name: 更新feeds
@@ -106,14 +115,14 @@ jobs:
     - name: 加载自定义配置
       run: |
         cd openwrt
-        echo "--------自定义配置-主机ip地址: $MYCONFIG_HOST_IP"
-        sed -i "s/192.168.1.1/$MYCONFIG_HOST_IP/g" package/base-files/files/bin/config_generate
-        echo "--------自定义配置-主机名: $MYCONFIG_HOST_NAME"
-        sed -i "s/OpenWrt/$MYCONFIG_HOST_NAME/g" package/base-files/files/bin/config_generate
-        echo "--------自定义配置-内核版本: $MYCONFIG_KERNEL_PATCHVER"
-        sed -i "s/KERNEL_PATCHVER:=.*/KERNEL_PATCHVER:=$MYCONFIG_KERNEL_PATCHVER/g" target/linux/armvirt/Makefile
-        echo "--------自定义配置-默认主题: $MYCONFIG_DEFAULT_THEME"
-        sed -i "s/luci-theme-bootstrap/$MYCONFIG_DEFAULT_THEME/g" ./feeds/luci/collections/luci/Makefile
+        echo "--------自定义配置-主机ip地址: $myconfig_host_ip"
+        sed -i "s/192.168.1.1/$myconfig_host_ip/g" package/base-files/files/bin/config_generate
+        echo "--------自定义配置-主机名: $myconfig_host_name"
+        sed -i "s/OpenWrt/$myconfig_host_name/g" package/base-files/files/bin/config_generate
+        echo "--------自定义配置-内核版本: $myconfig_kernel_patchver"
+        sed -i "s/kernel_patchver:=.*/kernel_patchver:=$myconfig_kernel_patchver/g" target/linux/armvirt/Makefile
+        echo "--------自定义配置-默认主题: $myconfig_default_theme"
+        sed -i "s/luci-theme-bootstrap/$myconfig_default_theme/g" ./feeds/luci/collections/luci/Makefile
         echo "--------自定义配置-build信息"
         sed -i 's/OpenWrt /杀生丸大人 Build $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g' package/lean/default-settings/files/zzz-default-settings
         echo "--------其他通用配置-添加autocore-arm支持可配置, 需要手动在.config/make menuconfig中选择启用"
@@ -121,12 +130,12 @@ jobs:
 
     - name: 加载扩展仓库
       run: |
-        if [ -e "$EXTRA_APPS_SH" ]; then
+        if [ -e "$extra_apps_sh" ]; then
           echo "注意: 加载扩展仓库之前, 务必先安装feeds和更新feeds, 否则会一堆依赖不全"
-          echo "加载扩展仓库, 将执行以下内容: " && cat $EXTRA_APPS_SH && echo "开始执行: "
-          chmod +x $EXTRA_APPS_SH
+          echo "加载扩展仓库, 将执行以下内容: " && cat $extra_apps_sh && echo "开始执行: "
+          chmod +x $extra_apps_sh
           cd openwrt
-          $GITHUB_WORKSPACE/$EXTRA_APPS_SH
+          $GITHUB_WORKSPACE/$extra_apps_sh
         else
           echo "加载扩展仓库: 跳过"
         fi
@@ -142,14 +151,14 @@ jobs:
 
     - name: 准备.config文件
       run: |
-        cp $CONFIG_FILE openwrt/.config
-        echo "复制仓库下$CONFIG_FILE,替换到openwrt/.config"
+        cp $config_file openwrt/.config
+        echo "复制仓库下$config_file,替换到openwrt/.config"
         ls -alh openwrt/.config && cat openwrt/.config
 
     - name: 执行make defconfig
       run: |
         cd openwrt
-        if [ "$MAKE_DEFCONFIG" = true ]; then
+        if [ "$make_defconfig" = true ]; then
             echo "开始执行make defconfig, 将.config文件匹配为适用于当前平台和硬件环境的配置文件"
             echo "注意: 部分.config配置中的配置讲会重置为默认选项"
             echo "--------执行前--------" && ls -alh .config && cat .config
@@ -162,9 +171,9 @@ jobs:
     - name: 准备编译所需的文件依赖项或资源
       run: |
         cd openwrt
-        [ -n "$BACKUP_ENV_URL" ] && {
+        [ -n "$backup_env_url" ] && {
             echo "开始加载离线编译环境中的dl包"
-            wget -q $BACKUP_ENV_URL
+            wget -q $backup_env_url
             echo "下载成功: " && ls -alh ./ | grep *.tar.gz
             sudo tar -zxf workdir.tar.gz && sudo rm workdir.tar.gz
             rm -rf ./dl && cp -R workdir/openwrt/dl ./ && rm -rf workdir
@@ -182,11 +191,11 @@ jobs:
         make -j$(nproc) || make -j1 || make -j1 V=s
         echo "结束编译: $(date +"%Y%m%d%H%M") success"
         echo "结束编译后的dl文件夹目录: " && ls -alh ./dl
-        echo "BUILD_DATE=$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+        echo "build_date=$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
 
     - name: 上传编译完成后的bin文件夹到actions的artifact
       uses: actions/upload-artifact@main
-      if: env.UPLOAD_BIN_DIR == 'true'
+      if: env.upload_bin_dir == 'true'
       with:
-        name: openwrt_bin_${{ env.BUILD_DATE }}
+        name: openwrt_bin_${{ env.build_date }}
         path: /mnt/workdir/openwrt/bin
