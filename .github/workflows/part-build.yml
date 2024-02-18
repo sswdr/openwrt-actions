@@ -49,8 +49,8 @@ env:
   output_config_artifact_env: ${{fromJSON(github.event.inputs.output_config).artifact_env}}
   output_config_artifact_env_dl: ${{fromJSON(github.event.inputs.output_config).artifact_env_dl}}
   output_config_releases_bin: ${{fromJSON(github.event.inputs.output_config).releases_bin}}
-  output_config_releases_env: ${{fromJSON(github.event.inputs.output_config).artifact_bin}}
-  output_config_releases_env_dl: ${{fromJSON(github.event.inputs.output_config).artifact_bin}}
+  output_config_releases_env: ${{fromJSON(github.event.inputs.output_config).releases_env}}
+  output_config_releases_env_dl: ${{fromJSON(github.event.inputs.output_config).releases_env_dl}}
 
 jobs:
   build:
