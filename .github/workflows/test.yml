@@ -57,8 +57,15 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
 
-    - name: if_output_config_artifact_bin
+    - name: if_output_config_artifact_bin_string
       if: env.output_config_artifact_bin == 'true'
+      run: |
+        echo $output_config_artifact_bin
+        echo $output_config_artifact_env
+        echo $output_config_releases_env_dl
+
+    - name: if_output_config_artifact_bin_bool
+      if: env.output_config_artifact_bin == true
       run: |
         echo $output_config_artifact_bin
         echo $output_config_artifact_env
