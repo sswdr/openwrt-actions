@@ -11,7 +11,7 @@ on:
         required: true
         default: https://github.com/rin0612/lede -b backup.2022.04.25
       backup_env_url:
-        description: '是否加载离线编译环境中的dl包(为空则通过Makefile下载对应dl,导入文件后会通过hash值校验通过则跳过下载)'
+        description: '是否加载离线编译环境中的dl包(值为false则只通过Makefile下载对应dl,为链接则导入文件后会通过hash值校验通过则跳过下载)'
         required: false
         default: https://github.com/sswdr/openwrt-actions/releases/download/backup_build_env_2024.02.17.0052/workdir.tar.gz
       extra_apps_sh:
@@ -34,7 +34,6 @@ on:
         description: '编译输出配置: 编译bin到artifact,编译env到artifact,编译env带dl到artifact,编译bin到releases,编译env到releases,编译env带dl到releases'
         required: true
         default: "{\"artifact_bin\":true,\"artifact_env\":true,\"artifact_env_dl\":true,\"releases_bin\":true,\"releases_env\":true,\"releases_env_dl\":true}"
-
 
 env:
   repo_url_branch: ${{ github.event.inputs.repo_url_branch }}
@@ -61,7 +60,6 @@ jobs:
     - name: if_output_config_artifact_bin
       if: env.output_config_artifact_bin == 'true'
       run: |
-        echo $env
         echo $output_config_artifact_bin
         echo $output_config_artifact_env
         echo $output_config_releases_env_dl
@@ -75,3 +73,11 @@ jobs:
       if: env.backup_env_url == ''
       run: |
         echo $backup_env_url
+
+    - name: test
+      run: |
+        echo test
+        [ -n "$backup_env_url" ] && {
+            echo 001
+            echo $backup_env_url
+        }
