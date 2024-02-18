@@ -81,3 +81,10 @@ jobs:
             echo 001
             echo $backup_env_url
         }
+
+    - name: 准备编译所需的文件依赖项或资源
+      run: |
+        echo 0
+        if [ "$backup_env_url" != false ]; then
+          echo 1
+        fi

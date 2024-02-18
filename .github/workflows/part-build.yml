@@ -11,7 +11,7 @@ on:
         required: true
         default: https://github.com/rin0612/lede -b backup.2022.04.25
       backup_env_url:
-        description: '是否加载离线编译环境中的dl包(为空则通过Makefile下载对应dl,导入文件后会通过hash值校验通过则跳过下载)'
+        description: '是否加载离线编译环境中的dl包(值为false则只通过Makefile下载对应dl,为链接则导入文件后会通过hash值校验通过则跳过下载)'
         required: false
         default: https://github.com/sswdr/openwrt-actions/releases/download/backup_build_env_2024.02.17.0052/workdir.tar.gz
       extra_apps_sh:
@@ -34,7 +34,6 @@ on:
         description: '编译输出配置: 编译bin到artifact,编译env到artifact,编译env带dl到artifact,编译bin到releases,编译env到releases,编译env带dl到releases'
         required: true
         default: "{\"artifact_bin\":true,\"artifact_env\":true,\"artifact_env_dl\":true,\"releases_bin\":true,\"releases_env\":true,\"releases_env_dl\":true}"
-
 
 env:
   repo_url_branch: ${{ github.event.inputs.repo_url_branch }}
@@ -168,7 +167,7 @@ jobs:
     - name: 准备编译所需的文件依赖项或资源
       run: |
         cd openwrt
-        [ -n "$backup_env_url" ] && {
+        if [ "$backup_env_url" != false ]; then
             echo "开始加载离线编译环境中的dl包"
             wget -q $backup_env_url
             echo "下载成功: " && ls -alh ./ | grep *.tar.gz
@@ -176,7 +175,7 @@ jobs:
             rm -rf ./dl && cp -R workdir/openwrt/dl ./ && rm -rf workdir
             sudo chown -R $USER:$GROUPS /mnt/workdir
             echo "加载离线编译环境中的dl包: " && ls -alh ./dl
-        }
+        fi
         echo "开始执行: make download -j8"
         make download -j8
         echo "执行make download -j8后的dl包: " && ls -alh ./dl
