@@ -152,17 +152,14 @@ jobs:
         ls -alh openwrt/.config && cat openwrt/.config
 
     - name: 执行make defconfig
+      if: env.make_defconfig == 'true'
       run: |
         cd openwrt
-        if [ "$make_defconfig" = true ]; then
-            echo "开始执行make defconfig, 将.config文件匹配为适用于当前平台和硬件环境的配置文件"
-            echo "注意: 部分.config配置中的配置讲会重置为默认选项"
-            echo "--------执行前--------" && ls -alh .config && cat .config
-            make defconfig
-            echo "--------执行后--------" && ls -alh .config && cat .config
-        else
-            echo "跳过执行make defconfig, 将直接使用.config中的配置编译" && ls -alh | grep -w .config && cat .config
-        fi
+        echo "开始执行make defconfig, 将.config文件匹配为适用于当前平台和硬件环境的配置文件"
+        echo "注意: 部分.config配置中的配置讲会重置为默认选项"
+        echo "--------执行前--------" && ls -alh .config && cat .config
+        make defconfig
+        echo "--------执行后--------" && ls -alh .config && cat .config
 
     - name: 准备编译所需的文件依赖项或资源
       run: |
