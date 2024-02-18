@@ -26,7 +26,7 @@ on:
         description: '是否执行make defconfig(不执行make defconfig将以当前.config直接编译,修改仓库时不会引入其他默认选上的不需要的依赖)'
         required: true
         default: false
-      myconfig:
+      build_config:
         description: '自定义配置: 主机ip地址,主机名,内核版本,默认主题(luci-theme-bootstrap/luci-theme-argonne,在.config必须包含这个主题)'
         required: true
         default: "{\"host_ip\":\"192.168.5.25\",\"host_name\":\"sswOpenWrt\",\"kernel_patchver\":\"5.10\",\"default_theme\":\"luci-theme-argonne\"}"
@@ -50,10 +50,10 @@ env:
   extra_apps_sh: ${{ github.event.inputs.extra_apps_sh }}
   config_file: ${{ github.event.inputs.config_file }}
   make_defconfig: ${{ github.event.inputs.make_defconfig }}
-  myconfig_host_ip: ${{fromJSON(github.event.inputs.myconfig).host_ip}}
-  myconfig_host_name: ${{fromJSON(github.event.inputs.myconfig).host_name}}
-  myconfig_kernel_patchver: ${{fromJSON(github.event.inputs.myconfig).kernel_patchver}}
-  myconfig_default_theme: ${{fromJSON(github.event.inputs.myconfig).default_theme}}
+  build_config_host_ip: ${{fromJSON(github.event.inputs.build_config).host_ip}}
+  build_config_host_name: ${{fromJSON(github.event.inputs.build_config).host_name}}
+  build_config_kernel_patchver: ${{fromJSON(github.event.inputs.build_config).kernel_patchver}}
+  build_config_default_theme: ${{fromJSON(github.event.inputs.build_config).default_theme}}
   upload_bin_dir: ${{ github.event.inputs.upload_bin_dir }}
 
 jobs:
@@ -115,14 +115,14 @@ jobs:
     - name: 加载自定义配置
       run: |
         cd openwrt
-        echo "--------自定义配置-主机ip地址: $myconfig_host_ip"
-        sed -i "s/192.168.1.1/$myconfig_host_ip/g" package/base-files/files/bin/config_generate
-        echo "--------自定义配置-主机名: $myconfig_host_name"
-        sed -i "s/OpenWrt/$myconfig_host_name/g" package/base-files/files/bin/config_generate
-        echo "--------自定义配置-内核版本: $myconfig_kernel_patchver"
-        sed -i "s/kernel_patchver:=.*/kernel_patchver:=$myconfig_kernel_patchver/g" target/linux/armvirt/Makefile
-        echo "--------自定义配置-默认主题: $myconfig_default_theme"
-        sed -i "s/luci-theme-bootstrap/$myconfig_default_theme/g" ./feeds/luci/collections/luci/Makefile
+        echo "--------自定义配置-主机ip地址: $build_config_host_ip"
+        sed -i "s/192.168.1.1/$build_config_host_ip/g" package/base-files/files/bin/config_generate
+        echo "--------自定义配置-主机名: $build_config_host_name"
+        sed -i "s/OpenWrt/$build_config_host_name/g" package/base-files/files/bin/config_generate
+        echo "--------自定义配置-内核版本: $build_config_kernel_patchver"
+        sed -i "s/kernel_patchver:=.*/kernel_patchver:=$build_config_kernel_patchver/g" target/linux/armvirt/Makefile
+        echo "--------自定义配置-默认主题: $build_config_default_theme"
+        sed -i "s/luci-theme-bootstrap/$build_config_default_theme/g" ./feeds/luci/collections/luci/Makefile
         echo "--------自定义配置-build信息"
         sed -i 's/OpenWrt /杀生丸大人 Build $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g' package/lean/default-settings/files/zzz-default-settings
         echo "--------其他通用配置-添加autocore-arm支持可配置, 需要手动在.config/make menuconfig中选择启用"
