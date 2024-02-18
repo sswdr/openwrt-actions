@@ -1,8 +1,8 @@
 部署以下编译环境: 
 ```
 git clone https://github.com/sswdr/openwrt-actions openwrt-actions
-chmod +x extra-apps.sh
 cd openwrt-actions
+chmod +x extra-apps.sh
 git clone https://github.com/rin0612/lede -b backup.2022.04.25 openwrt
 cd openwrt
 ./scripts/feeds update -a

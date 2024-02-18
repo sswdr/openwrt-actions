@@ -1,8 +1,8 @@
 部署以下编译环境: 
 ```
 git clone https://github.com/sswdr/openwrt-actions openwrt-actions
-chmod +x extra-apps.sh
 cd openwrt-actions
+chmod +x extra-apps.sh
 git clone https://github.com/rin0612/lede -b backup.2022.04.25 openwrt
 cd openwrt
 ./scripts/feeds update -a
@@ -15,11 +15,12 @@ sed -i 's/OpenWrt /杀生丸大人 Build $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt 
 sed -i 's/TARGET_rockchip/TARGET_rockchip\|\|TARGET_armvirt/g' package/lean/autocore/Makefile
 ../extra-apps.sh
 mv files openwrt/files
-cp ../build.config/backup_build_env_2022.04.25.1800/min-v2.config openwrt/.config
+cp ../build.config/backup_build_env_2022.04.25.1800/min-v3.config openwrt/.config
 
 make defconfig
 make menuconfig
 ```
+
 进行如下操作：基于min-v2.config
 ```
 将其复制到如上编译环境下的.config, 执行make defconfig
