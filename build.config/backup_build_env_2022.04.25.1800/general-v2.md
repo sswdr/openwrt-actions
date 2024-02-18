@@ -101,7 +101,7 @@ make menuconfig
         [*] Include DNSProxy                            TODO待处理(这次新增的待测试)
 <*> luci-app-unblockmusic                                   TODO待处理(lede的源码by ssw 2024.02.16)
     [*] UnblockNeteaseMusic Golang Version                  TODO待处理(lede的源码by ssw 2024.02.16)
-    [*] UnblockNeteaseMusic NodeJS Version                  TODO待处理(lede的源码by ssw 2024.02.16)
+    [*] UnblockNeteaseMusic NodeJS Version                  不建议编译，会引入node，编译可能一直卡在make[3] -C feeds/packages/lang/node host-compile和这个有关系？
 <*> luci-app-upnp                                           [100KB]服务-UPnP(UPnP 允许局域网内客户端自动设置路由器上的端口转发)
 <*> luci-app-watchcat                                       TODO待处理
 <*> luci-app-webadmin                                       [5kb]系统-web管理(openwrt的web管理，例如设置端口号之类的)
