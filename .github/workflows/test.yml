@@ -65,16 +65,12 @@ jobs:
         echo $output_config_artifact_env
         echo $output_config_releases_env_dl
 
-    - name: if_not_null_output_config_artifact_bin
-      if: env.output_config_artifact_bin != ''
+    - name: if_not_null
+      if: env.backup_env_url != ''
       run: |
-        echo $output_config_artifact_bin
-        echo $output_config_artifact_env
-        echo $output_config_releases_env_dl
+        echo $backup_env_url
 
-    - name: if_null_output_config_artifact_bin
-      if: env.output_config_artifact_bin == ''
+    - name: if_null
+      if: env.backup_env_url == ''
       run: |
-        echo $output_config_artifact_bin
-        echo $output_config_artifact_env
-        echo $output_config_releases_env_dl
+        echo $backup_env_url
