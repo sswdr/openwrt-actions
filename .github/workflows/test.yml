@@ -1,0 +1,38 @@
+name: Upload Artifacts Example
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build and generate artifact 1
+        run: |
+          # Build your project and generate artifact 1
+          echo "Building artifact 1..."
+          touch artifact1.txt
+
+      - name: Upload artifact 1
+        uses: actions/upload-artifact@main
+        with:
+          name: artifact1
+          path: artifact1.txt
+
+      - name: Build and generate artifact 2
+        run: |
+          # Build your project and generate artifact 2
+          echo "Building artifact 2..."
+          touch artifact2.txt
+
+      - name: Upload artifact 2
+        uses: actions/upload-artifact@main
+        with:
+          name: artifact2
+          path: artifact2.txt
