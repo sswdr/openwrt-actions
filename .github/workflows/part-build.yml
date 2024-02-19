@@ -273,7 +273,7 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         bodyFile: /env.txt
 
-    - name: upload-编译env到releases
+    - name: upload-编译bin到releases
       if: env.output_config_releases_bin == 'true'
       uses: rin0612/release-action@v1
       with:
