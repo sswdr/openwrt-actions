@@ -69,7 +69,7 @@ jobs:
         
         # Find and display the content of the current YAML file
         echo "Current YAML file: $YAML_FILE"
-        cat $YAML_FILE
+        cat .github/workflows/$YAML_FILE
 
     - name: or
       if: env.output_config_artifact_bin == 'true' || env.output_config_releases_bin == 'true'
