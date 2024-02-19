@@ -79,7 +79,7 @@ jobs:
         echo "action yml env Json: " >> env.txt && echo "\`\`\`" >> env.txt
         echo "${{ toJson(env) }}" >> env.txt && echo "\`\`\`" >> env.txt
         
-        if [ -e "$extra_apps_sh" ]; then
+        if [ -e "$EXTRA_APPS_SH" ]; then
           echo "$EXTRA_APPS_SH: " >> env.txt && echo "\`\`\`" >> env.txt
           cat $GITHUB_WORKSPACE/$EXTRA_APPS_SH >> env.txt && echo "\`\`\`" >> env.txt
         fi
@@ -89,8 +89,6 @@ jobs:
         
         echo "env信息: " && cat /env.txt
         # release-action 环境变量设置
-        echo "PACKAGED_OUTPUTPATH=/*.tar.gz" >>$GITHUB_ENV
-        echo "PACKAGED_OUTPUTDATE=$(date +"%Y.%m.%d.%H%M")" >>$GITHUB_ENV
         echo "RELEASES_BODY_FILE=/env.txt" >>$GITHUB_ENV
 
     - name: 推送文件到releases,如果tag不存在会创建
