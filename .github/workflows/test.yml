@@ -79,7 +79,7 @@ jobs:
         echo "action yml env Json: " >> env.txt && echo "\`\`\`" >> env.txt
         echo "${{ toJson(env) }}" >> env.txt && echo "\`\`\`" >> env.txt
         
-        if [ -e "$extra_apps_sh" ]; then
+        if [ -e "$GITHUB_WORKSPACE/$extra_apps_sh" ]; then
           echo "$extra_apps_sh: " >> env.txt && echo "\`\`\`" >> env.txt
           cat $GITHUB_WORKSPACE/$extra_apps_sh >> env.txt && echo "\`\`\`" >> env.txt
         fi
