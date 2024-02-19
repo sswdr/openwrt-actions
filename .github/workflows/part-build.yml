@@ -77,6 +77,26 @@ jobs:
         echo "设置时区,方便看正常日志的时间: Asia/Shanghai"
         sudo timedatectl set-timezone "Asia/Shanghai"
 
+    - name: 整理env信息到/env.txt
+      run: |
+        # 记录编译时间到GITHUB_ENV,yml中使用${{ env.build_date }}进行使用
+        echo "build_date=$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+        # env信息正文文件: /env.txt
+        cd / && sudo touch env.txt && sudo chown $USER:$GROUPS env.txt
+        # 当前工作流使用的yml文件名称(约定文件名称 = 工作流名称.yml)
+        YAML_FILE="$(echo $GITHUB_WORKFLOW | tr -d ' ' | tr -d '\n' | tr -d '\r').yml"
+        # ------ env信息正文 start
+        echo "action yml env Json: " >> env.txt && echo "\`\`\`" >> env.txt
+        echo "${{ toJson(env) }}" >> env.txt && echo "\`\`\`" >> env.txt
+        if [ -e "$GITHUB_WORKSPACE/$extra_apps_sh" ]; then
+          echo "$extra_apps_sh: " >> env.txt && echo "\`\`\`" >> env.txt
+          cat $GITHUB_WORKSPACE/$extra_apps_sh >> env.txt && echo "\`\`\`" >> env.txt
+        fi
+        echo "current workflow file name: $YAML_FILE, content: " >> env.txt && echo "\`\`\`" >> env.txt
+        cat $GITHUB_WORKSPACE/.github/workflows/$YAML_FILE >> env.txt && echo "\`\`\`" >> env.txt
+        # ------ env信息正文 end
+        echo "env信息: " && cat /env.txt
+
     - name: 初始化编译环境
       env:
         DEBIAN_FRONTEND: noninteractive
@@ -161,6 +181,14 @@ jobs:
         make defconfig
         echo "--------执行后--------" && ls -alh .config && cat .config
 
+    - name: output准备-导出的env
+      working-directory: /mnt/workdir
+      run: |
+        cp /env.txt openwrt/
+        mkdir output
+        tar -zcf /mnt/workdir/output/env.tar.gz openwrt/
+        ls -alh /mnt/workdir/output
+
     - name: 准备编译所需的文件依赖项或资源
       run: |
         cd openwrt
@@ -181,15 +209,76 @@ jobs:
       if: env.output_config_artifact_bin == 'true' || env.output_config_releases_bin == 'true'
       run: |
         cd openwrt
-        echo -e "开始编译: $(date +"%Y%m%d%H%M") start $(nproc) thread compile,先多线程,失败则单线程,再失败则详细日志的单线程"
+        echo -e "开始编译: start $(nproc) thread compile, 先多线程, 失败则单线程, 再失败则详细日志的单线程"
         make -j$(nproc) || make -j1 || make -j1 V=s
-        echo "结束编译: $(date +"%Y%m%d%H%M") success"
-        echo "结束编译后的dl文件夹目录: " && ls -alh ./dl
-        echo "build_date=$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+        echo "结束编译: success, dl文件夹目录: " && ls -alh ./dl
 
-    - name: 上传-编译完成后的bin文件夹到actions的artifact
+    - name: output准备-导出的bin
+      if: env.output_config_artifact_bin == 'true' || env.output_config_releases_bin == 'true'
+      run: |
+        cd openwrt
+        cp /env.txt bin/
+        tar -zcf /mnt/workdir/output/bin.tar.gz bin/
+        ls -alh /mnt/workdir/output
+
+    - name: output准备-导出的env-dl
+      if: env.output_config_artifact_bin == 'true' || env.output_config_releases_bin == 'true'
+      working-directory: /mnt/workdir
+      run: |
+        tar -zxf output/env.tar.gz -C output/
+        rm -rf output/openwrt/dl
+        cp -R openwrt/dl output/openwrt/dl
+        cd output
+        tar -zcf /mnt/workdir/output/env-dl.tar.gz openwrt/ && rm -rf openwrt/
+        ls -alh /mnt/workdir/output
+
+    - name: upload-编译env到artifact
+      if: env.output_config_artifact_env == 'true'
       uses: actions/upload-artifact@main
-      if: env.output_config_artifact_bin == 'true'
       with:
-        name: openwrt_bin_${{ env.build_date }}
-        path: /mnt/workdir/openwrt/bin
+        name: ${{ env.build_date }}_env
+        path: /mnt/workdir/output/env.tar.gz
+
+    - name: upload-编译env-dl到artifact
+      if: env.output_config_artifact_env_dl == 'true'
+      uses: actions/upload-artifact@main
+      with:
+        name: ${{ env.build_date }}_env_dl
+        path: /mnt/workdir/output/env-dl.tar.gz
+
+    - name: upload-编译bin到artifact
+      if: env.output_config_artifact_bin == 'true'
+      uses: actions/upload-artifact@main
+      with:
+        name: ${{ env.build_date }}_bin
+        path: /mnt/workdir/output/bin.tar.gz
+
+    - name: upload-编译env到releases
+      if: env.output_config_releases_env == 'true'
+      uses: rin0612/release-action@v1
+      with:
+        tag: ${{ env.build_date }}_build
+        artifacts: /mnt/workdir/output/env.tar.gz
+        allowUpdates: true
+        token: ${{ secrets.GITHUB_TOKEN }}
+        bodyFile: /env.txt
+
+    - name: upload-编译env-dl到releases
+      if: env.output_config_releases_env_dl == 'true'
+      uses: rin0612/release-action@v1
+      with:
+        tag: ${{ env.build_date }}_build
+        artifacts: /mnt/workdir/output/env-dl.tar.gz
+        allowUpdates: true
+        token: ${{ secrets.GITHUB_TOKEN }}
+        bodyFile: /env.txt
+
+    - name: upload-编译env到releases
+      if: env.output_config_releases_bin == 'true'
+      uses: rin0612/release-action@v1
+      with:
+        tag: ${{ env.build_date }}_build
+        artifacts: /mnt/workdir/output/bin.tar.gz
+        allowUpdates: true
+        token: ${{ secrets.GITHUB_TOKEN }}
+        bodyFile: /env.txt
