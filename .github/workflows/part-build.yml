@@ -13,6 +13,7 @@ on:
       backup_env_url:
         description: '是否加载离线编译环境中的dl包(值为false则只通过Makefile下载对应dl,为链接则导入文件后会通过hash值校验通过则跳过下载)'
         required: false
+        # TODO 这个链接要换成新的
         default: https://github.com/sswdr/openwrt-actions/releases/download/backup_build_env_2024.02.17.0052/workdir.tar.gz
       extra_apps_sh:
         description: '插件扩展仓库/feeds调整脚本(指定仓库根目录下不存在的脚本会跳过)'
@@ -21,6 +22,7 @@ on:
       config_file:
         description: '编译配置.config文件'
         required: true
+        # TODO 这个配置文件，待test-002.config测试后，删除test-002.config改到general-v2.config
         default: build.config/backup_build_env_2022.04.25.1800/general-v2.config
       make_defconfig:
         description: '是否执行make defconfig(不执行make defconfig将以当前.config直接编译,修改仓库时不会引入其他默认选上的不需要的依赖)'
@@ -182,11 +184,11 @@ jobs:
         echo "--------执行后--------" && ls -alh .config && cat .config
 
     - name: output准备-导出的env
-      working-directory: /mnt/workdir
+      working-directory: /mnt
       run: |
-        cp /env.txt openwrt/
-        mkdir output
-        tar -zcf /mnt/workdir/output/env.tar.gz openwrt/
+        cp /env.txt workdir/openwrt/
+        mkdir -p /mnt/workdir/output
+        tar -zcf /mnt/workdir/output/env.tar.gz --exclude=output workdir/
         ls -alh /mnt/workdir/output
 
     - name: 准备编译所需的文件依赖项或资源
@@ -196,7 +198,7 @@ jobs:
             echo "开始加载离线编译环境中的dl包"
             wget -q $backup_env_url
             echo "下载成功: " && ls -alh ./ | grep *.tar.gz
-            sudo tar -zxf workdir.tar.gz && sudo rm workdir.tar.gz
+            sudo tar -zxf *.tar.gz && sudo rm *.tar.gz
             rm -rf ./dl && cp -R workdir/openwrt/dl ./ && rm -rf workdir
             sudo chown -R $USER:$GROUPS /mnt/workdir
             echo "加载离线编译环境中的dl包: " && ls -alh ./dl
@@ -225,11 +227,10 @@ jobs:
       if: env.output_config_artifact_bin == 'true' || env.output_config_releases_bin == 'true'
       working-directory: /mnt/workdir
       run: |
-        tar -zxf output/env.tar.gz -C output/
-        rm -rf output/openwrt/dl
-        cp -R openwrt/dl output/openwrt/dl
+        mkdir -p output/workdir/openwrt
+        cp -R openwrt/dl output/workdir/openwrt/dl
         cd output
-        tar -zcf /mnt/workdir/output/env-dl.tar.gz openwrt/ && rm -rf openwrt/
+        tar -zcf /mnt/workdir/output/env-dl.tar.gz workdir/ && rm -rf workdir/
         ls -alh /mnt/workdir/output
 
     - name: upload-编译env到artifact
