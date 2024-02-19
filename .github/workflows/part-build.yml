@@ -15,7 +15,7 @@ on:
         required: false
         default: https://github.com/sswdr/openwrt-actions/releases/download/backup_build_env_2024.02.17.0052/workdir.tar.gz
       extra_apps_sh:
-        description: '插件扩展仓库/feeds调整脚本'
+        description: '插件扩展仓库/feeds调整脚本(指定仓库根目录下不存在的脚本会跳过)'
         required: false
         default: extra-apps.sh
       config_file:
