@@ -178,6 +178,7 @@ jobs:
         echo "执行make download -j8后的dl包: " && ls -alh ./dl
 
     - name: 编译固件
+      if: env.output_config_artifact_bin == 'true' || env.output_config_releases_bin == 'true'
       run: |
         cd openwrt
         echo -e "开始编译: $(date +"%Y%m%d%H%M") start $(nproc) thread compile,先多线程,失败则单线程,再失败则详细日志的单线程"
@@ -186,7 +187,7 @@ jobs:
         echo "结束编译后的dl文件夹目录: " && ls -alh ./dl
         echo "build_date=$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
 
-    - name: 上传编译完成后的bin文件夹到actions的artifact
+    - name: 上传-编译完成后的bin文件夹到actions的artifact
       uses: actions/upload-artifact@main
       if: env.output_config_artifact_bin == 'true'
       with:

@@ -56,6 +56,19 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Display current YAML file content
+      run: |
+        # Find YAML files in the repository
+        YAML_FILES=$(find . -type f -name "*.yml" -o -name "*.yaml")
+        
+        # Loop through the YAML files and display their content
+        for file in $YAML_FILES; do
+          echo "Content of $file:"
+          cat $file
+        done
 
     - name: or
       if: env.output_config_artifact_bin == 'true' || env.output_config_releases_bin == 'true'
