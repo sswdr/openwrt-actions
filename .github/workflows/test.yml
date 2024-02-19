@@ -59,16 +59,17 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Display current YAML file content
+    - name: Display current YAML file name and content
       run: |
-        # Find YAML files in the repository
-        YAML_FILES=$(find . -type f -name "*.yml" -o -name "*.yaml")
+        # Get the name of the current workflow file
+        CURRENT_WORKFLOW_FILE=$(echo $GITHUB_WORKFLOW | tr -d ' ' | tr -d '\n' | tr -d '\r')
         
-        # Loop through the YAML files and display their content
-        for file in $YAML_FILES; do
-          echo "Content of $file:"
-          cat $file
-        done
+        # Generate the name of the current YAML file based on the workflow name
+        YAML_FILE="${CURRENT_WORKFLOW_FILE}.yml"
+        
+        # Find and display the content of the current YAML file
+        echo "Current YAML file: $YAML_FILE"
+        cat $YAML_FILE
 
     - name: or
       if: env.output_config_artifact_bin == 'true' || env.output_config_releases_bin == 'true'
