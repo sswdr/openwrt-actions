@@ -10,8 +10,12 @@ on:
         description: '编译仓库及分支'
         required: true
         default: https://github.com/rin0612/lede -b backup.2022.04.25
+      backup_env:
+        description: '是否加载离线编译env(值为false则不加载,为链接则使用离线env)'
+        required: false
+        default: false
       backup_env_dl:
-        description: '是否加载离线编译环境中的dl包(值为false则只通过Makefile下载对应dl,为链接则导入文件后会通过hash值校验通过则跳过下载)'
+        description: '是否加载离线编译env中的dl包(值为false则只通过Makefile下载对应dl,为链接则导入文件后会通过hash值校验通过则跳过下载)'
         required: false
         # TODO 这个链接要换成新的，然后删了tag：backup_build_env_2024.02.17.0052
         default: https://github.com/sswdr/openwrt-actions/releases/download/backup_build_env_2024.02.17.0052/workdir.tar.gz
@@ -39,6 +43,7 @@ on:
 
 env:
   repo_url_branch: ${{ github.event.inputs.repo_url_branch }}
+  backup_env: ${{ github.event.inputs.backup_env_dl }}
   backup_env_dl: ${{ github.event.inputs.backup_env_dl }}
   extra_apps_sh: ${{ github.event.inputs.extra_apps_sh }}
   config_file: ${{ github.event.inputs.config_file }}
@@ -118,6 +123,7 @@ jobs:
         sudo chown $USER:$GROUPS /mnt/workdir
 
     - name: 克隆源码
+      if: env.backup_env == 'false'
       working-directory: /mnt/workdir
       run: |
         df -hT $PWD
@@ -125,12 +131,15 @@ jobs:
         ln -sf /mnt/workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
     - name: 更新feeds
+      if: env.backup_env == 'false'
       run: cd openwrt && ./scripts/feeds update -a
 
     - name: 安装feeds
+      if: env.backup_env == 'false'
       run: cd openwrt && ./scripts/feeds install -a
 
     - name: 加载自定义配置
+      if: env.backup_env == 'false'
       run: |
         cd openwrt
         echo "--------自定义配置-主机ip地址: $build_config_host_ip"
@@ -147,6 +156,7 @@ jobs:
         sed -i 's/TARGET_rockchip/TARGET_rockchip\|\|TARGET_armvirt/g' package/lean/autocore/Makefile
 
     - name: 加载扩展仓库
+      if: env.backup_env == 'false'
       run: |
         if [ -e "$extra_apps_sh" ]; then
           echo "注意: 加载扩展仓库之前, 务必先安装feeds和更新feeds, 否则会一堆依赖不全"
@@ -158,10 +168,23 @@ jobs:
           echo "加载扩展仓库: 跳过"
         fi
 
+    - name: 加载离线编译env
+      working-directory: /mnt
+      if: env.backup_env != 'false'
+      run: |
+        echo "开始加载离线编译env: $backup_env"
+        sudo wget -q -P /mnt $backup_env
+        echo "下载成功: $backup_env" && ls -alh /mnt | grep *.tar.gz
+        sudo tar -zxf *.tar.gz && sudo rm *.tar.gz
+        sudo chown -R $USER:$GROUPS /mnt/workdir
+        echo "准备完成: /mnt/workdir/openwrt" && ls -alh /mnt/workdir/openwrt
+        echo "更新编译时间信息 $(TZ=UTC-8 date "+%Y.%m.%d")"
+        sed -i "s/[0-9]\{4\}\.[0-9]\{2\}\.[0-9]\{2\}/$(TZ=UTC-8 date "+%Y.%m.%d")/" /workdir/openwrt/package/lean/default-settings/files/zzz-default-settings
+
     - name: 准备files文件夹
       run: |
         if [ -e files ]; then
-          mv files openwrt/files
+          rm -rf mv openwrt/files &&  files openwrt/files
           echo "当前仓库存在files文件夹,将替换到openwrt/files"
         else
           echo "当前仓库不存在files文件夹,将不替换到openwrt/files,跳过"
