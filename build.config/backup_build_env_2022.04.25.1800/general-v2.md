@@ -40,7 +40,7 @@ make menuconfig
         [ ] Include mdadm
 <*> luci-app-dockerman                                      [25mb]Docker(luci-app-docker + docker管理)
 <*> luci-app-eqos                                           [5kb]网络-IP限速
-<*> luci-app-fileassistant                                  [10kb]服务-文件助手
+< > luci-app-fileassistant(和luci-app-advanced冲突)          [10kb]服务-文件助手
 <*> luci-app-frpc                                           TODO待处理
 <*> luci-app-frps                                           TODO待处理
 <*> luci-app-gowebdav                                       TODO待处理[1.5mb]网络存储-GoWebDav
