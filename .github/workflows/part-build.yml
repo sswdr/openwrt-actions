@@ -43,7 +43,7 @@ on:
 
 env:
   repo_url_branch: ${{ github.event.inputs.repo_url_branch }}
-  backup_env: ${{ github.event.inputs.backup_env_dl }}
+  backup_env: ${{ github.event.inputs.backup_env }}
   backup_env_dl: ${{ github.event.inputs.backup_env_dl }}
   extra_apps_sh: ${{ github.event.inputs.extra_apps_sh }}
   config_file: ${{ github.event.inputs.config_file }}
