@@ -185,7 +185,7 @@ jobs:
     - name: 准备files文件夹
       run: |
         if [ -e files ]; then
-          rm -rf mv openwrt/files &&  files openwrt/files
+          rm -rf openwrt/files && mv files openwrt/files
           echo "当前仓库存在files文件夹,将替换到openwrt/files"
         else
           echo "当前仓库不存在files文件夹,将不替换到openwrt/files,跳过"
