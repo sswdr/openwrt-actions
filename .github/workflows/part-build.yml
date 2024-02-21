@@ -85,7 +85,7 @@ jobs:
     - name: 整理env信息到/env.txt
       run: |
         # 记录编译时间到GITHUB_ENV,yml中使用${{ env.build_date }}进行使用
-        echo "build_date=$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+        echo "build_date=$(date +"%Y.%m.%d.%H.%M")" >> $GITHUB_ENV
         # env信息正文文件: /env.txt
         cd / && sudo touch env.txt && sudo chown $USER:$GROUPS env.txt
         # 当前工作流使用的yml文件名称(约定文件名称 = 工作流名称.yml)
