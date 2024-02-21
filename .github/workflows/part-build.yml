@@ -6,10 +6,14 @@ on:
   repository_dispatch:
   workflow_dispatch:
     inputs:
-      repo_url_branch:
-        description: '编译仓库及分支'
+      repo_url:
+        description: '编译仓库地址'
         required: true
         default: https://github.com/rin0612/lede -b backup.2022.04.25
+      repo_branch:
+        description: '编译仓库分支'
+        required: true
+        default: backup.2022.04.25
       backup_env:
         description: '是否加载离线编译env(值为false则不加载,为链接则使用离线env)'
         required: false
@@ -40,7 +44,8 @@ on:
         default: "{\"artifact_bin\":true,\"artifact_env\":true,\"artifact_env_dl\":true,\"releases_bin\":true,\"releases_env\":true,\"releases_env_dl\":true}"
 
 env:
-  repo_url_branch: ${{ github.event.inputs.repo_url_branch }}
+  repo_url: ${{ github.event.inputs.repo_url }}
+  repo_branch: ${{ github.event.inputs.repo_branch }}
   backup_env: ${{ github.event.inputs.backup_env }}
   backup_env_dl: ${{ github.event.inputs.backup_env_dl }}
   extra_apps_sh: ${{ github.event.inputs.extra_apps_sh }}
@@ -125,7 +130,7 @@ jobs:
       working-directory: /mnt/workdir
       run: |
         df -hT $PWD
-        git clone $repo_url_branch openwrt
+        git clone $repo_url -b $repo_branch openwrt
         ln -sf /mnt/workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
     - name: 更新feeds
