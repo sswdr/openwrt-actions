@@ -4,7 +4,7 @@ action yml env Json:
   REPO_URL: https://github.com/coolsnowwolf/lede,
   REPO_BRANCH: master,
   FEEDS_CONF: feeds.conf.default,
-  CONFIG_FILE: build.config/backup_build_env_2024.02.06.1648/2024-min-v2.config,
+  CONFIG_FILE: build.config/backup.2024.02.01/min-2024-v2.config,
   INIT_CONFIG_SH: init-config.sh,
   UPLOAD_BIN_DIR: true
 }
