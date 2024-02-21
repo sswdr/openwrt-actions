@@ -38,7 +38,7 @@ ipv6 固件：
 ```
 min-v1.config来自于: https://github.com/sswdr/openwrt-actions/blob/backup.2022.04.25/5.10-lede+kenzok8-min-v3.config
 
-min-v1.config = 5.10-lede+kenzok8-min-v3.config 在 2022.04.25_build_backup 下执行 make defconfig
+min-v1.config = 5.10-lede+kenzok8-min-v3.config 在 backup.2022.04.25_build.2022.04.25 下执行 make defconfig
 
 其中lede+kenzok8-min-v1.config -> lede+kenzok8-min-v2.config -> 5.10-lede+kenzok8-min-v3.config
 
