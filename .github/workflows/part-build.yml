@@ -294,7 +294,7 @@ jobs:
       if: env.output_config_releases_env == 'true'
       uses: rin0612/release-action@v1
       with:
-        tag: ${{ env.build_date }}_build
+        tag: backup.2022.04.25_build.${{ env.build_date }}
         artifacts: /mnt/workdir/output/env.tar.gz
         allowUpdates: true
         token: ${{ secrets.GITHUB_TOKEN }}
@@ -304,7 +304,7 @@ jobs:
       if: env.output_config_releases_env_dl == 'true'
       uses: rin0612/release-action@v1
       with:
-        tag: ${{ env.build_date }}_build
+        tag: backup.2022.04.25_build.${{ env.build_date }}
         artifacts: /mnt/workdir/output/env-dl.tar.gz
         allowUpdates: true
         token: ${{ secrets.GITHUB_TOKEN }}
@@ -314,7 +314,7 @@ jobs:
       if: env.output_config_releases_bin == 'true'
       uses: rin0612/release-action@v1
       with:
-        tag: ${{ env.build_date }}_build
+        tag: backup.2022.04.25_build.${{ env.build_date }}
         artifacts: /mnt/workdir/output/bin.tar.gz
         allowUpdates: true
         token: ${{ secrets.GITHUB_TOKEN }}
