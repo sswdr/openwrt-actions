@@ -27,7 +27,7 @@ jobs:
     steps:
       - name: 准备操作
         run: |
-          echo "alias ll='ls -alF'" >> ~/.bashrc
+          echo "alias ll='ls -alhF'" >> ~/.bashrc
           echo "alias la='ls -A'" >> ~/.bashrc
           echo "alias vi='vim'" >> ~/.bashrc
           echo "alias sub='sublime-text-dev'" >> ~/.bashrc
