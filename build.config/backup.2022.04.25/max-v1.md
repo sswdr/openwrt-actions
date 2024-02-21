@@ -103,6 +103,21 @@
 <*> docker-compose                                          [8mb]
 ```
 
+支持usb-net-rndis网络共享
+```
+> Kernel modules > USB Support
+    -*- kmod-usb-net
+    -*- kmod-usb-net-cdc-ether
+    <*> kmod-usb-net-rndis
+> Utilities
+    <*> usbutils
+> depends依赖已选择：
+    CONFIG_PACKAGE_kmod-mii=y
+    CONFIG_PACKAGE_libeudev=y
+    CONFIG_PACKAGE_libusb-1.0=y
+    CONFIG_PACKAGE_usbids=y
+```
+
 支持openvpn
 ```
 > Network > VPN
@@ -137,21 +152,6 @@
     CONFIG_OPENVPN_openssl_ENABLE_PF=y
     # CONFIG_OPENVPN_openssl_ENABLE_IPROUTE2 is not set
     CONFIG_OPENVPN_openssl_ENABLE_SMALL=y
-```
-
-支持usb-net-rndis网络共享
-```
-> Kernel modules > USB Support
-    -*- kmod-usb-net
-    -*- kmod-usb-net-cdc-ether
-    <*> kmod-usb-net-rndis
-> Utilities
-    <*> usbutils
-> depends依赖已选择：
-    CONFIG_PACKAGE_kmod-mii=y
-    CONFIG_PACKAGE_libeudev=y
-    CONFIG_PACKAGE_libusb-1.0=y
-    CONFIG_PACKAGE_usbids=y
 ```
 
 支持usb摄像头内核和luci
