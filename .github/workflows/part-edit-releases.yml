@@ -1,0 +1,41 @@
+name: part-edit-releases
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      ssh:
+        description: '是否ssh连接到actions'
+        required: false
+        default: true
+      tag_name:
+        description: 'tag名称'
+        required: true
+        default: "2022.04.25_build_backup"
+      tag_dir:
+        description: 'tag上传目录'
+        required: true
+        default: "/upload/*"
+
+env:
+  tag_name: ${{ github.event.inputs.tag_name }}
+  tag_dir: ${{ github.event.inputs.tag_dir }}
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: ssh连接到actions
+        uses: rin0612/ssh2actions@v1.0.0
+        if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
+        env:
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+
+      - name: edit-releases
+        uses: rin0612/release-action@v1
+        with:
+          tag: ${{ env.tag_name }}
+          artifacts: ${{ env.tag_dir }}
+          allowUpdates: true
+          token: ${{ secrets.GITHUB_TOKEN }}
