@@ -15,7 +15,7 @@ on:
       tag_dir:
         description: 'tag上传目录'
         required: true
-        default: "/upload/*"
+        default: "/upload"
 
 env:
   tag_name: ${{ github.event.inputs.tag_name }}
@@ -25,6 +25,17 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
+      - name: 准备操作
+        run: |
+          echo "alias ll='ls -alF'" >> ~/.bashrc
+          echo "alias la='ls -A'" >> ~/.bashrc
+          echo "alias vi='vim'" >> ~/.bashrc
+          echo "alias sub='sublime-text-dev'" >> ~/.bashrc
+          source ~/.bashrc
+          sudo mkdir -p ${tag_dir}
+          sudo chown $USER:$GROUPS ${tag_dir}
+          # wget xxx
+
       - name: ssh连接到actions
         uses: rin0612/ssh2actions@v1.0.0
         if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
@@ -36,6 +47,6 @@ jobs:
         uses: rin0612/release-action@v1
         with:
           tag: ${{ env.tag_name }}
-          artifacts: ${{ env.tag_dir }}
+          artifacts: ${{ env.tag_dir }}/*
           allowUpdates: true
           token: ${{ secrets.GITHUB_TOKEN }}
