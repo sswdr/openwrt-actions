@@ -21,7 +21,7 @@ on:
       backup_env_dl:
         description: '是否加载离线编译env中的dl包(值为false则只通过Makefile下载对应dl,为链接则导入文件后会通过hash值校验通过则跳过下载)'
         required: false
-        default: https://github.com/sswdr/openwrt-actions/releases/download/202402201251_build/env-dl.tar.gz
+        default: https://github.com/sswdr/openwrt-actions/releases/download/backup.2022.04.25_build.2024.02.20.12.51/env-dl.tar.gz
       extra_apps_sh:
         description: '插件扩展仓库/feeds调整脚本(指定仓库根目录下不存在的脚本会跳过)'
         required: false
