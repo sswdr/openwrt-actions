@@ -1,31 +1,35 @@
-workflows yml export: workdir.tar.gz / env.tar.gz / env-dl.tar.gz
+lede env:
 ```
-use .yml: 
-https://github.com/sswdr/openwrt-actions/blob/backup.2022.04.25/.github/workflows/action-dev-export.yml
+git clone https://github.com/rin0612/lede -b backup.2022.04.25 openwrt
+cd openwrt
+./scripts/feeds update -a
+./scripts/feeds install -a
+sed -i 's/KERNEL_PATCHVER:=.*/KERNEL_PATCHVER:=5.10/g' target/linux/armvirt/Makefile
+sed -i 's/TARGET_rockchip/TARGET_rockchip\|\|TARGET_armvirt/g' package/lean/autocore/Makefile
 
-yml env Json:
-{
-  REPO_URL: https://github.com/coolsnowwolf/lede,
-  REPO_BRANCH: master,
-  FEEDS_CONF: feeds.conf.default,
-  CONFIG_FILE: 5.10-lede+kenzok8-max-v3.config,
-  DIY_P1_SH: diy-part1.sh,
-  DIY_P2_SH: diy-part2-5.10.x.sh,
-  TZ: Asia/Shanghai
-}
-
-diy-part2-5.10.x.sh: https://github.com/sswdr/openwrt-actions/blob/backup.2022.04.25/diy-part2-5.10.x.sh
+make defconfig
+make menuconfig
 ```
 
-workflows yml export: bin / rootfs / img
+lede & extra-apps.sh env:
 ```
-{use=n1,ip=192.168.5.25,user=root,password=password}
+git clone https://github.com/sswdr/openwrt-actions openwrt-actions
+cd openwrt-actions
+chmod +x extra-apps.sh
+git clone https://github.com/rin0612/lede -b backup.2022.04.25 openwrt
+cd openwrt
+./scripts/feeds update -a
+./scripts/feeds install -a
+sed -i "s/192.168.1.1/192.168.5.25/g" package/base-files/files/bin/config_generate
+sed -i "s/OpenWrt/sswOpenWrt/g" package/base-files/files/bin/config_generate
+sed -i "s/KERNEL_PATCHVER:=.*/KERNEL_PATCHVER:=5.10/g" target/linux/armvirt/Makefile
+sed -i "s/luci-theme-bootstrap/luci-theme-argonne/g" ./feeds/luci/collections/luci/Makefile
+sed -i 's/OpenWrt /杀生丸大人 Build $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g' package/lean/default-settings/files/zzz-default-settings
+sed -i 's/TARGET_rockchip/TARGET_rockchip\|\|TARGET_armvirt/g' package/lean/autocore/Makefile
+../extra-apps.sh
+mv ../files ./files
+cp ../build.config/backup.2022.04.25/min-v3.config ./.config
 
-use .yml: 
-https://github.com/sswdr/openwrt-actions/blob/backup.2022.04.25/.github/workflows/action-n1-5.10.x-max-compile.yml
-https://github.com/sswdr/openwrt-actions/blob/backup.2022.04.25/.github/workflows/action-n1-5.10.x-min-compile.yml
-
-use .config:
-https://github.com/sswdr/openwrt-actions/blob/backup.2022.04.25/5.10-lede+kenzok8-max-v3.config
-https://github.com/sswdr/openwrt-actions/blob/backup.2022.04.25/5.10-lede+kenzok8-min-v3.config
+make defconfig
+make menuconfig
 ```

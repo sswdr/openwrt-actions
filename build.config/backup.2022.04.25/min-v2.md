@@ -1,15 +1,5 @@
-部署以下编译环境: 
-```
-git clone https://github.com/rin0612/lede -b backup.2022.04.25 openwrt
-cd openwrt
-./scripts/feeds update -a
-./scripts/feeds install -a
-sed -i 's/KERNEL_PATCHVER:=.*/KERNEL_PATCHVER:=5.10/g' target/linux/armvirt/Makefile
-sed -i 's/TARGET_rockchip/TARGET_rockchip\|\|TARGET_armvirt/g' package/lean/autocore/Makefile
+部署编译环境: env.md/{lede env}
 
-make defconfig
-make menuconfig
-```
 进行如下操作：基于make defconfig生成的.config
 ```
 一个主题[luci-theme-bootstrap]
