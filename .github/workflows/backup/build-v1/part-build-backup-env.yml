@@ -9,11 +9,11 @@ on:
       CONFIG_FILE_URL:
         description: '.config编译配置'
         required: true
-        default: https://raw.githubusercontent.com/sswdr/openwrt-actions/main/build.config/backup_build_env_2022.04.25.1800/min-v1.config
+        default: https://raw.githubusercontent.com/sswdr/openwrt-actions/main/build.config/2022.04.25_build_backup/min-v1.config
       BACKUP_ENV_URL:
         description: 'build-backup-env编译环境'
         required: true
-        default: https://github.com/sswdr/openwrt-actions/releases/download/backup_build_env_2022.04.25.1800/workdir.tar.gz
+        default: https://github.com/sswdr/openwrt-actions/releases/download/2022.04.25_build_backup/workdir.tar.gz
       UPLOAD_BIN_DIR:
         description: '是否上传编译完成后的bin文件夹到actions的artifact'
         required: true

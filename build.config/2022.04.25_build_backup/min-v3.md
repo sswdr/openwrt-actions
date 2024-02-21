@@ -15,7 +15,7 @@ sed -i 's/OpenWrt /杀生丸大人 Build $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt 
 sed -i 's/TARGET_rockchip/TARGET_rockchip\|\|TARGET_armvirt/g' package/lean/autocore/Makefile
 ../extra-apps.sh
 mv ../files ./files
-cp ../build.config/backup_build_env_2022.04.25.1800/min-v3.config ./.config
+cp ../build.config/2022.04.25_build_backup/min-v3.config ./.config
 
 make defconfig
 make menuconfig

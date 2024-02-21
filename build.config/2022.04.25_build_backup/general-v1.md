@@ -1,4 +1,4 @@
-基于min-v1.config, 在backup_build_env_2022.04.25.1800下执行make menuconfig进行如下操作: 
+基于min-v1.config, 在2022.04.25_build_backup下执行make menuconfig进行如下操作: 
 
 1.luci-app
 ```
@@ -98,8 +98,8 @@ Network > <*> socat
 ```
 general-v1.config来自于: https://github.com/sswdr/openwrt-actions/blob/backup.2022.04.25/5.10-lede+kenzok8-max-v3.config
 
-general-v1.config = 5.10-lede+kenzok8-max-v3.config 在 backup_build_env_2022.04.25.1800 下执行 make defconfig
+general-v1.config = 5.10-lede+kenzok8-max-v3.config 在 2022.04.25_build_backup 下执行 make defconfig
 
-general-v1.config = https://github.com/sswdr/openwrt-actions/releases/download/backup_build_env_2022.04.25.1800/workdir.tar.gz
+general-v1.config = https://github.com/sswdr/openwrt-actions/releases/download/2022.04.25_build_backup/workdir.tar.gz
     /workdir/openwrt/.config 
 ```
