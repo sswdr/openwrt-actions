@@ -96,7 +96,7 @@ Network > <*> socat
 
 备注:
 ```
-general-v1.config来自于: https://github.com/sswdr/openwrt-actions/blob/backup.2022.05.02/5.10-lede+kenzok8-max-v3.config
+general-v1.config来自于: https://github.com/sswdr/openwrt-actions/blob/backup.2022.04.25/5.10-lede+kenzok8-max-v3.config
 
 general-v1.config = 5.10-lede+kenzok8-max-v3.config 在 backup_build_env_2022.04.25.1800 下执行 make defconfig
 
