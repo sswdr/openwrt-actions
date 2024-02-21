@@ -9,7 +9,7 @@ on:
       repo_url:
         description: '编译仓库地址'
         required: true
-        default: https://github.com/rin0612/lede -b backup.2022.04.25
+        default: https://github.com/rin0612/lede
       repo_branch:
         description: '编译仓库分支'
         required: true
