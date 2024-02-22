@@ -22,7 +22,7 @@ on:
       CONFIG_FILE:
         description: '.config编译配置'
         required: true
-        default: build.config/backup.2024.02.01/min-2024-v2.config
+        default: build.config/backup.2024.02.22/min-2024-v2.config
       INIT_CONFIG_SH:
         description: '自定义的init-config.sh'
         required: true
