@@ -37,7 +37,7 @@ on:
       build_config:
         description: '自定义配置: 主机ip地址,主机名,内核版本,默认主题(luci-theme-bootstrap/luci-theme-argonne,在.config必须包含这个主题)'
         required: true
-        default: "{\"host_ip\":\"192.168.5.25\",\"host_name\":\"sswOpenWrt\",\"kernel_patchver\":\"5.10\",\"default_theme\":\"luci-theme-argonne\"}"
+        default: "{\"host_ip\":\"192.168.5.25\",\"host_name\":\"sswOpenWrt\",\"kernel_patchver\":\"5.10\",\"default_theme\":\"luci-theme-bootstrap\"}"
       output_config:
         description: '编译输出配置: 编译bin到artifact,编译env到artifact,编译env带dl到artifact,编译bin到releases,编译env到releases,编译env带dl到releases'
         required: true
