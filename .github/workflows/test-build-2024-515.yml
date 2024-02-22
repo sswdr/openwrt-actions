@@ -228,8 +228,8 @@ jobs:
             s/DEPENDS:=+kmod-libphy/DEPENDS:=+kmod-libphy +kmod-of-mdio/
           }' package/kernel/linux/modules/netdevices.mk
         fi
-#        echo "TODO backup.2024.02.22[?CONFIG_LINUX_5_10=y] 处理xfsprogs编译报错"
-#        sed -i 's/TARGET_CFLAGS += -DHAVE_MAP_SYNC/TARGET_CFLAGS += -DHAVE_MAP_SYNC -D_LARGEFILE64_SOURCE/' feeds/packages/utils/xfsprogs/Makefile
+        echo "TODO backup.2024.02.22[CONFIG_LINUX_5_15=y] 处理xfsprogs编译报错"
+        sed -i 's/TARGET_CFLAGS += -DHAVE_MAP_SYNC/TARGET_CFLAGS += -DHAVE_MAP_SYNC -D_LARGEFILE64_SOURCE/' feeds/packages/utils/xfsprogs/Makefile
 #        echo "TODO backup.2024.02.22[?CONFIG_LINUX_5_10=y] 处理hostapd wpa_supplicant-full编译报错"
 #        sed -i 's/#CONFIG_AP=y/CONFIG_AP=y/' package/network/services/hostapd/files/wpa_supplicant-full.config
 
