@@ -1,6 +1,6 @@
 # 使用拉出的编译仓库环境编译
 
-name: part-build
+name: test-build-2024-huangqian8-515
 
 on:
   repository_dispatch:
@@ -13,7 +13,7 @@ on:
       repo_branch:
         description: '编译仓库分支([backup.2022.04.25]/[backup.2024.02.22])'
         required: true
-        default: backup.2022.04.25
+        default: backup.2024.02.22
       backup_env:
         description: '是否加载离线编译env(值为false则不加载,为链接则使用离线env)'
         required: false
@@ -21,15 +21,15 @@ on:
       backup_env_dl:
         description: '是否加载离线编译env中的dl包(值为false则只通过Makefile下载对应dl,为链接则导入文件后会通过hash值校验通过则跳过下载)'
         required: false
-        default: https://github.com/sswdr/openwrt-actions/releases/download/backup.2022.04.25_build.2024.02.22.00.46/env-dl.tar.gz
+        default: false
       extra_apps_sh:
         description: '插件扩展仓库/feeds调整脚本(指定仓库根目录下不存在的脚本会跳过)'
         required: false
-        default: extra-apps.sh
+        default: false
       config_file:
         description: '编译配置.config文件'
         required: true
-        default: build.config/backup.2022.04.25/max-v1.config
+        default: build.config/backup.2024.02.22/min-2024-huangqian8-v1.config
       make_defconfig:
         description: '是否执行make defconfig(不执行make defconfig将以当前.config直接编译,修改仓库时不会引入其他默认选上的不需要的依赖)'
         required: true
@@ -37,11 +37,11 @@ on:
       build_config:
         description: '自定义配置: 主机ip地址,主机名,内核版本,默认主题(luci-theme-bootstrap/luci-theme-argonne,在.config必须包含这个主题)'
         required: true
-        default: "{\"host_ip\":\"192.168.5.25\",\"host_name\":\"sswOpenWrt\",\"kernel_patchver\":\"5.10\",\"default_theme\":\"luci-theme-argonne\"}"
+        default: "{\"host_ip\":\"192.168.5.25\",\"host_name\":\"sswOpenWrt\",\"kernel_patchver\":\"5.15\",\"default_theme\":\"luci-theme-bootstrap\"}"
       output_config:
         description: '编译输出配置: 编译bin到artifact,编译env到artifact,编译env带dl到artifact,编译bin到releases,编译env到releases,编译env带dl到releases'
         required: true
-        default: "{\"releases_bin\":true,\"releases_env\":true,\"releases_env_dl\":true,\"artifact_bin\":false,\"artifact_env\":false,\"artifact_env_dl\":false}"
+        default: "{\"releases_bin\":false,\"releases_env\":false,\"releases_env_dl\":false,\"artifact_bin\":true,\"artifact_env\":false,\"artifact_env_dl\":false}"
 
 env:
   repo_url: ${{ github.event.inputs.repo_url }}
@@ -222,18 +222,7 @@ jobs:
     - name: 编译固件前,处理编译错误的问题
       run: |
         cd openwrt
-        if [ "$repo_branch" == "backup.2024.02.22" ] && [ "$build_config_kernel_patchver" == "5.10" ]; then
-          echo "TODO backup.2024.02.22[CONFIG_LINUX_5_10=y] 处理phylink编译报错"
-          sed -i '/^define KernelPackage\/phylink$/,/^endef$/ {
-            s/DEPENDS:=+kmod-libphy/DEPENDS:=+kmod-libphy +kmod-of-mdio/
-          }' package/kernel/linux/modules/netdevices.mk
-        fi
-        if [ "$repo_branch" == "backup.2024.02.22" ] && [ "$build_config_kernel_patchver" == "5.15" ]; then
-          echo "TODO backup.2024.02.22[CONFIG_LINUX_5_15=y] 处理xfsprogs编译报错"
-          sed -i 's/TARGET_CFLAGS += -DHAVE_MAP_SYNC/TARGET_CFLAGS += -DHAVE_MAP_SYNC -D_LARGEFILE64_SOURCE/' feeds/packages/utils/xfsprogs/Makefile
-          echo "TODO backup.2024.02.22[CONFIG_LINUX_5_15=y] 处理hostapd wpa_supplicant-full编译报错"
-          sed -i 's/#CONFIG_AP=y/CONFIG_AP=y/' package/network/services/hostapd/files/wpa_supplicant-full.config
-        fi
+        echo "不进行任何处理"
 
     - name: 准备编译所需的文件依赖项或资源
       run: |
