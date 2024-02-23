@@ -218,20 +218,22 @@ jobs:
         tar -zcf /mnt/workdir/output/env.tar.gz --exclude=output workdir/
         ls -alh /mnt/workdir/output
 
-    # TODO 待整理这部分的内容
+      # TODO 待整理这部分的内容
     - name: 编译固件前,处理编译错误的问题
       run: |
-        cd /mnt/workdir/output
-        if [ "$repo_branch" == "backup.2024.02.22" && "$build_config_kernel_patchver" == "5.10" ]; then
+        cd openwrt
+        if [ "$repo_branch" == "backup.2024.02.22" ] && [ "$build_config_kernel_patchver" == "5.10" ]; then
           echo "TODO backup.2024.02.22[CONFIG_LINUX_5_10=y] 处理phylink编译报错"
           sed -i '/^define KernelPackage\/phylink$/,/^endef$/ {
             s/DEPENDS:=+kmod-libphy/DEPENDS:=+kmod-libphy +kmod-of-mdio/
           }' package/kernel/linux/modules/netdevices.mk
         fi
-#        echo "TODO backup.2024.02.22[?CONFIG_LINUX_5_10=y] 处理xfsprogs编译报错"
-#        sed -i 's/TARGET_CFLAGS += -DHAVE_MAP_SYNC/TARGET_CFLAGS += -DHAVE_MAP_SYNC -D_LARGEFILE64_SOURCE/' feeds/packages/utils/xfsprogs/Makefile
-#        echo "TODO backup.2024.02.22[?CONFIG_LINUX_5_10=y] 处理hostapd wpa_supplicant-full编译报错"
-#        sed -i 's/#CONFIG_AP=y/CONFIG_AP=y/' package/network/services/hostapd/files/wpa_supplicant-full.config
+        if [ "$repo_branch" == "backup.2024.02.22" ] && [ "$build_config_kernel_patchver" == "5.15" ]; then
+          echo "TODO backup.2024.02.22[CONFIG_LINUX_5_15=y] 处理xfsprogs编译报错"
+          sed -i 's/TARGET_CFLAGS += -DHAVE_MAP_SYNC/TARGET_CFLAGS += -DHAVE_MAP_SYNC -D_LARGEFILE64_SOURCE/' feeds/packages/utils/xfsprogs/Makefile
+          echo "TODO backup.2024.02.22[CONFIG_LINUX_5_15=y] 处理hostapd wpa_supplicant-full编译报错"
+          sed -i 's/#CONFIG_AP=y/CONFIG_AP=y/' package/network/services/hostapd/files/wpa_supplicant-full.config
+        fi
 
     - name: 准备编译所需的文件依赖项或资源
       run: |
