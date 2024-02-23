@@ -29,7 +29,7 @@ on:
       config_file:
         description: '编译配置.config文件'
         required: true
-        default: build.config/backup.2024.02.22/min-2024-huangqian8-v2.config
+        default: build.config/backup.2024.02.22/min-2024-huangqian8-v1.config
       make_defconfig:
         description: '是否执行make defconfig(不执行make defconfig将以当前.config直接编译,修改仓库时不会引入其他默认选上的不需要的依赖)'
         required: true
