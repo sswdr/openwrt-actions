@@ -238,6 +238,10 @@ jobs:
           echo "TODO backup.2024.02.22[CONFIG_LINUX_5_15=y] 处理hostapd wpa_supplicant-full编译报错"
           sed -i 's/#CONFIG_AP=y/CONFIG_AP=y/' package/network/services/hostapd/files/wpa_supplicant-full.config
         fi
+        if [ "$repo_branch" == "backup.2024.01.01" ]; then
+          echo "TODO backup.2024.01.01 处理hostapd wpa_supplicant-full编译报错"
+          sed -i 's/#CONFIG_AP=y/CONFIG_AP=y/' package/network/services/hostapd/files/wpa_supplicant-full.config
+        fi
 
     - name: 准备编译所需的文件依赖项或资源
       run: |
