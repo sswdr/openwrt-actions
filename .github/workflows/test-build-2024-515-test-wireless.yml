@@ -1,0 +1,337 @@
+# 使用拉出的编译仓库环境编译
+
+name: test-build-2024-515
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      repo_url:
+        description: '编译仓库地址([https://github.com/coolsnowwolf/lede]/[https://github.com/rin0612/lede])'
+        required: true
+        default: https://github.com/rin0612/lede
+      repo_branch:
+        description: '编译仓库分支([backup.2022.04.25]/[backup.2024.02.22])'
+        required: true
+        default: backup.2024.01.01
+      backup_env:
+        description: '是否加载离线编译env(值为false则不加载,为链接则使用离线env)'
+        required: false
+        default: false
+      backup_env_dl:
+        description: '是否加载离线编译env中的dl包(值为false则只通过Makefile下载对应dl,为链接则导入文件后会通过hash值校验通过则跳过下载)'
+        required: false
+        default: false
+      extra_apps_sh:
+        description: '插件扩展仓库/feeds调整脚本(指定仓库根目录下不存在的脚本会跳过)'
+        required: false
+        default: false
+      config_file:
+        description: '编译配置.config文件'
+        required: true
+        default: build.config/backup.2024.01.01/min-2024-lede-v3.config
+      make_defconfig:
+        description: '是否执行make defconfig(不执行make defconfig将以当前.config直接编译,修改仓库时不会引入其他默认选上的不需要的依赖)'
+        required: true
+        default: true
+      build_config:
+        description: '自定义配置: 主机ip地址,主机名,内核版本,默认主题(luci-theme-bootstrap/luci-theme-argonne,在.config必须包含这个主题)'
+        required: true
+        default: "{\"host_ip\":\"192.168.5.25\",\"host_name\":\"sswOpenWrt\",\"kernel_patchver\":\"5.15\",\"default_theme\":\"luci-theme-bootstrap\"}"
+      output_config:
+        description: '编译输出配置: 编译bin到artifact,编译env到artifact,编译env带dl到artifact,编译bin到releases,编译env到releases,编译env带dl到releases'
+        required: true
+        default: "{\"releases_bin\":false,\"releases_env\":false,\"releases_env_dl\":false,\"artifact_bin\":true,\"artifact_env\":false,\"artifact_env_dl\":false}"
+
+env:
+  repo_url: ${{ github.event.inputs.repo_url }}
+  repo_branch: ${{ github.event.inputs.repo_branch }}
+  backup_env: ${{ github.event.inputs.backup_env }}
+  backup_env_dl: ${{ github.event.inputs.backup_env_dl }}
+  extra_apps_sh: ${{ github.event.inputs.extra_apps_sh }}
+  config_file: ${{ github.event.inputs.config_file }}
+  make_defconfig: ${{ github.event.inputs.make_defconfig }}
+  build_config_host_ip: ${{fromJSON(github.event.inputs.build_config).host_ip}}
+  build_config_host_name: ${{fromJSON(github.event.inputs.build_config).host_name}}
+  build_config_kernel_patchver: ${{fromJSON(github.event.inputs.build_config).kernel_patchver}}
+  build_config_default_theme: ${{fromJSON(github.event.inputs.build_config).default_theme}}
+  output_config_artifact_bin: ${{fromJSON(github.event.inputs.output_config).artifact_bin}}
+  output_config_artifact_env: ${{fromJSON(github.event.inputs.output_config).artifact_env}}
+  output_config_artifact_env_dl: ${{fromJSON(github.event.inputs.output_config).artifact_env_dl}}
+  output_config_releases_bin: ${{fromJSON(github.event.inputs.output_config).releases_bin}}
+  output_config_releases_env: ${{fromJSON(github.event.inputs.output_config).releases_env}}
+  output_config_releases_env_dl: ${{fromJSON(github.event.inputs.output_config).releases_env_dl}}
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Checkout
+      uses: actions/checkout@main
+
+    - name: 获取服务器信息,解除当前用户限制,设置时区
+      run: |
+        echo "CPU物理数量: $(cat /proc/cpuinfo| grep "physical id"| sort| uniq| wc -l)"
+        echo -e "CPU核心及版本信息：$(cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c)"
+        echo "已安装内存详细信息: " && sudo lshw -short -C memory | grep GiB
+        echo -e  "硬盘数量: $(ls /dev/sd* | grep -v [1-9] | wc -l)"
+        echo "硬盘详情: " && df -Th
+        echo "解除当前用户限制 $USER $(date +"%Y%m%d%H%M")"
+        ulimit -u 10000
+        ulimit -n 4096
+        ulimit -d unlimited
+        ulimit -m unlimited
+        ulimit -s unlimited
+        ulimit -t unlimited
+        ulimit -v unlimited
+        echo "设置时区,方便看正常日志的时间: Asia/Shanghai"
+        sudo timedatectl set-timezone "Asia/Shanghai"
+
+    - name: 整理env信息到/env.txt
+      run: |
+        # 记录编译时间到GITHUB_ENV,yml中使用${{ env.build_date }}进行使用
+        echo "build_date=$(date +"%Y.%m.%d.%H.%M")" >> $GITHUB_ENV
+        # env信息正文文件: /env.txt
+        cd / && sudo touch env.txt && sudo chown $USER:$GROUPS env.txt
+        # 当前工作流使用的yml文件名称(约定文件名称 = 工作流名称.yml)
+        YAML_FILE="$(echo $GITHUB_WORKFLOW | tr -d ' ' | tr -d '\n' | tr -d '\r').yml"
+        # ------ env信息正文 start
+        echo "action yml env Json: " >> env.txt && echo "\`\`\`" >> env.txt
+        echo "${{ toJson(env) }}" >> env.txt && echo "\`\`\`" >> env.txt
+        if [ -e "$GITHUB_WORKSPACE/$extra_apps_sh" ]; then
+          echo "$extra_apps_sh: " >> env.txt && echo "\`\`\`" >> env.txt
+          cat $GITHUB_WORKSPACE/$extra_apps_sh >> env.txt && echo "\`\`\`" >> env.txt
+        fi
+        echo "current workflow file name: $YAML_FILE, content: " >> env.txt && echo "\`\`\`" >> env.txt
+        cat $GITHUB_WORKSPACE/.github/workflows/$YAML_FILE >> env.txt && echo "\`\`\`" >> env.txt
+        # ------ env信息正文 end
+        echo "env信息: " && cat /env.txt
+
+    - name: 初始化编译环境
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        sudo -E apt-get -qq update
+        # 此处安装编译所需的依赖来自lede readme.md中, 原先使用的sudo -E apt-get -qq install $(curl -fsSL git.io/depends-ubuntu-2004), 来自P3TERX
+        sudo -E apt-get -qq install ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libfuse-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libpython3-dev libreadline-dev libssl-dev libtool lrzsz mkisofs msmtp ninja-build p7zip p7zip-full patch pkgconf python2.7 python3 python3-pyelftools python3-setuptools qemu-utils rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
+        sudo -E apt-get -qq autoremove --purge
+        sudo -E apt-get -qq clean
+        # 清理多余文件, 腾出磁盘空间
+        # sudo -E apt-get remove -y --purge azure-cli ghc zulu* hhvm llvm* firefox google* dotnet* powershell mysql* php* mssql-tools msodbcsql17 android*
+        # sudo rm -rf /etc/mysql /etc/php /swapfile
+        docker rmi $(docker images -q)
+        # 编译的work目录
+        sudo mkdir -p /mnt/workdir
+        sudo chown $USER:$GROUPS /mnt/workdir
+
+    - name: 克隆源码
+      if: env.backup_env == 'false'
+      working-directory: /mnt/workdir
+      run: |
+        df -hT $PWD
+        git clone $repo_url -b $repo_branch openwrt
+        ln -sf /mnt/workdir/openwrt $GITHUB_WORKSPACE/openwrt
+
+    - name: 更新feeds
+      if: env.backup_env == 'false'
+      run: cd openwrt && ./scripts/feeds update -a
+
+    - name: 安装feeds
+      if: env.backup_env == 'false'
+      run: cd openwrt && ./scripts/feeds install -a
+
+    - name: 加载自定义配置
+      if: env.backup_env == 'false'
+      run: |
+        cd openwrt
+        echo "--------自定义配置-主机ip地址: $build_config_host_ip"
+        sed -i "s/192.168.1.1/$build_config_host_ip/g" package/base-files/files/bin/config_generate
+        echo "--------自定义配置-主机名: $build_config_host_name"
+        sed -i "s/OpenWrt/$build_config_host_name/g" package/base-files/files/bin/config_generate
+        echo "--------自定义配置-内核版本: $build_config_kernel_patchver"
+        sed -i "s/KERNEL_PATCHVER:=.*/KERNEL_PATCHVER:=$build_config_kernel_patchver/g" target/linux/armvirt/Makefile
+        echo "--------自定义配置-默认主题: $build_config_default_theme"
+        sed -i "s/luci-theme-bootstrap/$build_config_default_theme/g" ./feeds/luci/collections/luci/Makefile
+        echo "--------自定义配置-build信息"
+        sed -i 's/OpenWrt /杀生丸大人 Build $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g' package/lean/default-settings/files/zzz-default-settings
+        echo "--------其他通用配置-添加autocore-arm支持可配置, 需要手动在.config/make menuconfig中选择启用"
+        sed -i 's/TARGET_rockchip/TARGET_rockchip\|\|TARGET_armvirt/g' package/lean/autocore/Makefile
+
+    - name: 加载扩展仓库
+      if: env.backup_env == 'false'
+      run: |
+        if [ -e "$extra_apps_sh" ]; then
+          echo "注意: 加载扩展仓库之前, 务必先安装feeds和更新feeds, 否则会一堆依赖不全"
+          echo "加载扩展仓库, 将执行以下内容: " && cat $extra_apps_sh && echo "开始执行: "
+          chmod +x $extra_apps_sh
+          cd openwrt
+          $GITHUB_WORKSPACE/$extra_apps_sh
+        else
+          echo "加载扩展仓库: 跳过"
+        fi
+
+    - name: 加载离线编译env
+      working-directory: /mnt
+      if: env.backup_env != 'false'
+      run: |
+        echo "开始加载离线编译env: $backup_env"
+        sudo wget -q -P /mnt $backup_env
+        echo "下载成功: $backup_env" && ls -alh /mnt | grep *.tar.gz
+        sudo tar -zxf *.tar.gz && sudo rm *.tar.gz
+        sudo chown -R $USER:$GROUPS /mnt/workdir
+        ln -sf /mnt/workdir/openwrt $GITHUB_WORKSPACE/openwrt
+        echo "准备完成: /mnt/workdir/openwrt" && ls -alh /mnt/workdir/openwrt
+        echo "更新编译时间信息 $(TZ=UTC-8 date "+%Y.%m.%d")"
+        sed -i "s/[0-9]\{4\}\.[0-9]\{2\}\.[0-9]\{2\}/$(TZ=UTC-8 date "+%Y.%m.%d")/" /mnt/workdir/openwrt/package/lean/default-settings/files/zzz-default-settings
+
+    - name: 准备files文件夹
+      run: |
+        if [ -e files ]; then
+          rm -rf openwrt/files && mv files openwrt/files
+          echo "当前仓库存在files文件夹,将替换到openwrt/files"
+        else
+          echo "当前仓库不存在files文件夹,将不替换到openwrt/files,跳过"
+        fi
+
+    - name: 准备.config文件
+      run: |
+        cp $config_file openwrt/.config
+        echo "复制仓库下$config_file,替换到openwrt/.config"
+        ls -alh openwrt/.config && cat openwrt/.config
+
+    - name: 执行make defconfig
+      if: env.make_defconfig == 'true'
+      run: |
+        cd openwrt
+        echo "开始执行make defconfig, 将.config文件匹配为适用于当前平台和硬件环境的配置文件"
+        echo "注意: 部分.config配置中的配置讲会重置为默认选项"
+        echo "--------执行前--------" && ls -alh .config && cat .config
+        make defconfig
+        echo "--------执行后--------" && ls -alh .config && cat .config
+
+    - name: output准备-导出的env
+      working-directory: /mnt
+      run: |
+        cp /env.txt workdir/openwrt/
+        mkdir -p /mnt/workdir/output
+        tar -zcf /mnt/workdir/output/env.tar.gz --exclude=output workdir/
+        ls -alh /mnt/workdir/output
+
+#    - name: 编译固件前,处理编译错误的问题
+#      run: |
+#        cd openwrt
+#        if [ "$repo_branch" == "backup.2024.02.22" ] && [ "$build_config_kernel_patchver" == "5.10" ]; then
+#          echo "TODO backup.2024.02.22[CONFIG_LINUX_5_10=y] 处理phylink编译报错"
+#          sed -i '/^define KernelPackage\/phylink$/,/^endef$/ {
+#            s/DEPENDS:=+kmod-libphy/DEPENDS:=+kmod-libphy +kmod-of-mdio/
+#          }' package/kernel/linux/modules/netdevices.mk
+#          # 修正了上面这个错误后,backup.2024.02.22编译510还有错误,暂无余力找原因,后续backup.2024.02.22只使用5.15
+#          # touch /mnt/workdir/openwrt/staging_dir/target-aarch64_generic_musl/root-armvirt/stamp/.kernel_installed
+#          # ERROR: module '/mnt/workdir/openwrt/build_dir/target-aarch64_generic_musl/linux-armvirt_64/linux-5.10.209/drivers/net/pcs/pcs_xpcs.ko' is missing.
+#          # make[3]: *** [/mnt/workdir/openwrt/target/linux/armvirt/modules.mk:25: /mnt/workdir/openwrt/bin/targets/armvirt/64/packages/kmod-pcs-xpcs_5.10.209-1_aarch64_generic.ipk] Error 1
+#          # make[3]: Leaving directory '/mnt/workdir/openwrt/package/kernel/linux'
+#        fi
+#        if [ "$repo_branch" == "backup.2024.02.22" ] && [ "$build_config_kernel_patchver" == "5.15" ]; then
+#          echo "TODO backup.2024.02.22[CONFIG_LINUX_5_15=y] 处理xfsprogs编译报错"
+#          sed -i 's/TARGET_CFLAGS += -DHAVE_MAP_SYNC/TARGET_CFLAGS += -DHAVE_MAP_SYNC -D_LARGEFILE64_SOURCE/' feeds/packages/utils/xfsprogs/Makefile
+#          echo "TODO backup.2024.02.22[CONFIG_LINUX_5_15=y] 处理hostapd wpa_supplicant-full编译报错"
+#          sed -i 's/#CONFIG_AP=y/CONFIG_AP=y/' package/network/services/hostapd/files/wpa_supplicant-full.config
+#        fi
+#        if [ "$repo_branch" == "backup.2024.01.01" ]; then
+#          echo "TODO backup.2024.01.01 处理hostapd wpa_supplicant-full编译报错"
+#          sed -i 's/#CONFIG_AP=y/CONFIG_AP=y/' package/network/services/hostapd/files/wpa_supplicant-full.config
+#        fi
+
+    - name: 准备编译所需的文件依赖项或资源
+      run: |
+        cd openwrt
+        if [ "$backup_env_dl" != false ]; then
+            echo "开始加载离线编译环境中的dl包"
+            wget -q $backup_env_dl
+            echo "下载成功: " && ls -alh ./ | grep *.tar.gz
+            sudo tar -zxf *.tar.gz && sudo rm *.tar.gz
+            rm -rf ./dl && cp -R workdir/openwrt/dl ./ && rm -rf workdir
+            sudo chown -R $USER:$GROUPS /mnt/workdir
+            echo "加载离线编译环境中的dl包: " && ls -alh ./dl
+        fi
+        echo "开始执行: make download -j8"
+        make download -j8
+        echo "执行make download -j8后的dl包: " && ls -alh ./dl
+
+    - name: 编译固件
+      if: env.output_config_artifact_bin == 'true' || env.output_config_releases_bin == 'true'
+      run: |
+        cd openwrt
+        echo -e "开始编译: start $(nproc) thread compile, 先多线程, 失败则单线程, 再失败则详细日志的单线程"
+        make -j$(nproc) || make -j1 || make -j1 V=s
+        echo "结束编译: success, dl文件夹目录: " && ls -alh ./dl
+
+    - name: output准备-导出的bin
+      if: env.output_config_artifact_bin == 'true' || env.output_config_releases_bin == 'true'
+      run: |
+        cd openwrt
+        cp /env.txt bin/
+        tar -zcf /mnt/workdir/output/bin.tar.gz bin/
+        ls -alh /mnt/workdir/output
+
+    - name: output准备-导出的env-dl
+      if: env.output_config_artifact_bin == 'true' || env.output_config_releases_bin == 'true'
+      working-directory: /mnt/workdir
+      run: |
+        mkdir -p output/workdir/openwrt
+        cp -R openwrt/dl output/workdir/openwrt/dl
+        cd output
+        tar -zcf /mnt/workdir/output/env-dl.tar.gz workdir/ && rm -rf workdir/
+        ls -alh /mnt/workdir/output
+
+    - name: upload-编译env到artifact
+      if: env.output_config_artifact_env == 'true'
+      uses: actions/upload-artifact@main
+      with:
+        name: ${{ env.build_date }}_env
+        path: /mnt/workdir/output/env.tar.gz
+
+    - name: upload-编译env-dl到artifact
+      if: env.output_config_artifact_env_dl == 'true'
+      uses: actions/upload-artifact@main
+      with:
+        name: ${{ env.build_date }}_env_dl
+        path: /mnt/workdir/output/env-dl.tar.gz
+
+    - name: upload-编译bin到artifact
+      if: env.output_config_artifact_bin == 'true'
+      uses: actions/upload-artifact@main
+      with:
+        name: ${{ env.build_date }}_bin
+        path: /mnt/workdir/output/bin.tar.gz
+
+    - name: upload-编译env到releases
+      if: env.output_config_releases_env == 'true'
+      uses: rin0612/release-action@v1
+      with:
+        tag: ${{ env.repo_branch }}_build.${{ env.build_date }}
+        artifacts: /mnt/workdir/output/env.tar.gz
+        allowUpdates: true
+        token: ${{ secrets.GITHUB_TOKEN }}
+        bodyFile: /env.txt
+
+    - name: upload-编译env-dl到releases
+      if: env.output_config_releases_env_dl == 'true'
+      uses: rin0612/release-action@v1
+      with:
+        tag: ${{ env.repo_branch }}_build.${{ env.build_date }}
+        artifacts: /mnt/workdir/output/env-dl.tar.gz
+        allowUpdates: true
+        token: ${{ secrets.GITHUB_TOKEN }}
+        bodyFile: /env.txt
+
+    - name: upload-编译bin到releases
+      if: env.output_config_releases_bin == 'true'
+      uses: rin0612/release-action@v1
+      with:
+        tag: ${{ env.repo_branch }}_build.${{ env.build_date }}
+        artifacts: /mnt/workdir/output/bin.tar.gz
+        allowUpdates: true
+        token: ${{ secrets.GITHUB_TOKEN }}
+        bodyFile: /env.txt
