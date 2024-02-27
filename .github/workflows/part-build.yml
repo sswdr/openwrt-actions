@@ -198,7 +198,7 @@ jobs:
       run: |
         cp $config_file openwrt/.config
         echo "复制仓库下$config_file,替换到openwrt/.config"
-        ls -alh openwrt/.config && cat openwrt/.config
+        ls -alh openwrt/.config
 
     - name: 执行make defconfig
       if: env.make_defconfig == 'true'
@@ -206,7 +206,6 @@ jobs:
         cd openwrt
         echo "开始执行make defconfig, 将.config文件匹配为适用于当前平台和硬件环境的配置文件"
         echo "注意: 部分.config配置中的配置讲会重置为默认选项"
-        echo "--------执行前--------" && ls -alh .config && cat .config
         make defconfig
         echo "--------执行后--------" && ls -alh .config && cat .config
 

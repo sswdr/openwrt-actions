@@ -149,7 +149,7 @@ jobs:
       run: |
         cp $CONFIG_FILE openwrt/.config
         echo "复制仓库下$CONFIG_FILE,替换到openwrt/.config"
-        ls -alh openwrt/.config && cat openwrt/.config
+        ls -alh openwrt/.config
 
     - name: 执行make defconfig
       run: |
