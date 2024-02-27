@@ -218,7 +218,7 @@ jobs:
         tar -zcf /mnt/workdir/output/env.tar.gz --exclude=output workdir/
         ls -alh /mnt/workdir/output
 
-    - name: 编译固件前,处理编译错误的问题
+    - name: 处理编译备份分支中可能的历史错误
       run: |
         cd openwrt
         if [ "$repo_branch" == "backup.2024.02.22" ] && [ "$build_config_kernel_patchver" == "5.10" ]; then
