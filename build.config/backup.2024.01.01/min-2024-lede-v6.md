@@ -44,6 +44,12 @@ Network  ->  WirelessAPD -> hostapd-common
                           -> wpa-cli
           ->  iw
 
+添加必要依赖：
+    > Network > NMAP Suite  <*> ncat
+    > Network  <*> ethtool
+    > Utilities > Compression  <*> unzip
+    > Utilities  <*> pv
+
 ipv6 固件：
     Extra packages --->  ipv6helper（选上）
     Base system  --->  [*] Build with DHCPv6 support.  （如果前面不带 * 就选上）
