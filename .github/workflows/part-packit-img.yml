@@ -21,7 +21,7 @@ jobs:
         # OPENWRT_ARMVIRT: /workdir/openwrt/bin/targets/*/*/*.tar.gz
         OPENWRT_ARMVIRT: https://github.com/sswdr/openwrt-actions/releases/download/openwrt_N1_2022.04.29.1427/openwrt-armvirt-64-default-rootfs.tar.gz
         # 使用的内核下载链接: ${KERNEL_REPO_URL}/${KERNEL_VERSION}.tar.gz
-        KERNEL_REPO_URL: https://github.com/rin0612/openwrt_packit/releases/download/backup.kernel
+        KERNEL_REPO_URL: https://github.com/rin0612/openwrt_packit/releases/download/kernel_stable
         KERNEL_VERSION: 5.10.110
         # 执行的打包脚本
         RUN_SH: mk_s905d_n1.sh
