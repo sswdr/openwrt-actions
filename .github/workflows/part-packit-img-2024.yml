@@ -1,0 +1,34 @@
+# rootfs.tar.gz和kernel与n1打包脚本制作镜像
+
+name: part-packit-img-2024
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Package OpenWrt Firmware
+      uses: rin0612/flippy-openwrt-actions@main
+      env:
+        OPENWRT_ARMVIRT: https://github.com/sswdr/openwrt-actions/releases/download/backup.2024.01.01_build.2024.02.28.03.10/openwrt-armvirt-64-generic-rootfs.tar.gz
+        SCRIPT_REPO_URL: https://github.com/rin0612/openwrt_packit
+        SCRIPT_REPO_BRANCH: master
+        KERNEL_REPO_URL: https://github.com/rin0612/openwrt_packit/releases/tag/kernel_stable
+        KERNEL_VERSION_NAME: 5.15.145
+        KERNEL_AUTO_LATEST: false
+        PACKAGE_SOC: s905d
+        OPENWRT_VER: R23.11.11
+        WHOAMI: 杀生丸大人
+
+    - name: Upload Release
+      uses: rin0612/release-action@v1
+      with:
+        tag: ${{ env.PACKAGED_OUTPUTDATE }}_packit
+        artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/*
+        allowUpdates: true
+        token: ${{ secrets.GITHUB_TOKEN }}
+        body: |
+          ``` ${{ toJson(env) }} ```
