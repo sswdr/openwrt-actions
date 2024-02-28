@@ -41,7 +41,7 @@ on:
       output_config:
         description: '编译输出配置: 编译bin到artifact,编译env到artifact,编译env带dl到artifact,编译bin到releases,编译env到releases,编译env带dl到releases'
         required: true
-        default: "{\"releases_bin\":true,\"releases_env\":true,\"releases_env_dl\":true,\"artifact_bin\":false,\"artifact_env\":false,\"artifact_env_dl\":false}"
+        default: "{\"releases_rootfs\":true,\"releases_bin\":true,\"releases_env\":true,\"releases_env_dl\":true,\"artifact_rootfs\":false,\"artifact_bin\":false,\"artifact_env\":false,\"artifact_env_dl\":false}"
 
 env:
   repo_url: ${{ github.event.inputs.repo_url }}
@@ -55,9 +55,11 @@ env:
   build_config_host_name: ${{fromJSON(github.event.inputs.build_config).host_name}}
   build_config_kernel_patchver: ${{fromJSON(github.event.inputs.build_config).kernel_patchver}}
   build_config_default_theme: ${{fromJSON(github.event.inputs.build_config).default_theme}}
+  output_config_artifact_rootfs: ${{fromJSON(github.event.inputs.output_config).artifact_rootfs}}
   output_config_artifact_bin: ${{fromJSON(github.event.inputs.output_config).artifact_bin}}
   output_config_artifact_env: ${{fromJSON(github.event.inputs.output_config).artifact_env}}
   output_config_artifact_env_dl: ${{fromJSON(github.event.inputs.output_config).artifact_env_dl}}
+  output_config_releases_rootfs: ${{fromJSON(github.event.inputs.output_config).releases_rootfs}}
   output_config_releases_bin: ${{fromJSON(github.event.inputs.output_config).releases_bin}}
   output_config_releases_env: ${{fromJSON(github.event.inputs.output_config).releases_env}}
   output_config_releases_env_dl: ${{fromJSON(github.event.inputs.output_config).releases_env_dl}}
@@ -262,6 +264,12 @@ jobs:
         make -j$(nproc) || make -j1 || make -j1 V=s
         echo "结束编译: success, dl文件夹目录: " && ls -alh ./dl
 
+    - name: output准备-导出的rootfs
+      if: env.output_config_artifact_rootfs == 'true' || env.output_config_releases_rootfs == 'true'
+      run: |
+        cd openwrt
+        mv bin/targets/*/*/openwrt*.tar.gz /mnt/workdir/output
+
     - name: output准备-导出的bin
       if: env.output_config_artifact_bin == 'true' || env.output_config_releases_bin == 'true'
       run: |
@@ -294,6 +302,13 @@ jobs:
         name: ${{ env.build_date }}_env_dl
         path: /mnt/workdir/output/env-dl.tar.gz
 
+    - name: upload-编译rootfs到artifact
+      if: env.output_config_artifact_rootfs == 'true'
+      uses: actions/upload-artifact@main
+      with:
+        name: ${{ env.build_date }}_rootfs
+        path: /mnt/workdir/output/openwrt*.tar.gz
+
     - name: upload-编译bin到artifact
       if: env.output_config_artifact_bin == 'true'
       uses: actions/upload-artifact@main
@@ -317,6 +332,16 @@ jobs:
       with:
         tag: ${{ env.repo_branch }}_build.${{ env.build_date }}
         artifacts: /mnt/workdir/output/env-dl.tar.gz
+        allowUpdates: true
+        token: ${{ secrets.GITHUB_TOKEN }}
+        bodyFile: /env.txt
+
+    - name: upload-编译rootfs到releases
+      if: env.output_config_releases_rootfs == 'true'
+      uses: rin0612/release-action@v1
+      with:
+        tag: ${{ env.repo_branch }}_build.${{ env.build_date }}
+        artifacts: /mnt/workdir/output/openwrt*.tar.gz
         allowUpdates: true
         token: ${{ secrets.GITHUB_TOKEN }}
         bodyFile: /env.txt
