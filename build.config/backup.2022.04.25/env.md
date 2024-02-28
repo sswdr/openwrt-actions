@@ -1,6 +1,6 @@
 lede env:
 ```
-git clone https://github.com/rin0612/lede -b backup.2022.04.25 openwrt
+git clone --depth=1 https://github.com/rin0612/lede -b backup.2022.04.25 openwrt
 cd openwrt
 ./scripts/feeds update -a
 ./scripts/feeds install -a
