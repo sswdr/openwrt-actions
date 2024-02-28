@@ -11,7 +11,7 @@ on:
         required: true
         default: https://github.com/rin0612/lede
       repo_branch:
-        description: '编译仓库分支([backup.2022.04.25]/[backup.2024.02.22])'
+        description: '编译仓库分支([backup.2022.04.25]/[backup.2024.01.01]/[master])'
         required: true
         default: backup.2022.04.25
       backup_env:
@@ -235,10 +235,6 @@ jobs:
 #          echo "TODO backup.2024.02.22[CONFIG_LINUX_5_15=y] 处理xfsprogs编译报错"
 #          sed -i 's/TARGET_CFLAGS += -DHAVE_MAP_SYNC/TARGET_CFLAGS += -DHAVE_MAP_SYNC -D_LARGEFILE64_SOURCE/' feeds/packages/utils/xfsprogs/Makefile
 #          echo "TODO backup.2024.02.22[CONFIG_LINUX_5_15=y] 处理hostapd wpa_supplicant-full编译报错"
-#          sed -i 's/#CONFIG_AP=y/CONFIG_AP=y/' package/network/services/hostapd/files/wpa_supplicant-full.config
-#        fi
-#        if [ "$repo_branch" == "backup.2024.01.01" ]; then
-#          echo "TODO backup.2024.01.01 处理hostapd wpa_supplicant-full编译报错"
 #          sed -i 's/#CONFIG_AP=y/CONFIG_AP=y/' package/network/services/hostapd/files/wpa_supplicant-full.config
 #        fi
 
