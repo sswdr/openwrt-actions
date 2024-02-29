@@ -1,0 +1,24 @@
+# 推送文件到artifact
+
+name: part-push-artifact
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+    - name: 准备需要推送到artifact的文件
+      run: |
+        echo "----------准备将/opt/2024/*推送到artifact--------------"
+        mkdir -p /opt/2024
+        dd if=/dev/zero of=/opt/2024/tmp.tar.gz bs=1 count=1
+        cd /opt/2024
+
+    - name: upload-编译bin到artifact
+      uses: rin0612/upload-artifact@v4.3.1
+      with:
+        name: bin
+        path: /opt/2024/tmp.tar.gz
