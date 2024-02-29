@@ -5,6 +5,59 @@ name: part-packit-img-2022
 on:
   repository_dispatch:
   workflow_dispatch:
+    inputs:
+      openwrt_armvirt:
+        description: '打包使用的rootfs.tar.gz,链接或者文件目录'
+        required: true
+        default: https://github.com/sswdr/openwrt-actions/releases/download/backup.2022.04.25_build.2022.04.25.18.00/2022.04.29.1427_5.10-lede+kenzok8-max-v3.config_openwrt-armvirt-64-default-rootfs.tar.gz
+      script_repo_url:
+        description: '打包仓库地址'
+        required: true
+        default: https://github.com/rin0612/openwrt_packit
+      script_repo_branch:
+        description: '打包仓库分支'
+        required: true
+        default: backup.2022.04.25
+      kernel_repo_url:
+        description: '打包使用的内核地址,默认是 https://github.com/breakings/OpenWrt/releases/download/kernel_stable'
+        required: true
+        default: https://github.com/rin0612/openwrt_packit/releases/download/kernel_stable
+      kernel_version:
+        description: '打包使用的内核版本'
+        required: true
+        default: 5.10.110
+      kernel_version_name:
+        description: 'KERNEL_VERSION_NAME用于打包仓库中的make.env的KERNEL_VERSION,用于选择并打包的内核,来自于下载的kernel压缩包中的文件名称'
+        required: true
+        default: 5.10.110-flippy-71+
+      run_sh:
+        description: '指定SOC'
+        required: true
+        default: mk_s905d_n1.sh
+      openwrt_ver:
+        description: '指定打包仓库中make.env中OPENWRT_VER的值,来自于lede仓库的zzz-default-settings,用于firmware中展示'
+        required: true
+        default: R22.4.1
+      whoami:
+        description: '指定打包仓库中make.env中WHOAMI的值,用于firmware中展示'
+        required: true
+        default: 杀生丸大人
+      tag_name:
+        description: '指定tag名称,为false则使用新的tag名称'
+        required: true
+        default: false
+
+env:
+  openwrt_armvirt: ${{ github.event.inputs.openwrt_armvirt }}
+  script_repo_url: ${{ github.event.inputs.script_repo_url }}
+  script_repo_branch: ${{ github.event.inputs.script_repo_branch }}
+  kernel_repo_url: ${{ github.event.inputs.kernel_repo_url }}
+  kernel_version: ${{ github.event.inputs.kernel_version }}
+  kernel_version_name: ${{ github.event.inputs.kernel_version_name }}
+  run_sh: ${{ github.event.inputs.run_sh }}
+  openwrt_ver: ${{ github.event.inputs.openwrt_ver }}
+  whoami: ${{ github.event.inputs.whoami }}
+  tag_name: ${{ github.event.inputs.tag_name }}
 
 jobs:
   build:
@@ -13,30 +66,37 @@ jobs:
     - name: Package OpenWrt Firmware
       uses: rin0612/openwrt_packit@backup.2022.04.25
       env:
-        # 使用的打包仓库和分支
-        PACKIT_REPO_URL: https://github.com/rin0612/openwrt_packit
-        PACKIT_REPO_BRANCH: backup.2022.04.25
-        # rootfs文件可以是下载的http连接,也可以是文件目录
-        OPENWRT_ARMVIRT: https://github.com/sswdr/openwrt-actions/releases/download/backup.2022.04.25_build.2022.04.25.18.00/2022.04.29.1427_5.10-lede+kenzok8-max-v3.config_openwrt-armvirt-64-default-rootfs.tar.gz
-        # 使用的内核下载链接: ${KERNEL_REPO_URL}/${KERNEL_VERSION}.tar.gz
-        KERNEL_REPO_URL: https://github.com/rin0612/openwrt_packit/releases/download/kernel_stable
-        KERNEL_VERSION: 5.10.110
-        # 执行的打包脚本
-        RUN_SH: mk_s905d_n1.sh
-        # KERNEL_VERSION_NAME用于打包仓库中的make.env的KERNEL_VERSION,用于选择并打包的内核
-        KERNEL_VERSION_NAME: 5.10.110-flippy-71+
-        # 以下信息打入镜像内,仅仅展示作用
-        WHOAMI: 杀生丸大人
-        OPENWRT_VER: R22.4.1
+        OPENWRT_ARMVIRT: ${{ env.openwrt_armvirt }}
+        SCRIPT_REPO_URL: ${{ env.script_repo_url }}
+        SCRIPT_REPO_BRANCH: ${{ env.script_repo_branch }}
+        KERNEL_REPO_URL: ${{ env.kernel_repo_url }}
+        KERNEL_VERSION: ${{ env.kernel_version }}
+        KERNEL_VERSION_NAME: ${{ env.kernel_version_name }}
+        run_sh: ${{ env.run_sh }}
+        OPENWRT_VER: ${{ env.openwrt_ver }}
+        WHOAMI: ${{ env.whoami }}
 
-    - name: 推送文件到releases,如果tag不存在会创建
+    - name: Prepare Package Env
+      run: |
+        cd $PACKAGED_OUTPUTPATH
+        for file in openwrt_$package_soc_*.img.gz; do
+          touch "${file/.img.gz/.env}"
+        done
+        echo "${{ toJson(env) }}" >> openwrt_$package_soc_*.env
+        if [ "$tag_name" == false ]; then
+            echo "tag_name=packit.$(date +"%Y.%m.%d.%H.%M")" >> $GITHUB_ENV
+        fi
+
+    - name: Upload Release
       uses: rin0612/release-action@v1.14.0
       with:
-        tag: ${{ env.PACKAGED_OUTPUTDATE }}_releases的tag
-        artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/*
+        tag: ${{ env.tag_name }}
+        artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/openwrt_${{ env.package_soc }}*
         allowUpdates: true
         token: ${{ secrets.GITHUB_TOKEN }}
         # omitBody默认值为false,即覆盖原先的正文.true则不更新release的body正文
         omitBody: true
         body: |
-          ### **${{ env.PACKAGED_OUTPUTDATE }}_releases的budy适用于md语法**
+          ```
+          ${{ toJson(env) }}
+          ```

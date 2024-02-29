@@ -79,8 +79,8 @@ jobs:
     - name: Prepare Package Env
       run: |
         cd $PACKAGED_OUTPUTPATH
-        for file in openwrt_$package_soc_*.sha; do
-          cp "$file" "${file/.sha/.env}"
+        for file in openwrt_$package_soc_*.img.gz; do
+          touch "${file/.img.gz/.env}"
         done
         echo "${{ toJson(env) }}" >> openwrt_$package_soc_*.env
         if [ "$tag_name" == false ]; then
