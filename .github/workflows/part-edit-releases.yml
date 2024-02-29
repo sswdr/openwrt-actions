@@ -32,10 +32,10 @@ jobs:
           dd if=/dev/zero of=${tag_dir}/tmp.tar.gz bs=1 count=1
 
       - name: edit-releases
-        uses: rin0612/release-action@main
+        uses: rin0612/release-action@v1.14.0
         with:
           tag: ${{ env.tag_name }}
           artifacts: ${{ env.tag_dir }}/*
           allowUpdates: true
           token: ${{ secrets.GITHUB_TOKEN }}
-#          omitBody: true
+          omitBody: true
