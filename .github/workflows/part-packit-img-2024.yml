@@ -83,11 +83,14 @@ jobs:
           cp "$file" "${file/.sha/.env}"
         done
         echo "${{ toJson(env) }}" >> openwrt_$package_soc_*.env
+        if [ "$tag_name" == false ]; then
+            echo "::set-env name=tag_name::packit.$PACKAGED_OUTPUTDATE"
+        fi
 
     - name: Upload Release
       uses: rin0612/release-action@v1.14.0
       with:
-        tag: ${{ if eq(env.SOME_VALUE, 'false') }}packit.${{ env.PACKAGED_OUTPUTDATE }}{{ else }}${{ env.tag_name }}{{ end }}
+        tag: ${{ env.tag_name }}
         artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/openwrt_${{ env.package_soc }}*
         allowUpdates: true
         token: ${{ secrets.GITHUB_TOKEN }}
