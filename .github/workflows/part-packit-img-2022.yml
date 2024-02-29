@@ -72,7 +72,7 @@ jobs:
         KERNEL_REPO_URL: ${{ env.kernel_repo_url }}
         KERNEL_VERSION: ${{ env.kernel_version }}
         KERNEL_VERSION_NAME: ${{ env.kernel_version_name }}
-        run_sh: ${{ env.run_sh }}
+        RUN_SH: ${{ env.run_sh }}
         OPENWRT_VER: ${{ env.openwrt_ver }}
         WHOAMI: ${{ env.whoami }}
 
