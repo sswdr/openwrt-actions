@@ -84,7 +84,7 @@ jobs:
         done
         echo "${{ toJson(env) }}" >> openwrt_$package_soc_*.env
         if [ "$tag_name" == false ]; then
-            echo "tag_name=packit.$PACKAGED_OUTPUTDATE" >> $GITHUB_ENV
+            echo "tag_name=packit.$(date +"%Y.%m.%d.%H.%M")" >> $GITHUB_ENV
         fi
 
     - name: Upload Release
