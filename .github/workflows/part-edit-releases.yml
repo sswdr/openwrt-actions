@@ -1,0 +1,41 @@
+name: part-edit-releases
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      ssh:
+        description: '是否ssh连接到actions'
+        required: false
+        default: true
+      tag_name:
+        description: 'tag名称'
+        required: true
+        default: "packit.02.28.1021"
+      tag_dir:
+        description: 'tag上传目录'
+        required: true
+        default: "/upload"
+
+env:
+  tag_name: ${{ github.event.inputs.tag_name }}
+  tag_dir: ${{ github.event.inputs.tag_dir }}
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: 准备操作
+        run: |
+          sudo mkdir -p ${tag_dir}
+          sudo chown $USER:$GROUPS ${tag_dir}
+          dd if=/dev/zero of=${tag_dir}/tmp.tar.gz bs=1 count=1
+
+      - name: edit-releases
+        uses: rin0612/release-action@main
+        with:
+          tag: ${{ env.tag_name }}
+          artifacts: ${{ env.tag_dir }}/*
+          allowUpdates: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          omitBody: true
