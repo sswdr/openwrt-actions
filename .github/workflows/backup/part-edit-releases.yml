@@ -44,9 +44,11 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
 
       - name: edit-releases
-        uses: rin0612/release-action@v1
+        uses: rin0612/release-action@v1.14.0
         with:
           tag: ${{ env.tag_name }}
           artifacts: ${{ env.tag_dir }}/*
           allowUpdates: true
           token: ${{ secrets.GITHUB_TOKEN }}
+          # omitBody默认值为false,即覆盖原先的正文.true则不更新release的body正文
+          omitBody: true

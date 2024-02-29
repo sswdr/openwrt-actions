@@ -36,12 +36,14 @@ jobs:
         echo -e "CPU核心及版本信息：$(cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c)" >> bodyFile.txt
 
     - name: 推送文件到releases,如果tag不存在会创建
-      uses: rin0612/release-action@v1
+      uses: rin0612/release-action@v1.14.0
       with:
         tag: ${{ env.PACKAGED_OUTPUTDATE }}_releases的tag
         artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/*
         allowUpdates: true
         token: ${{ secrets.GITHUB_TOKEN }}
+        # omitBody默认值为false,即覆盖原先的正文.true则不更新release的body正文
+        omitBody: false
         # 也可以是文件当releases的body
         bodyFile: ${{ env.RELEASES_BODY_FILE }}
         # 可以是直接写入releases的body

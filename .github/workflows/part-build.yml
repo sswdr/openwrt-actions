@@ -318,7 +318,7 @@ jobs:
 
     - name: upload-编译env到releases
       if: env.output_config_releases_env == 'true'
-      uses: rin0612/release-action@v1
+      uses: rin0612/release-action@v1.14.0
       with:
         tag: ${{ env.repo_branch }}_build.${{ env.build_date }}
         artifacts: /mnt/workdir/output/env.tar.gz
@@ -328,7 +328,7 @@ jobs:
 
     - name: upload-编译env-dl到releases
       if: env.output_config_releases_env_dl == 'true'
-      uses: rin0612/release-action@v1
+      uses: rin0612/release-action@v1.14.0
       with:
         tag: ${{ env.repo_branch }}_build.${{ env.build_date }}
         artifacts: /mnt/workdir/output/env-dl.tar.gz
@@ -338,7 +338,7 @@ jobs:
 
     - name: upload-编译rootfs到releases
       if: env.output_config_releases_rootfs == 'true'
-      uses: rin0612/release-action@v1
+      uses: rin0612/release-action@v1.14.0
       with:
         tag: ${{ env.repo_branch }}_build.${{ env.build_date }}
         artifacts: /mnt/workdir/output/openwrt*.tar.gz
@@ -348,7 +348,7 @@ jobs:
 
     - name: upload-编译bin到releases
       if: env.output_config_releases_bin == 'true'
-      uses: rin0612/release-action@v1
+      uses: rin0612/release-action@v1.14.0
       with:
         tag: ${{ env.repo_branch }}_build.${{ env.build_date }}
         artifacts: /mnt/workdir/output/bin.tar.gz

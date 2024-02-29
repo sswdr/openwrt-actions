@@ -37,12 +37,14 @@ jobs:
         WHOAMI: 杀生丸大人
 
     - name: Upload Release
-      uses: rin0612/release-action@v1
+      uses: rin0612/release-action@v1.14.0
       with:
         tag: packit.${{ env.PACKAGED_OUTPUTDATE }}
         artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/*
         allowUpdates: true
         token: ${{ secrets.GITHUB_TOKEN }}
+        # omitBody默认值为false,即覆盖原先的正文.true则不更新release的body正文
+        omitBody: true
         body: |
           ```
           ${{ toJson(env) }}
