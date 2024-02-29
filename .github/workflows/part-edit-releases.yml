@@ -38,4 +38,4 @@ jobs:
           artifacts: ${{ env.tag_dir }}/*
           allowUpdates: true
           token: ${{ secrets.GITHUB_TOKEN }}
-          omitBody: true
+#          omitBody: true
