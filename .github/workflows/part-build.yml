@@ -290,28 +290,28 @@ jobs:
 
     - name: upload-编译env到artifact
       if: env.output_config_artifact_env == 'true'
-      uses: actions/upload-artifact@main
+      uses: rin0612/upload-artifact@v4.3.1
       with:
         name: ${{ env.build_date }}_env
         path: /mnt/workdir/output/env.tar.gz
 
     - name: upload-编译env-dl到artifact
       if: env.output_config_artifact_env_dl == 'true'
-      uses: actions/upload-artifact@main
+      uses: rin0612/upload-artifact@v4.3.1
       with:
         name: ${{ env.build_date }}_env_dl
         path: /mnt/workdir/output/env-dl.tar.gz
 
     - name: upload-编译rootfs到artifact
       if: env.output_config_artifact_rootfs == 'true'
-      uses: actions/upload-artifact@main
+      uses: rin0612/upload-artifact@v4.3.1
       with:
         name: ${{ env.build_date }}_rootfs
         path: /mnt/workdir/output/openwrt*.tar.gz
 
     - name: upload-编译bin到artifact
       if: env.output_config_artifact_bin == 'true'
-      uses: actions/upload-artifact@main
+      uses: rin0612/upload-artifact@v4.3.1
       with:
         name: ${{ env.build_date }}_bin
         path: /mnt/workdir/output/bin.tar.gz
