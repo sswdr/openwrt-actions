@@ -7,40 +7,88 @@ on:
   workflow_dispatch:
     inputs:
       openwrt_armvirt:
-        description: '下载openwrt*rootfs.tar.gz的url'
+        description: '打包使用的rootfs.tar.gz,链接或者文件目录'
         required: true
         default: https://github.com/sswdr/openwrt-actions/releases/download/backup.2024.01.01_build.2024.02.28.16.33/openwrt-armvirt-64-generic-rootfs.tar.gz
+      script_repo_url:
+        description: '打包仓库地址'
+        required: true
+        default: https://github.com/rin0612/openwrt_packit
+      script_repo_branch:
+        description: '打包仓库分支'
+        required: true
+        default: backup.2024.02.28
+      kernel_repo_url:
+        description: '打包使用的内核地址,默认是 https://github.com/breakings/OpenWrt/releases/tag/kernel_stable'
+        required: true
+        default: https://github.com/rin0612/openwrt_packit/releases/tag/kernel_stable
       kernel_version_name:
-        description: '内核版本'
+        description: '打包使用的内核版本,可以多个连接例如 6.1.1_5.15.1'
         required: true
         default: 5.15.145
+      kernel_auto_latest:
+        description: '否自动采用同系列最新版本内核'
+        required: true
+        default: false
+      package_soc:
+        description: '指定SOC'
+        required: true
+        default: s905d
+      openwrt_ver:
+        description: '指定打包仓库中make.env中OPENWRT_VER的值,来自于lede仓库的zzz-default-settings,用于firmware中展示'
+        required: true
+        default: R23.11.11
+      whoami:
+        description: '指定打包仓库中make.env中WHOAMI的值,用于firmware中展示'
+        required: true
+        default: 杀生丸大人
+      tag_name:
+        description: '指定tag名称,为false则使用新的tag名称'
+        required: true
+        default: backup.2024.01.01_build.2024.02.28.16.33
 
 env:
   openwrt_armvirt: ${{ github.event.inputs.openwrt_armvirt }}
+  script_repo_url: ${{ github.event.inputs.script_repo_url }}
+  script_repo_branch: ${{ github.event.inputs.script_repo_branch }}
+  kernel_repo_url: ${{ github.event.inputs.kernel_repo_url }}
   kernel_version_name: ${{ github.event.inputs.kernel_version_name }}
+  kernel_auto_latest: ${{ github.event.inputs.kernel_auto_latest }}
+  package_soc: ${{ github.event.inputs.package_soc }}
+  openwrt_ver: ${{ github.event.inputs.openwrt_ver }}
+  whoami: ${{ github.event.inputs.whoami }}
+  tag_name: ${{ github.event.inputs.tag_name }}
 
 jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
     - name: Package OpenWrt Firmware
-      uses: rin0612/flippy-openwrt-actions@main
+      uses: rin0612/flippy-openwrt-actions@backup.2024.02.28
       env:
         OPENWRT_ARMVIRT: ${{ env.openwrt_armvirt }}
-        SCRIPT_REPO_URL: https://github.com/rin0612/openwrt_packit
-        SCRIPT_REPO_BRANCH: master
-        KERNEL_REPO_URL: https://github.com/rin0612/openwrt_packit/releases/tag/kernel_stable
+        SCRIPT_REPO_URL: ${{ env.script_repo_url }}
+        SCRIPT_REPO_BRANCH: ${{ env.script_repo_branch }}
+        KERNEL_REPO_URL: ${{ env.kernel_repo_url }}
         KERNEL_VERSION_NAME: ${{ env.kernel_version_name }}
-        KERNEL_AUTO_LATEST: false
-        PACKAGE_SOC: s905d
-        OPENWRT_VER: R23.11.11
-        WHOAMI: 杀生丸大人
+        KERNEL_AUTO_LATEST: ${{ env.kernel_auto_latest }}
+        PACKAGE_SOC: ${{ env.package_soc }}
+        OPENWRT_VER: ${{ env.openwrt_ver }}
+        WHOAMI: ${{ env.whoami }}
+
+    - name: Prepare Package Env
+      run: |
+        cd $PACKAGED_OUTPUTPATH
+        for file in openwrt_$package_soc_*.sha; do
+          cp "$file" "${file/.sha/.env}"
+        done
+        echo "${{ toJson(env) }}" >> openwrt_$package_soc_*.env
 
     - name: Upload Release
       uses: rin0612/release-action@v1.14.0
       with:
-        tag: packit.${{ env.PACKAGED_OUTPUTDATE }}
-        artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/*
+        tag: ${{ if eq(env.SOME_VALUE, 'false') }}packit.${{ env.PACKAGED_OUTPUTDATE }}{{ else }}${{ env.tag_name }}{{ end }}
+        artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/openwrt_${{ env.package_soc }}*
         allowUpdates: true
         token: ${{ secrets.GITHUB_TOKEN }}
         # omitBody默认值为false,即覆盖原先的正文.true则不更新release的body正文
