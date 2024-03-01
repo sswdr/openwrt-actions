@@ -1,5 +1,3 @@
-# rootfs.tar.gz和kernel与n1打包脚本制作镜像
-
 name: part-packit-img-2022
 
 on:
