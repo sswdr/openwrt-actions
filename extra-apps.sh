@@ -20,6 +20,7 @@ rm -rf package/openwrt-packages/luci-theme-argonne
 rm -rf package/openwrt-packages/luci-app-argonne-config
 rm -rf package/openwrt-packages/ddnsto
 rm -rf package/openwrt-packages/luci-app-ddnsto
+rm -rf package/openwrt-packages/luci-app-openclash
 
 rm -rf feeds/packages/net/zerotier
 rm -rf feeds/packages/net/baidupcs-web
