@@ -22,7 +22,6 @@ rm -rf package/openwrt-packages/ddnsto
 rm -rf package/openwrt-packages/luci-app-ddnsto
 
 rm -rf feeds/packages/net/zerotier
-rm -rf feeds/packages/net/baidupcs-go
 rm -rf feeds/packages/net/baidupcs-web
 rm -rf feeds/packages/multimedia/UnblockNeteaseMusic
 rm -rf feeds/packages/multimedia/UnblockNeteaseMusic-Go
