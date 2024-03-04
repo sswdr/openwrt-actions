@@ -1,17 +1,6 @@
-部署编译环境: env.md/{lede env}
+min-v1.config = [CONFIG_LINUX_5_10=y] + [核心配置] + [ipv6 固件] + [必要固定配置] - [无用默认选上的配置]
 
-进行如下操作：基于make defconfig生成的.config
-```
-一个主题[luci-theme-bootstrap]
-linux内核版本[CONFIG_LINUX_5_10=y]
-添加必要依赖: CONFIG_PACKAGE_pv=y(openwrt-ddbr 依赖于pv)
-添加必要依赖: CONFIG_PACKAGE_ethtool=y(用于调整太网适配器参数/模式)
-添加必要依赖: CONFIG_PACKAGE_unzip=y
-添加必要依赖: CONFIG_PACKAGE_ncat=y(测试github的push和update是否可用: ncat -zv github.com 443)
-去除无用默认选上的配置: # CONFIG_PACKAGE_UnblockNeteaseMusic-Go is not set
-添加了autocore-arm支持但是没有选择编译: # CONFIG_PACKAGE_autocore-arm is not set
-[核心配置] + [ipv6 固件]: 
-```
+其中 [核心配置] + [ipv6 固件] 如下: 
 ```
 Target System  ->  QEMU ARM Virtual Machine 
 Subtarget ->  QEMU ARMv**8 Virtual Machine (cortex-a53)
@@ -30,7 +19,7 @@ Utilities -> Disc -> blkid、fdisk、lsblk、parted
           -> Compression -> bsdtar、pigz
           -> Shells  ->  bash         
           -> gawk、getopt、losetup、tar、uuidgen
- Kernel modules  ->   Wireless Drivers -> kmod-brcmfmac(SDIO) 
+Kernel modules  ->   Wireless Drivers -> kmod-brcmfmac(SDIO) 
                                        -> kmod-brcmutil
                                        -> kmod-cfg80211
                                        -> kmod-mac80211 
@@ -43,4 +32,15 @@ ipv6 固件：
         2、Extra packages --->  ipv6helper（选上）
         3、Base system  --->  [*] Build with DHCPv6 support.  （如果前面不带 * 就选上）
         4、Network  --->  6in4 和 6rd 和 6to4  （三个都选上）
+```
+
+备注:
+```
+min-v1.config来自于: https://github.com/sswdr/openwrt-actions/blob/backup.2022.04.25/5.10-lede+kenzok8-min-v3.config
+
+min-v1.config = 5.10-lede+kenzok8-min-v3.config 在 backup.2022.04.25_build.2022.04.25.18.00 下执行 make defconfig
+
+其中lede+kenzok8-min-v1.config -> lede+kenzok8-min-v2.config -> 5.10-lede+kenzok8-min-v3.config
+
+具体改动参考文件对比工具对比差异
 ```

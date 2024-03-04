@@ -9,7 +9,7 @@ on:
       CONFIG_FILE_URL:
         description: '.config编译配置'
         required: true
-        default: https://raw.githubusercontent.com/sswdr/openwrt-actions/main/build.config/backup.2022.04.25/min-v1.config
+        default: https://raw.githubusercontent.com/sswdr/openwrt-actions/main/.github/workflows/backup/build-v1/min-v1.config
       BACKUP_ENV_URL:
         description: 'build-backup-env编译环境'
         required: true
