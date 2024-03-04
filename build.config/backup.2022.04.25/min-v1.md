@@ -30,7 +30,7 @@ Utilities -> Disc -> blkid、fdisk、lsblk、parted
           -> Compression -> bsdtar、pigz
           -> Shells  ->  bash         
           -> gawk、getopt、losetup、tar、uuidgen
- Kernel modules  ->   Wireless Drivers -> kmod-brcmfmac(SDIO) 
+Kernel modules  ->   Wireless Drivers -> kmod-brcmfmac(SDIO) 
                                        -> kmod-brcmutil
                                        -> kmod-cfg80211
                                        -> kmod-mac80211 
