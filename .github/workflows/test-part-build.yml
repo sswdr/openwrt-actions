@@ -191,7 +191,7 @@ jobs:
         cd files/etc/openclash/core/
         wget -q https://raw.githubusercontent.com/vernesong/OpenClash/core/master/dev/clash-linux-arm64.tar.gz
         tar -zxvf clash-linux-arm64.tar.gz && rm clash-linux-arm64.tar.gz
-        pwd && ll -alh ./
+        pwd && ls -alh ./
 
     - name: 准备files文件夹
       run: |
