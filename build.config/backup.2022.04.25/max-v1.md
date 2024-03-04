@@ -27,7 +27,7 @@
 <*> luci-app-hd-idle                                        [10kb]网络存储-硬盘休眠(未测试，编译备用)
 <*> luci-app-homebox                                        [2.8mb]服务-homebox(网络测速，使用仓库openwrt-packages-ssw)
 <*> luci-app-nlbwmon                                        [50KB]带宽监控(实时流量，统计，配置等)
-<*> luci-app-openclash                                      [3.6mb]服务-OpenClash(网络代理，首次使用，无法加载核心，无法在线更新，需要手动下载到目录；建议使用2024源码编译的luci-app-openclash，新版本可正常使用)
+<*> luci-app-openclash                                      {TODO待处理(使用仓库openwrt-packages-ssw，lede的源码by ssw 2024.03.03)} [3.6mb]服务-OpenClash(网络代理，首次使用，无法加载核心，无法在线更新，需要手动下载到目录；建议使用2024源码编译的luci-app-openclash，新版本可正常使用)
 <*> luci-app-passwall                                       [1mb]服务-PassWall(暂不使用，编译备用)(都是默认选上的和2022的一致)
         [*] Transparent Proxy
         [ ] Include Brook
@@ -84,7 +84,7 @@
 <*> luci-app-upnp                                           [100KB]服务-UPnP(UPnP 允许局域网内客户端自动设置路由器上的端口转发)
 <*> luci-app-watchcat                                       TODO待处理[8kb]断网检测功能与定时重启
 <*> luci-app-webadmin                                       [5kb]系统-web管理(openwrt的web管理，例如设置端口号之类的)
-<*> luci-app-zerotier                                       [500KB](能用,zerotier更新至1.12.2，luci-app-zerotier启动停止正常，使用无问题)VPN-ZeroTier
+<*> luci-app-zerotier                                       [500KB]VPN-ZeroTier(能用,zerotier更新至1.12.2，luci-app-zerotier启动停止正常，使用无问题)(使用仓库openwrt-packages-ssw，lede的源码by ssw 2024.03.03)
 
 > Network > SSH
 <*> openssh-sftp-server                                     [60kb]
