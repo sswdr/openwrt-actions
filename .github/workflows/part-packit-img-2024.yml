@@ -7,7 +7,7 @@ on:
       openwrt_armvirt:
         description: '打包使用的rootfs.tar.gz,链接或者文件目录'
         required: true
-        default: https://github.com/sswdr/openwrt-actions/releases/download/backup.2024.01.01_build.2024.02.28.16.33/openwrt-armvirt-64-generic-rootfs.tar.gz
+        default: https://github.com/sswdr/openwrt-actions/releases/download/backup.2024.01.01_build.2024.03.05.01.03/openwrt-armvirt-64-generic-rootfs.tar.gz
       script_repo_url:
         description: '打包仓库地址'
         required: true
@@ -43,7 +43,7 @@ on:
       tag_name:
         description: '指定tag名称,为false则使用新的tag名称'
         required: true
-        default: backup.2024.01.01_build.2024.02.28.16.33
+        default: backup.2024.01.01_build.2024.03.05.01.03
 
 env:
   openwrt_armvirt: ${{ github.event.inputs.openwrt_armvirt }}
