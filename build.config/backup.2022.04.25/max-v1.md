@@ -8,6 +8,7 @@
         [*] Include Binary File
 <*> luci-app-advanced                                       [15kb]系统-高级设置(能用，暂不需要)(luci-app-advanced包含了luci-app-fileassistant，同时选择会编译的install会错误，文件冲突)
 <*> luci-app-advanced-reboot                                [10kb]系统-高级重启(能用，暂不需要)
+<*> luci-app-autoreboot                                     [3kb]系统-定时重启
 <*> luci-app-autotimeset                                    [10kb]Control-任务设置(能用)(使用仓库openwrt-packages-ssw)(设置定时关机，重启等等)
 <*> luci-app-baidupcs-web                                   [6.5mb]网络存储-BaiduPCS Web(能用)(不选择<> baidupcs-go也可以正常使用，使用仓库openwrt-packages-ssw，lede的源码by ssw 2024.02.16)
 <*> luci-app-cifs-mount                                     [5kb]网络存储-挂载SMB网络共享(挂载SMB到本地，修改挂载后，需要重启使用这些文件夹的客户端)
