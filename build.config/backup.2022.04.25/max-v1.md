@@ -28,7 +28,7 @@
 <*> luci-app-hd-idle                                        [10kb]网络存储-硬盘休眠(未测试，编译备用)
 <*> luci-app-homebox                                        [2.8mb]服务-homebox(网络测速，使用仓库openwrt-packages-ssw)
 <*> luci-app-nlbwmon                                        [50KB]带宽监控(实时流量，统计，配置等)
-<*> luci-app-openclash                                      {TODO待处理(使用仓库openwrt-packages-ssw，lede的源码by ssw 2024.03.03)} [3.6mb]服务-OpenClash(网络代理，首次使用，无法加载核心，无法在线更新，需要手动下载到目录；建议使用2024源码编译的luci-app-openclash，新版本可正常使用)
+<*> luci-app-openclash                                      [3.6mb]服务-OpenClash(使用仓库openwrt-packages-ssw，lede的源码by ssw 2024.03.03)(网络代理，首次使用，无法加载核心，无法在线更新，需要手动下载到目录；建议使用2024源码编译的luci-app-openclash，新版本可正常使用)
 <*> luci-app-passwall                                       [1mb]服务-PassWall(暂不使用，编译备用)(都是默认选上的和2022的一致)
         [*] Transparent Proxy
         [ ] Include Brook
