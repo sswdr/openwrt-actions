@@ -56,7 +56,6 @@
 <*> luci-app-ramfree                                        [5KB]状态-释放内存(释放内存)
 <*> luci-app-samba4                                         [8mb]网络存储-网络共享(正常使用，需要调好配置文件)(支持Samba 4.x，Samba 4.x完全兼容Windows 10。Samba 4.x包括对SMBv2和SMBv3协议的支持)
 <*> luci-app-serverchan                                     [200KB]服务-微信推送(正常使用)
-<*> luci-app-statistics                                     [40kb]统计(能用，暂不需要，不能实时查看)(状态统计图表)
 <*> luci-app-ssr-plus                                       TODO待处理[200kb](新增了部分Include)
         [*] Include Kcptun                              TODO待处理[2.2MB](这次新增的待测试)
         [*] Include NaiveProxy                          TODO待处理[2.4MB](这次新增的待测试)
@@ -72,6 +71,7 @@
         [*] Include Trojan                              TODO待处理[260kb](这次新增的待测试)
         [*] Include Shadowsocks V2ray Plugin            TODO待处理[4.3mb](这次新增的待测试)
         [*] Include Xray                                    [6.6mb]
+<*> luci-app-statistics                                     [40kb]统计(能用，暂不需要，不能实时查看)(状态统计图表)
 <*> luci-app-transmission                                   [1.5mb]网络存储-transmission(下载种子，相对qbittorrent占用资源少，tr稳，适合保种，管理种子也方便)
 <*> luci-app-ttyd                                           [250KB]系统-putty(网页终端命令窗)
 <*> luci-app-turboacc                                       [10KB]网络-Turbo ACC 网络加速设置(开源流量分载驱动 支持 Fast Path 或者 硬件 NAT)
