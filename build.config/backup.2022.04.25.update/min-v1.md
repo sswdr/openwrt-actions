@@ -4,8 +4,8 @@
 ```
 确认当前默认：
     一个主题[luci-theme-bootstrap]
-    linux内核版本[CONFIG_LINUX_5_15=y]
-    暂时未选不清楚作用来自https://github.com/huangqian8/Cloud-N1-OpenWrt/blob/main/config.sh中[Boot Loaders  --->  <*> grub2-efi-arm]
+    linux内核版本[CONFIG_LINUX_5_10=y]
+    添加了autocore-arm依赖支持但是没有选择编译[# CONFIG_PACKAGE_autocore-arm is not set]
 
 去掉非必要依赖：
     > LuCI > 3. Applications
@@ -33,45 +33,38 @@
 2.执行make menuconfig：选择如下依赖(核心配置 + ipv6 支持)
 ```
 Target System  ->  QEMU ARM Virtual Machine 
-Subtarget ->  64-bit ARM machines
-Target Profile  ->  Generic EFI Boot
-Target Images
-    [*] tar.gz
-    [*] GZip images
-    (128) Kernel partition size (in MiB)
-    (512) Root filesystem partition size (in MiB)
-
-Languages -> Perl               
+Subtarget      ->  QEMU ARMv8 Virtual Machine (cortex-a53)
+Target Profile ->  Default
+Target Images  ->  tar.gz (只选这一个)
+Languages -> Perl
              ->  perl-http-date
              ->  perlbase-file
              ->  perlbase-getopt
              ->  perlbase-time
-             ->  perlbase-unicode                              
-             ->  perlbase-utf8        
-
-Utilities -> Compression -> bsdtar、pigz
-          -> Disc -> blkid、fdisk、lsblk、parted
-          -> Filesystem -> attr、btrfs-progs(Build with zstd support)、chattr、dosfstools、
+             ->  perlbase-unicode
+             ->  perlbase-utf8
+Utilities -> Disc -> blkid、fdisk、lsblk、parted
+          -> Filesystem -> attr、btrfs-progs([*]Build with zstd support)、chattr、dosfstools、
                            e2fsprogs、f2fs-tools、f2fsck、lsattr、mkf2fs、xfs-fsck、xfs-mkfs
-          -> Shells  ->  bash         
+          -> Compression -> bsdtar、pigz
+          -> Shells  ->  bash
           -> gawk、getopt、losetup、tar、uuidgen
-
 Kernel modules  ->   Wireless Drivers
-        -> kmod-brcmfmac(SDIO)
-            [*]   Enable SDIO bus interface support
-            [*]   Enable USB bus interface support
-            [*]   Enable PCIE bus interface support
-        -> kmod-brcmutil
-        -> kmod-cfg80211
-        -> kmod-mac80211
-
+          -> kmod-brcmfmac(SDIO)
+              [*]   Enable SDIO bus interface support
+              [*]   Enable USB bus interface support
+              [*]   Enable PCIE bus interface support
+         -> kmod-brcmutil
+         -> kmod-cfg80211
+         -> kmod-mac80211
 Network  ->  WirelessAPD -> hostapd-common
                           -> wpad-basic
                           -> wpa-cli
           ->  iw
 
 ipv6支持：
-    Extra packages --->  ipv6helper
-    Base system  --->  [*] Build with DHCPv6 support
-    Network  --->  6in4、6rd、6to4
+        1、Global build settings --->  Enable IPv6 support in packages (NEW)（选上）
+        2、Extra packages --->  ipv6helper（选上）
+        3、Base system  --->  [*] Build with DHCPv6 support.  （如果前面不带 * 就选上）
+        4、Network  --->  6in4 和 6rd 和 6to4  （三个都选上）
 ```
