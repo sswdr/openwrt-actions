@@ -156,8 +156,10 @@ jobs:
         sed -i "s/luci-theme-bootstrap/$build_config_default_theme/g" ./feeds/luci/collections/luci/Makefile
         echo "--------自定义配置-build信息"
         sed -i 's/OpenWrt /杀生丸大人 Build $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g' package/lean/default-settings/files/zzz-default-settings
-        echo "--------其他通用配置-添加autocore-arm支持可配置, 需要手动在.config/make menuconfig中选择启用"
-        sed -i 's/TARGET_rockchip/TARGET_rockchip\|\|TARGET_armvirt/g' package/lean/autocore/Makefile
+        if [ "$repo_branch" == "backup.2022.04.25" ]; then
+            echo "--------backup.2022.04.25-其他配置-添加autocore-arm支持可配置, 需要手动在.config/make menuconfig中选择启用"
+            sed -i 's/TARGET_rockchip/TARGET_rockchip\|\|TARGET_armvirt/g' package/lean/autocore/Makefile
+        fi
 
     - name: 加载扩展仓库
       if: env.backup_env == 'false' && env.extra_apps_sh != 'false'
