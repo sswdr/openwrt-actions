@@ -9,14 +9,18 @@ BRANCH_SSW=${1:-main}
 BRANCH=${2:-backup.2022.04.25}
 
 # 自用备份插件库
-git clone https://github.com/rin0612/openwrt-packages-ssw  package/openwrt-packages-ssw -b $BRANCH_SSW
+echo "执行: git clone --depth=1 https://github.com/rin0612/openwrt-packages-ssw  package/openwrt-packages-ssw -b $BRANCH_SSW"
+git clone --depth=1 https://github.com/rin0612/openwrt-packages-ssw  package/openwrt-packages-ssw -b $BRANCH_SSW
 
 # kenzok8 packages
-git clone https://github.com/rin0612/openwrt-packages  package/openwrt-packages -b $BRANCH
+echo "执行: git clone --depth=1 https://github.com/rin0612/openwrt-packages  package/openwrt-packages -b $BRANCH"
+git clone --depth=1 https://github.com/rin0612/openwrt-packages  package/openwrt-packages -b $BRANCH
 
 # kenzok8 vpn相关
-git clone https://github.com/rin0612/small  package/small -b $BRANCH
+echo "执行: git clone --depth=1 https://github.com/rin0612/small  package/small -b $BRANCH"
+git clone --depth=1 https://github.com/rin0612/small  package/small -b $BRANCH
 
+echo "执行: 移除重复依赖"
 rm -rf package/openwrt-packages/UnblockNeteaseMusic
 rm -rf package/openwrt-packages/luci-app-unblockneteasemusic
 rm -rf package/openwrt-packages/luci-theme-argon
@@ -49,5 +53,6 @@ rm -rf feeds/luci/applications/luci-app-baidupcs-web
 # #src-link custom /usr/src/openwrt/custom-feed
 # EOF
 
+echo "执行: 更新安装feeds"
 ./scripts/feeds update -a
 ./scripts/feeds install -a
