@@ -20,10 +20,10 @@ on:
         description: '是否加载离线编译env中的dl包(值为false则只通过Makefile下载对应dl,为链接则导入文件后会通过hash值校验通过则跳过下载)'
         required: false
         default: https://github.com/sswdr/openwrt-actions/releases/download/backup.2022.04.25_build.2022.04.25.18.00/env-dl.tar.gz
-      extra_apps_sh:
-        description: '插件扩展仓库/feeds调整脚本(指定仓库根目录下不存在的脚本会跳过)'
+      extra_apps_config:
+        description: '插件扩展仓库/feeds调整脚本和分支(指定extra_apps_sh=false会跳过)'
         required: false
-        default: extra-apps.sh
+        default: "{\"extra_apps_sh\":\"extra-apps.sh\",\"extra_apps_branch\":\"main backup.2022.04.25\"}"
       config_file:
         description: '编译配置.config文件'
         required: true
@@ -46,7 +46,8 @@ env:
   repo_branch: ${{ github.event.inputs.repo_branch }}
   backup_env: ${{ github.event.inputs.backup_env }}
   backup_env_dl: ${{ github.event.inputs.backup_env_dl }}
-  extra_apps_sh: ${{ github.event.inputs.extra_apps_sh }}
+  extra_apps_sh: ${{fromJSON(github.event.inputs.extra_apps_config).extra_apps_sh}}
+  extra_apps_branch: ${{fromJSON(github.event.inputs.extra_apps_config).extra_apps_branch}}
   config_file: ${{ github.event.inputs.config_file }}
   make_defconfig: ${{ github.event.inputs.make_defconfig }}
   build_config_host_ip: ${{fromJSON(github.event.inputs.build_config).host_ip}}
@@ -163,10 +164,10 @@ jobs:
       run: |
         if [ -e "$extra_apps_sh" ]; then
           echo "注意: 加载扩展仓库之前, 务必先安装feeds和更新feeds, 否则会一堆依赖不全"
-          echo "加载扩展仓库, 将执行以下内容: " && cat $extra_apps_sh && echo "开始执行: "
+          echo "加载扩展仓库, 使用分支$extra_apps_branch, 将执行以下内容: " && cat $extra_apps_sh && echo "开始执行: "
           chmod +x $extra_apps_sh
           cd openwrt
-          $GITHUB_WORKSPACE/$extra_apps_sh
+          $GITHUB_WORKSPACE/$extra_apps_sh $extra_apps_branch
         else
           echo "加载扩展仓库: 跳过"
         fi
