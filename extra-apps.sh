@@ -6,7 +6,7 @@
 
 BRANCH_SSW=${1:-main}
 
-BRANCH=${1:-backup.2022.04.25}
+BRANCH=${2:-backup.2022.04.25}
 
 # 自用备份插件库
 git clone https://github.com/rin0612/openwrt-packages-ssw  package/openwrt-packages-ssw -b $BRANCH_SSW
