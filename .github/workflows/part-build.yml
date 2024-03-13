@@ -163,8 +163,7 @@ jobs:
       if: env.backup_env == 'false' && env.extra_apps_sh != 'false'
       run: |
         if [ -e "$extra_apps_sh" ]; then
-          echo "注意: 加载扩展仓库之前, 务必先安装feeds和更新feeds, 否则会一堆依赖不全"
-          echo "加载扩展仓库, 使用分支$extra_apps_branch, 将执行以下内容: " && cat $extra_apps_sh && echo "开始执行: "
+          echo "注意: 加载扩展仓库之前, 务必先安装feeds和更新feeds, 否则会一堆依赖不全, sh[$GITHUB_WORKSPACE/$extra_apps_sh $extra_apps_branc]"
           chmod +x $extra_apps_sh
           cd openwrt
           $GITHUB_WORKSPACE/$extra_apps_sh $extra_apps_branch
