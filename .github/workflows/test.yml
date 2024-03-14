@@ -1,4 +1,4 @@
-name: part-packit-img-2024
+name: ${{ env.openwrt_armvirt }}
 
 on:
   repository_dispatch:
