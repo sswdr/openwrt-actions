@@ -7,10 +7,6 @@ on:
   repository_dispatch:
   workflow_dispatch:
     inputs:
-      runs_on:
-        description: 'jobs build runs on xxx'
-        required: true
-        default: ubuntu-24.04
       repo_url:
         description: '编译仓库地址([https://github.com/coolsnowwolf/lede]/[https://github.com/rin0612/lede])'
         required: true
@@ -49,7 +45,6 @@ on:
         default: "{\"releases_target_images\":true,\"releases_bin\":true,\"releases_env\":true,\"releases_env_dl\":true,\"artifact_target_images\":false,\"artifact_bin\":false,\"artifact_env\":false,\"artifact_env_dl\":false}"
 
 env:
-  runs_on: ${{ github.event.inputs.runs_on }}
   repo_url: ${{ github.event.inputs.repo_url }}
   repo_branch: ${{ github.event.inputs.repo_branch }}
   backup_env: ${{ github.event.inputs.backup_env }}
@@ -73,7 +68,7 @@ env:
 
 jobs:
   build:
-    runs-on: ${{ env.runs_on }}
+    runs-on: ubuntu-24.04
     steps:
     - name: Checkout
       uses: actions/checkout@main
