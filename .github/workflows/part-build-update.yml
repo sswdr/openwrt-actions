@@ -49,6 +49,7 @@ on:
         default: "{\"releases_target_images\":true,\"releases_bin\":true,\"releases_env\":true,\"releases_env_dl\":true,\"artifact_target_images\":false,\"artifact_bin\":false,\"artifact_env\":false,\"artifact_env_dl\":false}"
 
 env:
+  runs_on: ${{ github.event.inputs.runs_on }}
   repo_url: ${{ github.event.inputs.repo_url }}
   repo_branch: ${{ github.event.inputs.repo_branch }}
   backup_env: ${{ github.event.inputs.backup_env }}
