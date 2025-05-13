@@ -3,8 +3,8 @@
 进行如下操作：基于min-v2.config
 ```
 > Target Images
-(26) Kernel partition size (in MiB)
-(260) Root filesystem partition size (in MB)
+(32) Kernel partition size (in MiB)
+(480) Root filesystem partition size (in MB)
 
 > LuCI > Applications
 <*> luci-app-accesscontrol                                  [5kb]服务-上网时间控制(能用)(控制ip/mac上网时间)
