@@ -4,7 +4,7 @@
 ```
 > Target Images
 (32) Kernel partition size (in MiB)
-(480) Root filesystem partition size (in MB)
+(960) Root filesystem partition size (in MB)
 
 > LuCI > Applications
 <*> luci-app-accesscontrol                                  [5kb]服务-上网时间控制(能用)(控制ip/mac上网时间)
