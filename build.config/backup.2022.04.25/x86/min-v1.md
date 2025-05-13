@@ -45,6 +45,7 @@
     > LuCI > 5. Protocols
         < > luci-proto-bonding
         < > luci-proto-wireguard
+    .config文件手动处理：CONFIG_PACKAGE_wsdd2 is not set
   
 添加必要依赖：
     > Base system > [*] Customize busybox options > Linux System Utilities > [*] lspci    (查看PCI总线)
