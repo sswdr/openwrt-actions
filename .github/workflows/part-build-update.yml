@@ -145,6 +145,7 @@ jobs:
       if: env.backup_env == 'false'
       run: cd openwrt && ./scripts/feeds install -a
 
+      # TODO 目前内核版本指定只对armvirt有效，其余的是默认的
     - name: 加载自定义配置
       if: env.backup_env == 'false'
       run: |
