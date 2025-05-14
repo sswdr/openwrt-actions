@@ -31,21 +31,24 @@
 <*> luci-app-ramfree                                        [5KB]状态-释放内存(释放内存)
 <*> luci-app-samba4                                         [8mb]网络存储-网络共享(正常使用，需要调好配置文件)(支持Samba 4.x，Samba 4.x完全兼容Windows 10。Samba 4.x包括对SMBv2和SMBv3协议的支持)
 <*> luci-app-serverchan                                     [200KB]服务-微信推送(正常使用)
-<*> luci-app-ssr-plus                                       TODO待处理[200kb](新增了部分Include)
-        [*] Include Kcptun                              TODO待处理[2.2MB](这次新增的待测试)
-        [*] Include NaiveProxy                          TODO待处理[2.4MB](这次新增的待测试)
-        [*] Include ipt2socks                           TODO待处理[35kb](这次新增的待测试)
-        [*] Include Redsocks2                           TODO待处理[60kb](这次新增的待测试)
-        [*] Include Shadowsocks Libev Client            TODO待处理[100kb](这次新增的待测试)
-        [*] Include Shadowsocks Libev Server            TODO待处理[55kb](这次新增的待测试)       
-        [*] Include Shadowsocks Rust Client                 [2.5mb]
-        [*] Include Shadowsocks Rust Server                 [1.7mb]
-        [*] Include ShadowsocksR Libev Client               [120kb]
-        [*] Include ShadowsocksR Libev Server           TODO待处理[65kb](这次新增的待测试) 
-        [*] Include Shadowsocks Simple Obfs Plugin      TODO待处理[30kb](这次新增的待测试)
-        [*] Include Trojan                              TODO待处理[260kb](这次新增的待测试)
-        [*] Include Shadowsocks V2ray Plugin            TODO待处理[4.3mb](这次新增的待测试)
-        [*] Include Xray                                    [6.6mb]
+<*> luci-app-ssr-plus
+        Shadowsocks Client Selection (Shadowsocks-rust)
+        Shadowsocks Server Selection (Shadowsocks-rust)
+        V2ray-core Selection (Xray-core)
+    -*- Include ChinaDNS-NG 
+    [*] Include MosDNS
+    [*] Include Hysteria
+    [*] Include Tuic-Client
+    [*] Include Shadow-TLS
+    -*- Include IPT2Socks
+    [*] Include Kcptun
+    [*] Include NaiveProxy
+    [*] Include Redsocks2
+    [*] Include Shadowsocks Simple Obfs Plugin
+    [*] Include Shadowsocks V2ray Plugin
+    [*] Include ShadowsocksR Libev Client
+    [*] Include ShadowsocksR Libev Server
+    [*] Include Trojan
 <*> luci-app-transmission                                   [1.5mb]网络存储-transmission(下载种子，相对qbittorrent占用资源少，tr稳，适合保种，管理种子也方便)
 <*> luci-app-ttyd                                           [250KB]系统-putty(网页终端命令窗)
 <*> luci-app-unblockmusic                                   [10kb](使用仓库openwrt-packages-ssw，lede的源码by ssw 2024.02.16)
