@@ -1,7 +1,11 @@
 部署编译环境: env.md/{lede & extra-apps.sh env}
 
-进行如下操作：基于min-v2-2024.config
+进行如下操作：基于min-v2.config
 ```
+> Target Images
+(32) Kernel partition size (in MiB)
+(960) Root filesystem partition size (in MB)
+
 > LuCI > Applications
 <*> luci-app-accesscontrol                                  [5kb]服务-上网时间控制(能用)(控制ip/mac上网时间)
 <*> luci-app-autoreboot                                     [3kb]系统-定时重启
@@ -62,6 +66,7 @@
 > Utilities
 <*> adb                                                     [60kb](能用)(Android Debug Bridge CLI tool)
 <*> docker-compose                                          [8mb](能用)
+<*> tree
 ```
 
 支持usb-net-rndis网络共享
