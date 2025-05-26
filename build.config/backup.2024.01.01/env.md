@@ -1,3 +1,12 @@
+当前分支backup.2024.01.01备注:
+```
+1.此目录下编译target：CONFIG_TARGET_armvirt_64，为了得到openwrt-armvirt-64-default-rootfs.tar.gz
+
+2.默认编译内核选择5.15
+
+3.version：R23.11.11
+```
+
 lede env:
 ```
 git clone --depth=1 https://github.com/rin0612/lede -b backup.2024.01.01 openwrt
