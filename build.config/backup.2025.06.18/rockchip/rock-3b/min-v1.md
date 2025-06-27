@@ -2,7 +2,7 @@
 
 2.执行make menuconfig：选择如下依赖(核心配置 + ipv6 支持)
 ```
-rock 3b默认：DEVICE_PACKAGES := 
+rock 3b已选择的编译配置默认：DEVICE_PACKAGES := 
     kmod-usb-net-cdc-ncm
     kmod-usb-net-rndis
     kmod-ata-ahci
@@ -54,6 +54,9 @@ ipv6支持：
     一个主题[luci-theme-bootstrap]
     linux内核版本[CONFIG_LINUX_6_6=y]
 
+添加主题：
+    <*> luci-theme-argon
+
 去掉非必要依赖：
     > LuCI > 3. Applications
         < > luci-app-accesscontrol
@@ -92,15 +95,19 @@ ipv6支持：
         < > samba4-libs  下面全部,包括wsdd2
     > Extra packages
         < > autosamba
+    > Base system > [*] Customize busybox options > Linux System Utilities
+        < > lspci
+        < > lsusb
     .config文件手动处理：CONFIG_PACKAGE_wsdd2 is not set
 
 添加必要依赖：
-    > Base system > [*] Customize busybox options > Linux System Utilities > [*] lspci    (查看PCI总线)
-    > Network > NMAP Suite  <*> ncat            (例如测试github的push和update是否可用: ncat -zv github.com 443)
-    > Network  <*> ethtool                      (用于调整太网适配器参数/模式)
-    > Utilities > Compression  <*> unzip        (解压zip)
-    > Utilities  <*> pv                         (openwrt-ddbr命令 依赖于pv)
-    > Network > SSH  <*> openssh-sftp-server    (提供sftp服务)
-    > Network > File Transfer  <*> curl         (下载文件)
-    > Base system  <*> resolveip                (用于解析主机名为IP地址: resolveip sswPC)
+    > Network > NMAP Suite  <*> ncat                            (例如测试github的push和update是否可用: ncat -zv github.com 443)
+    > Network  <*> ethtool                                      (用于调整太网适配器参数/模式)
+    > Utilities > Compression  <*> unzip                        (解压zip)
+    > Utilities <*> pv                                          (openwrt-ddbr命令 依赖于pv)
+    > Utilities <*> pciutils，包含pciids、libpci、libkmod         (查看PCI总线，非busybox的不完整的lspci命令，此处的lspci -vv才能输出详细的pcie信息)
+    > Utilities <*> usbutils <*> usbids                         (完整的lsusb功能)
+    > Network > SSH  <*> openssh-sftp-server                    (提供sftp服务)
+    > Network > File Transfer  <*> curl                         (下载文件)
+    > Base system  <*> resolveip                                (用于解析主机名为IP地址: resolveip sswPC)
 ```
