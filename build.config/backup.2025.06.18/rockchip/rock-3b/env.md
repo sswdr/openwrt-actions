@@ -1,10 +1,12 @@
 当前分支backup.2025.06.18备注:
 ```
-1.此目录下编译target：Target System (Rockchip)、Subtarget (RK33xx/RK35xx boards (64 bit))、Target Profile (Radxa ROCK 3B)
+1.此目录下编译target：TargetSystem(Rockchip)、Subtarget(RK33xx/RK35xxboards(64bit))、TargetProfile(RadxaROCK3B)
 
 2.默认编译内核选择6.6，即6.6.93
 
-3.version：R24.10
+3.version：24.10.1
+LEDER25.5.25/LuCIbackup.2025.06.18.openwrt-23.05branchgit-25.167.72489-7cd82b0
+PoweredbyLuCIbackup.2025.06.18.openwrt-23.05branch(git-25.167.72489-7cd82b0)/OpenWrt24.10.1(r0-80d06981)
 ```
 
 lede env:

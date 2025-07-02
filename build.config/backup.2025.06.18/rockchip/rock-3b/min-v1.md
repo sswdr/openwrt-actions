@@ -55,7 +55,7 @@ ipv6支持：
     linux内核版本[CONFIG_LINUX_6_6=y]
 
 添加主题：
-    <*> luci-theme-argon
+    <*> luci-theme-argon  # 注意：默认是勾选luci-theme-bootstrap=y，且不可取消的，勾选上luci-theme-argon=y就行，默认会先启用luci-theme-argon；壁纸目录：/www/luci-static/argon/background
 
 去掉非必要依赖：
     > LuCI > 3. Applications
@@ -96,8 +96,8 @@ ipv6支持：
     > Extra packages
         < > autosamba
     > Base system > [*] Customize busybox options > Linux System Utilities
-        < > lspci
-        < > lsusb
+        < > lspci  # BusyBox内置的 lspci 功能非常有限，不支持 -v、-vv 等详细输出选项。BusyBox的 lspci 仅能显示最基本的PCI设备列表，无法提供详细信息（如厂商、设备名称、配置空间等）
+        < > lsusb  # BusyBox内置的 lsusb 同上
     .config文件手动处理：CONFIG_PACKAGE_wsdd2 is not set
 
 添加必要依赖：
