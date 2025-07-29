@@ -303,12 +303,18 @@ jobs:
       if: env.output_config_artifact_target_images == 'true' || env.output_config_releases_target_images == 'true'
       run: |
         cd openwrt
-        cp -R bin/targets target-images
-        rm -rf target-images/*/*/packages
-        cp /env.txt target-images/
+        mkdir target-images
+        # 移动bin目录下的全部*.tar.gz、*.img.gz到target-images目录下
+        find bin -type f \( -name "*.tar.gz" -o -name "*.img.gz" \) -exec mv -v -t target-images {} +
+        
+        cp -R bin/targets target-images-info
+        cp /env.txt target-images-info/
+        rm -rf target-images-info/*/*/packages
+        tar -zcf target-images/target-images-info.tar.gz target-images-info/
+        
         tar -zcf /mnt/workdir/output/target-images.tar.gz target-images/
+        mv target-images /mnt/workdir/output/
 
-      # 注意：如果[导出的target_images] = false，那么[导出的bin] = true 将会导出整个bin目录包括[导出的target_images]
     - name: output准备-导出的bin
       if: env.output_config_artifact_bin == 'true' || env.output_config_releases_bin == 'true'
       run: |
@@ -380,7 +386,7 @@ jobs:
       uses: rin0612/release-action@v1.14.0
       with:
         tag: ${{ env.repo_branch }}_build.${{ env.build_date }}
-        artifacts: /mnt/workdir/output/target-images.tar.gz
+        artifacts: /mnt/workdir/output/target-images/*
         allowUpdates: true
         token: ${{ secrets.GITHUB_TOKEN }}
         bodyFile: /env.txt
