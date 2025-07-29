@@ -4,7 +4,7 @@
 
 2.默认编译内核选择6.6，即6.6.93
 
-3.version：24.10.1
+3.version：24.10.1 R25.5.25
 LEDER25.5.25/LuCIbackup.2025.06.18.openwrt-23.05branchgit-25.167.72489-7cd82b0
 PoweredbyLuCIbackup.2025.06.18.openwrt-23.05branch(git-25.167.72489-7cd82b0)/OpenWrt24.10.1(r0-80d06981)
 ```

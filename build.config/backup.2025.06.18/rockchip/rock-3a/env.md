@@ -1,5 +1,11 @@
 ```
 和rock-3b的区别：
+
+rock-3b默认是生成双网口的配置
+rock-3a默认是生成单网口的配置
+    target/linux/rockchip/armv8/base-files/etc/board.d/02_network
+
+.config区别
     # CONFIG_TARGET_rockchip_armv8_DEVICE_radxa_rock-3a is not set
     CONFIG_TARGET_rockchip_armv8_DEVICE_radxa_rock-3b=y
     改为

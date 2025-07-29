@@ -1,7 +1,4 @@
-# update by 2025.05.12 from part-build-2022.yml
-# 1.补充编译x86完成后导出会报错，需要调整，x86没有这个openwrt*.tar.gz
-# 2.临时调整下，不用rootfs导出了，使用target_images
-name: part-build-latest
+name: part-build-2025
 
 on:
   repository_dispatch:
@@ -12,9 +9,9 @@ on:
         required: true
         default: https://github.com/rin0612/lede
       repo_branch:
-        description: '编译仓库分支([backup.2022.04.25]/[backup.2024.01.01]/[master])'
+        description: '编译仓库分支([backup.2025.06.18]/[backup.2022.04.25]/[backup.2024.01.01]/[master])'
         required: true
-        default: backup.2022.04.25
+        default: backup.2025.06.18
       backup_env:
         description: '是否加载离线编译env(值为false则不加载,为链接则使用离线env)'
         required: false
@@ -22,15 +19,15 @@ on:
       backup_env_dl:
         description: '是否加载离线编译env中的dl包(值为false则只通过Makefile下载对应dl,为链接则导入文件后会通过hash值校验通过则跳过下载)'
         required: false
-        default: https://github.com/sswdr/openwrt-actions/releases/download/backup.2022.04.25_build.2022.04.25.18.00/env-dl.tar.gz
+        default: false
       extra_apps_config:
         description: '插件扩展仓库/feeds调整脚本和分支(指定extra_apps_sh=false会跳过)'
         required: false
-        default: "{\"extra_apps_sh\":\"extra-apps.sh\",\"extra_apps_branch\":\"main backup.2022.04.25\"}"
+        default: "{\"extra_apps_sh\":\"false\",\"extra_apps_branch\":\"false\"}"
       config_file:
         description: '编译配置.config文件'
         required: true
-        default: build.config/backup.2022.04.25/max-v1.config
+        default: build.config/backup.2025.06.18/rockchip/rock-3b/min-v1.config
       make_defconfig:
         description: '是否执行make defconfig(不执行make defconfig将以当前.config直接编译,修改仓库时不会引入其他默认选上的不需要的依赖)'
         required: true
@@ -38,11 +35,11 @@ on:
       build_config:
         description: '自定义配置: 主机ip地址,主机名,内核版本,默认主题(luci-theme-bootstrap/luci-theme-argonne,在.config必须包含这个主题)'
         required: true
-        default: "{\"host_ip\":\"192.168.5.25\",\"host_name\":\"sswOpenWrt\",\"kernel_patchver\":\"5.10\",\"default_theme\":\"luci-theme-argonne\"}"
+        default: "{\"host_ip\":\"192.168.5.200\",\"host_name\":\"sswOpenWrt\",\"kernel_patchver\":\"default\",\"default_theme\":\"default\"}"
       output_config:
         description: '编译输出配置: 编译target_images到artifact,编译bin_packages到artifact,编译env到artifact,编译env带dl到artifact,编译target_images到releases,编译bin_packages到releases,编译env到releases,编译env带dl到releases'
         required: true
-        default: "{\"releases_target_images\":true,\"releases_bin\":true,\"releases_env\":true,\"releases_env_dl\":true,\"artifact_target_images\":false,\"artifact_bin\":false,\"artifact_env\":false,\"artifact_env_dl\":false}"
+        default: "{\"releases_target_images\":false,\"releases_bin\":false,\"releases_env\":false,\"releases_env_dl\":false,\"artifact_target_images\":true,\"artifact_bin\":true,\"artifact_env\":false,\"artifact_env_dl\":false}"
 
 env:
   repo_url: ${{ github.event.inputs.repo_url }}
