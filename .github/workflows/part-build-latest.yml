@@ -23,6 +23,10 @@ on:
         description: '是否加载离线编译env中的dl包(值为false则只通过Makefile下载对应dl,为链接则导入文件后会通过hash值校验通过则跳过下载)'
         required: false
         default: https://github.com/sswdr/openwrt-actions/releases/download/backup.2022.04.25_build.2022.04.25.18.00/env-dl.tar.gz
+      move_files_folder:
+        description: '是否加载本仓库的files文件夹到固件中(例如默认配置、默认主题壁纸)'
+        required: false
+        default: false
       extra_apps_config:
         description: '插件扩展仓库/feeds调整脚本和分支(指定extra_apps_sh=false会跳过)'
         required: false
@@ -49,6 +53,7 @@ env:
   repo_branch: ${{ github.event.inputs.repo_branch }}
   backup_env: ${{ github.event.inputs.backup_env }}
   backup_env_dl: ${{ github.event.inputs.backup_env_dl }}
+  move_files_folder: ${{ github.event.inputs.move_files_folder }}
   extra_apps_sh: ${{fromJSON(github.event.inputs.extra_apps_config).extra_apps_sh}}
   extra_apps_branch: ${{fromJSON(github.event.inputs.extra_apps_config).extra_apps_branch}}
   config_file: ${{ github.event.inputs.config_file }}
@@ -214,12 +219,19 @@ jobs:
         sed -i "s/[0-9]\{4\}\.[0-9]\{2\}\.[0-9]\{2\}/$(TZ=UTC-8 date "+%Y.%m.%d")/" /mnt/workdir/openwrt/package/lean/default-settings/files/zzz-default-settings
 
     - name: 准备files文件夹
+      if: env.move_files_folder == 'true'
       run: |
-        if [ -e files ]; then
-          rm -rf openwrt/files && mv files openwrt/files
-          echo "当前仓库存在files文件夹,将替换到openwrt/files"
-        else
-          echo "当前仓库不存在files文件夹,将不替换到openwrt/files,跳过"
+        if [[ "$repo_branch" == "backup.2022.04.25" || "$repo_branch" == "backup.backup.2024.01.01" ]]; then
+            if [ -e files ]; then
+              rm -rf openwrt/files && mv files openwrt/files
+              echo "当前仓库存在files文件夹,将替换到openwrt/files"
+            else
+              echo "当前仓库不存在files文件夹,将不替换到openwrt/files,跳过"
+            fi
+        fi
+        if [ "$repo_branch" == "backup.2025.06.18" ]; then
+            # TODO 待处理
+            echo "TODO 待处理 backup.2025.06.18 准备files文件夹"
         fi
 
     - name: 准备.config文件
