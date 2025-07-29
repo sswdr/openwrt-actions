@@ -307,6 +307,10 @@ jobs:
       run: |
         cd openwrt
         mkdir target-images
+
+        # 编译x86的时候，得到的是img未压缩格式的镜像，这里找到全部img文件，并压缩
+        find bin -type f -name "*.img" -execdir sh -c 'gzip -k -c "$0" > "$0.gz"' {} \;
+        
         # 移动bin目录下的全部*.tar.gz、*.img.gz到target-images目录下
         find bin -type f \( -name "*.tar.gz" -o -name "*.img.gz" \) -exec mv -v -t target-images {} +
         
