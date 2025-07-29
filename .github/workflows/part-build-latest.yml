@@ -368,7 +368,7 @@ jobs:
       if: env.output_config_releases_env == 'true'
       uses: rin0612/release-action@v1.14.0
       with:
-        tag: ${{ env.repo_branch }}_build.${{ env.build_date }}_config.[${{ env.config_file }}]
+        tag: ${{ env.repo_branch }}_build.${{ env.build_date }}_${{ env.config_file }}
         artifacts: /mnt/workdir/output/env.tar.gz
         allowUpdates: true
         token: ${{ secrets.GITHUB_TOKEN }}
@@ -378,7 +378,7 @@ jobs:
       if: env.output_config_releases_env_dl == 'true'
       uses: rin0612/release-action@v1.14.0
       with:
-        tag: ${{ env.repo_branch }}_build.${{ env.build_date }}_config.[${{ env.config_file }}]
+        tag: ${{ env.repo_branch }}_build.${{ env.build_date }}_${{ env.config_file }}
         artifacts: /mnt/workdir/output/env-dl.tar.gz
         allowUpdates: true
         token: ${{ secrets.GITHUB_TOKEN }}
@@ -388,7 +388,7 @@ jobs:
       if: env.output_config_releases_target_images == 'true'
       uses: rin0612/release-action@v1.14.0
       with:
-        tag: ${{ env.repo_branch }}_build.${{ env.build_date }}_config.[${{ env.config_file }}]
+        tag: ${{ env.repo_branch }}_build.${{ env.build_date }}_${{ env.config_file }}
         artifacts: /mnt/workdir/output/target-images/*
         allowUpdates: true
         token: ${{ secrets.GITHUB_TOKEN }}
@@ -398,7 +398,7 @@ jobs:
       if: env.output_config_releases_bin == 'true'
       uses: rin0612/release-action@v1.14.0
       with:
-        tag: ${{ env.repo_branch }}_build.${{ env.build_date }}_config.[${{ env.config_file }}]
+        tag: ${{ env.repo_branch }}_build.${{ env.build_date }}_${{ env.config_file }}
         artifacts: /mnt/workdir/output/bin.tar.gz
         allowUpdates: true
         token: ${{ secrets.GITHUB_TOKEN }}
