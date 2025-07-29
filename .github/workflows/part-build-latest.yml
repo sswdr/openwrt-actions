@@ -1,7 +1,7 @@
-# update by 2025.05.12
+# update by 2025.05.12 from part-build-2022.yml
 # 1.补充编译x86完成后导出会报错，需要调整，x86没有这个openwrt*.tar.gz
 # 2.临时调整下，不用rootfs导出了，使用target_images
-name: part-build-update
+name: part-build-latest
 
 on:
   repository_dispatch:
