@@ -184,7 +184,7 @@ jobs:
             sed -i 's/OpenWrt /杀生丸大人 Build $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g' package/lean/default-settings/files/zzz-default-settings
         fi
         if [ "$repo_branch" == "backup.2025.06.18" ]; then
-            echo "--------自定义配置-build信息"
+            echo "--------自定义配置-build信息: 杀生丸大人 Build $(TZ=UTC-8 date "+%Y.%m.%d") @"
             sed -i 's/LEDE /杀生丸大人 Build $(TZ=UTC-8 date "+%Y.%m.%d") @ LEDE /g' package/lean/default-settings/files/zzz-default-settings
         fi
         if [ "$repo_branch" == "backup.2022.04.25" ]; then
