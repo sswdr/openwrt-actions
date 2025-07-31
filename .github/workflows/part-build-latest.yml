@@ -152,41 +152,73 @@ jobs:
 
       # TODO 目前内核版本指定只对armvirt有效，其余的是使用默认的
       # TODO 自定义配置=default 时不加载配置
+      # TODO 注意，编译好的文件系统的文件的创建日期和修改日期会重定向为：SOURCE_DATE_EPOCH
     - name: 加载自定义配置
       if: env.backup_env == 'false'
       run: |
         cd openwrt
+        # --------自定义配置-主机ip地址
         if [ "$build_config_host_ip" != "default" ]; then
-            echo "--------自定义配置-主机ip地址: $build_config_host_ip"
-            sed -i "s/192.168.1.1/$build_config_host_ip/g" package/base-files/files/bin/config_generate
+            case "$repo_branch" in
+                "backup.2022.04.25"|"backup.backup.2024.01.01")
+                    echo "--------自定义配置-主机ip地址: $build_config_host_ip"
+                    sed -i "s/192.168.1.1/$build_config_host_ip/g" package/base-files/files/bin/config_generate
+                ;;
+                "backup.2025.06.18")
+                    echo "--------自定义配置-主机ip地址: $build_config_host_ip"
+                    sed -i "s/192.168.1.1/$build_config_host_ip/g" package/base-files/files/bin/config_generate
+                    sed -i "s/192.168.1.1/$build_config_host_ip/g" package/base-files/luci2/bin/config_generate
+                ;;
+            esac
         fi
+        
+        # --------自定义配置-主机名
         if [ "$build_config_host_name" != "default" ]; then
-            if [[ "$repo_branch" == "backup.2022.04.25" || "$repo_branch" == "backup.backup.2024.01.01" ]]; then
-                echo "--------自定义配置-主机名: $build_config_host_name"
-                sed -i "s/OpenWrt/$build_config_host_name/g" package/base-files/files/bin/config_generate
-            fi
-            if [ "$repo_branch" == "backup.2025.06.18" ]; then
-                echo "--------自定义配置-主机名: $build_config_host_name"
-                sed -i "s/LEDE/$build_config_host_name/g" package/base-files/files/bin/config_generate
-            fi
+            case "$repo_branch" in
+                "backup.2022.04.25"|"backup.backup.2024.01.01")
+                    echo "--------自定义配置-主机名: $build_config_host_name"
+                    sed -i "s/OpenWrt/$build_config_host_name/g" package/base-files/files/bin/config_generate
+                ;;
+                "backup.2025.06.18")
+                    echo "--------自定义配置-主机名: $build_config_host_name"
+                    sed -i "s/LEDE/$build_config_host_name/g" package/base-files/files/bin/config_generate
+                    sed -i "s/LEDE/$build_config_host_name/g" package/base-files/luci2/bin/config_generate
+                ;;
+            esac
         fi
+        
+        # --------自定义配置-build信息
+        case "$repo_branch" in
+            "backup.2022.04.25"|"backup.backup.2024.01.01")
+                echo "--------自定义配置-build信息"
+                sed -i 's/OpenWrt /杀生丸大人 Build $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g' package/lean/default-settings/files/zzz-default-settings
+            ;;
+            "backup.2025.06.18")
+                echo "--------自定义配置-build信息: 杀生丸大人.Build.$(TZ=Asia/Shanghai date '+%Y.%m.%d').@LEDE "
+                sed -i "s/LEDE /杀生丸大人.Build.$(TZ=Asia/Shanghai date '+%Y.%m.%d').@LEDE /g" package/lean/default-settings/files/zzz-default-settings
+            ;;
+        esac
+        
+        # --------自定义配置-默认主题
+        if [ "$build_config_default_theme" != "default" ]; then
+            case "$repo_branch" in
+                "backup.2022.04.25"|"backup.backup.2024.01.01")
+                    echo "--------自定义配置-默认主题: $build_config_default_theme"
+                    sed -i "s/luci-theme-bootstrap/$build_config_default_theme/g" ./feeds/luci/collections/luci/Makefile
+                ;;
+                "backup.2025.06.18")
+                    # TODO
+                ;;
+            esac
+        fi
+        
+        # --------自定义配置-armvirt内核版本
         if [ "$build_config_kernel_patchver" != "default" ]; then
-            echo "--------自定义配置-内核版本: $build_config_kernel_patchver"
+            echo "--------自定义配置-armvirt内核版本: $build_config_kernel_patchver"
             sed -i "s/KERNEL_PATCHVER:=.*/KERNEL_PATCHVER:=$build_config_kernel_patchver/g" target/linux/armvirt/Makefile
         fi
-        if [ "$build_config_default_theme" != "default" ]; then
-            echo "--------自定义配置-默认主题: $build_config_default_theme"
-            sed -i "s/luci-theme-bootstrap/$build_config_default_theme/g" ./feeds/luci/collections/luci/Makefile
-        fi
-
-        if [[ "$repo_branch" == "backup.2022.04.25" || "$repo_branch" == "backup.backup.2024.01.01" ]]; then
-            echo "--------自定义配置-build信息"
-            sed -i 's/OpenWrt /杀生丸大人 Build $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g' package/lean/default-settings/files/zzz-default-settings
-        fi
-        if [ "$repo_branch" == "backup.2025.06.18" ]; then
-            echo "--------自定义配置-build信息: 杀生丸大人 Build $(TZ=UTC-8 date "+%Y.%m.%d") @"
-            sed -i 's/LEDE /杀生丸大人 Build $(TZ=UTC-8 date "+%Y.%m.%d") @ LEDE /g' package/lean/default-settings/files/zzz-default-settings
-        fi
+        
+        # --------autocore-arm支持
         if [ "$repo_branch" == "backup.2022.04.25" ]; then
             echo "--------backup.2022.04.25-其他配置-添加autocore-arm支持可配置, 需要手动在.config/make menuconfig中选择启用"
             sed -i 's/TARGET_rockchip/TARGET_rockchip\|\|TARGET_armvirt/g' package/lean/autocore/Makefile
