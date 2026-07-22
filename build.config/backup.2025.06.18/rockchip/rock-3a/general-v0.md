@@ -44,7 +44,7 @@ Target Images
     > I2C support
         <*> kmod-i2c-core
     > Network Devices
-        <*> kmod-r8125-rss
+        <*>   kmod-r8125-rss
         <*> kmod-r8168
     > USB Support
         -*- kmod-usb-core
@@ -103,10 +103,10 @@ Target Images
     <*> 6in4
     <*> 6rd
     <*> 6to4
+    <*> ethtool  # 用于调整太网适配器参数/模式
     <*> iw
     <*> iputils-ping  # 完整的ping命令
     [*]   Install legacy ping4 and ping6 symlinks
-    <*> ethtool  # 用于调整太网适配器参数/模式
     > File Transfer
         <*> curl
     > NMAP Suite
@@ -170,10 +170,10 @@ Target Images
         <*> f2fs-tools
         <*> f2fsck
         <*> lsattr
+        <*> mkf2fs
         <*> ntfs-3g
         [ ]   use external FUSE library, selects package libfuse
         [*]   install the ntfs-3g.probe utility
-        <*> mkf2fs
         <*> sysfsutils
         <*> xfs-fsck
         <*> xfs-mkfs
