@@ -175,6 +175,7 @@ Target Images
         [ ]   use external FUSE library, selects package libfuse
         [*]   install the ntfs-3g.probe utility
         <*> sysfsutils
+        <*> tune2fs
         <*> xfs-fsck
         <*> xfs-mkfs
     > Shells
