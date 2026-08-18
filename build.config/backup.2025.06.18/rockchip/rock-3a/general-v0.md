@@ -60,6 +60,7 @@ Target Images
         <*> kmod-video-uvc
         -*- kmod-video-videobuf2
     > Wireless Drivers
+        <*> kmod-aic8800u
         <*> kmod-cfg80211
         <*> kmod-mac80211
         <*> kmod-mt7921-firmware
@@ -104,6 +105,7 @@ Target Images
     <*> 6rd
     <*> 6to4
     <*> ethtool  # 用于调整太网适配器参数/模式
+    <*> iperf3   # 调试测速
     <*> iw
     <*> iputils-ping  # 完整的ping命令
     [*]   Install legacy ping4 and ping6 symlinks
