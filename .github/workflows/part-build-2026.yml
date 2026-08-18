@@ -165,7 +165,7 @@ jobs:
                 "backup.2026.08.18")
                     echo "--------自定义配置-主机ip地址: $build_config_host_ip"
                     sed -i "s/192.168.1.1/$build_config_host_ip/g" package/base-files/files/bin/config_generate
-                    sed -i "s/192.168.1.1/$build_config_host_ip/g" package/base-files/luci2/bin/config_generate
+                    sed -i "s/192.168.1.1/$build_config_host_ip/g" package/base-files/luci/bin/config_generate
                 ;;
             esac
         fi
@@ -180,7 +180,7 @@ jobs:
                 "backup.2026.08.18")
                     echo "--------自定义配置-主机名: $build_config_host_name"
                     sed -i "s/LEDE/$build_config_host_name/g" package/base-files/files/bin/config_generate
-                    sed -i "s/LEDE/$build_config_host_name/g" package/base-files/luci2/bin/config_generate
+                    sed -i "s/LEDE/$build_config_host_name/g" package/base-files/luci/bin/config_generate
                 ;;
             esac
         fi
