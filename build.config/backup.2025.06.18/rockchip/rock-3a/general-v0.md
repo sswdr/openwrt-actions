@@ -33,6 +33,7 @@ Target Images
     <*> ipv6helper
 
 > Firmware
+    -*- aic8800-usb-firmware
     <*> rtl8821ce-firmware
 
 > Kernel modules 
@@ -60,7 +61,7 @@ Target Images
         <*> kmod-video-uvc
         -*- kmod-video-videobuf2
     > Wireless Drivers
-        <*> kmod-aic8800u
+        <*> kmod-aic8800-usb
         <*> kmod-cfg80211
         <*> kmod-mac80211
         <*> kmod-mt7921-firmware
