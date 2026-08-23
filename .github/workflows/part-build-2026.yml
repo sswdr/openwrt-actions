@@ -148,7 +148,7 @@ jobs:
       if: env.backup_env == 'false'
       run: cd openwrt && ./scripts/feeds install -a
 
-      # TODO 目前内核版本指定只对armvirt有效，其余的是使用默认的
+      # TODO 目前内核版本指定只对rockchip有效，其余的是使用默认的
       # TODO 自定义配置=default 时不加载配置
       # TODO 注意，编译好的文件系统的文件的创建日期和修改日期会重定向为：SOURCE_DATE_EPOCH
     - name: 加载自定义配置
@@ -210,10 +210,12 @@ jobs:
             esac
         fi
 
-        # --------自定义配置-armvirt内核版本
+        # --------自定义配置-rockchip内核版本
         if [ "$build_config_kernel_patchver" != "default" ]; then
-            echo "--------自定义配置-armvirt内核版本: $build_config_kernel_patchver"
-            sed -i "s/KERNEL_PATCHVER:=.*/KERNEL_PATCHVER:=$build_config_kernel_patchver/g" target/linux/armvirt/Makefile
+            echo "--------自定义配置-rockchip内核版本: $build_config_kernel_patchver"
+            sed -i "s/KERNEL_PATCHVER:=.*/KERNEL_PATCHVER:=$build_config_kernel_patchver/g" target/linux/rockchip/Makefile
+            sed -i "s/KERNEL_TESTING_PATCHVER:=.*/KERNEL_TESTING_PATCHVER:=$build_config_kernel_patchver/g" target/linux/rockchip/Makefile
+            cat target/linux/rockchip/Makefile
         fi
 
         # --------autocore-arm支持
