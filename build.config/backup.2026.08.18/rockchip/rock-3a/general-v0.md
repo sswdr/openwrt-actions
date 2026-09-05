@@ -17,14 +17,17 @@
         luci-app-webadmin
         kmod-aic8800u
     
-    ③、目前仅补齐aic8800驱动
+    ③、目前仅补齐aic8800、mt7601、nfa765驱动
     > Kernel modules
         > Bluetooth Support
             <*> kmod-aic8800-btusb      # 蓝牙暂时无用
         > Wireless Drivers
             <*> kmod-aic8800-usb
+            <*> kmod-ath11k-pci
+            <*> kmod-mt7601u
     > Firmware
         -*- aic8800-usb-firmware
+        <*> ath11k-firmware-wcn6855
 
 ```
 
