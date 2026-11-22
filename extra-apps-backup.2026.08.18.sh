@@ -5,5 +5,7 @@ BRANCH=${2:-backup.2026.08.18}
 
 echo "src-git modem https://github.com/fildunsky/luci-app-5gmodem.git" >> feeds.conf.default
 
+echo "src-git qmodem https://github.com/FUjr/QModem.git" >> feeds.conf.default
+
 ./scripts/feeds update -a
 ./scripts/feeds install -a
